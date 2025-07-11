@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<querybuilder version="8.3">
+<source>
+<database charset="utf8mb4" collation="utf8mb4_0900_ai_ci">pointofsales</database>
+</source>
+<canvas>
+<table tablename="saldoawaldetail" alias="" left="33" top="61" width="150" height="113" />
+<table tablename="saldoawal" alias="" left="375" top="15" width="150" height="113" />
+<table tablename="akun" alias="" left="326" top="188" width="150" height="113" />
+<join type = "Inner Join">
+<from tablename = "saldoawaldetail" alias = "">idsaldoawal</from>
+<to tablename = "saldoawal" alias = "">idsaldoawal</to>
+</join>
+<join type = "Inner Join">
+<from tablename = "saldoawaldetail" alias = "">kdakun</from>
+<to tablename = "akun" alias = "">kdakun</to>
+</join>
+</canvas>
+<grid>
+<column id="1">
+<table tablename="saldoawaldetail"></table>
+<field>idsaldoawal</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="2">
+<table tablename="saldoawaldetail"></table>
+<field>kdakun</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="3">
+<table tablename="saldoawaldetail"></table>
+<field>debet</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="4">
+<table tablename="saldoawaldetail"></table>
+<field>kredit</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="5">
+<table tablename="akun"></table>
+<field>namaakun</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="6">
+<table tablename="akun"></table>
+<field>kdparent</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="7">
+<table tablename="saldoawal"></table>
+<field>tahun</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+</grid>
+</querybuilder>

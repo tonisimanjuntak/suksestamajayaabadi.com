@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<querybuilder version="8.3">
+<source>
+<database charset="utf8mb4" collation="utf8mb4_0900_ai_ci">pointofsales</database>
+</source>
+<canvas>
+<view tablename="v_piutang" alias="" left="10" top="21" width="150" height="218" />
+<table tablename="piutangdetail" alias="" left="679" top="13" width="150" height="113" />
+<table tablename="konsumen" alias="" left="183" top="153" width="150" height="233" />
+<table tablename="wilayah" alias="" left="358" top="144" width="150" height="113" />
+<table tablename="penjualan" alias="" left="524" top="92" width="150" height="173" />
+<table tablename="sales" alias="" left="720" top="147" width="150" height="113" />
+<join type = "Inner Join">
+<from tablename = "v_piutang" alias = "">idpiutang</from>
+<to tablename = "piutangdetail" alias = "">idpiutang</to>
+</join>
+<join type = "Inner Join">
+<from tablename = "v_piutang" alias = "">idkonsumen</from>
+<to tablename = "konsumen" alias = "">idkonsumen</to>
+</join>
+<join type = "Left Join">
+<from tablename = "v_piutang" alias = "">idpenjualan</from>
+<to tablename = "penjualan" alias = "">idpenjualan</to>
+</join>
+<join type = "Left Join">
+<from tablename = "konsumen" alias = "">idwilayah</from>
+<to tablename = "wilayah" alias = "">idwilayah</to>
+</join>
+<join type = "Left Join">
+<from tablename = "penjualan" alias = "">idsales</from>
+<to tablename = "sales" alias = "">idsales</to>
+</join>
+</canvas>
+<grid>
+<column id="1">
+<table tablename="v_piutang"></table>
+<field>idpiutang</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>true</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="2">
+<table tablename="v_piutang"></table>
+<field>tglpiutang</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>true</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="3">
+<table tablename="v_piutang"></table>
+<field>idpenjualan</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>true</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="4">
+<table tablename="v_piutang"></table>
+<field>noinvoice</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>true</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="5">
+<table tablename="v_piutang"></table>
+<field>tglinvoice</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>true</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="6">
+<table tablename="v_piutang"></table>
+<field>idkonsumen</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>true</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="7">
+<table tablename="v_piutang"></table>
+<field>namakonsumen</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>true</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="8">
+<table tablename="v_piutang"></table>
+<field>jatuhtempo</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>true</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="9">
+<table tablename="v_piutang"></table>
+<field>tgljatuhtempo</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>true</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="10">
+<table tablename="v_piutang"></table>
+<field>totaldebet</field>
+<alias>jumlahpiutang</alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>true</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="11">
+<table tablename="piutangdetail"></table>
+<field>kredit</field>
+<alias>jumlahdibayar</alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct>sum</aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="12">
+<table tablename="konsumen"></table>
+<field>idwilayah</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>true</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="13">
+<table tablename="wilayah"></table>
+<field>namawilayah</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>true</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="14">
+<table tablename="penjualan"></table>
+<field>idsales</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>true</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="15">
+<table tablename="sales"></table>
+<field>namasales</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>true</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+</grid>
+</querybuilder>

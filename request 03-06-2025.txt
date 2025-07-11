@@ -1,0 +1,13 @@
+master barang default bonus penjualan 0.5%
+
+pembelian pas tambah barang Harga dpp langsung dikali jumlah qty
+
+penerimaan PO hilangin cara bayar GIRO
+
+
+buatkan file excel untuk export
+konsumen
+supplier
+barang
+sales
+ekspedisi

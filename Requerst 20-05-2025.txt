@@ -1,0 +1,74 @@
+SUDAH
+===============
+**semua email tidak wajib
+*Konsumen
+	tambah NPWP
+	email tidak wajib
+	limit (50 juta), bisa edit dengan tingkatan administrator
+	tandem dengan akun level 4 (piutang)
+
+*sales
+	email tidak wajib
+	tambah target penjualan
+
+*supplier
+	tandem dengan akun level 4 (utang)
+
+*ekspedisi
+	tandem dengan akun level 4 (utang)
+
+*Pembelian
+	tanggal Bilyet Giro
+
+*pembelian
+	tambah menu
+	penerimaan barang
+
+*retur pembelian
+	munculkan nama supplier
+
+*laporan pembelian
+	munculkan sub total
+	discount
+	potongan
+	dpp
+	ppn
+	total pembelian
+
+
+*penjualan
+	kode atau invoice penjualan
+	urut belakang jadi 6 digit, tetapi sewaktu pindah bulan, 6 digit ini lanjut, hanya tahun dan bulan berubah
+	penjualan masih bisa dilakukan apabila konsumen masih memiliki limit dan belum memasuki jatuh tempo dari semua invoice yang telah dibuat
+
+buku utang ekspedisi
+
+BELUM
+================
+
+
+
+cetak lembar penagihan
+
+laporan buku hutang ekspedisi sisa hutang pindahin ke Bawah.
+
+
+
+*barang (dasar penentuan bonus) (disesuaikan lagi bang toni apabila salah dalam penyampaian saya)
+	munculkan bonus penjualan
+	setiap penjualan mendapatkan bonus sebesar 0,5 persen, kecuali seng
+	(bisa menggunakan persen atau nominal, defaultnya 0,5, sedangkan seng tidak mendapatkan bonus penjualan)
+	munculkan jenis bonus penjualan sesuai target (Middle= 0,25 & Fast = 0,5, mungkin baiknya buatkan pilihan bonusnya = 0 sebagai pilihan jika terdapat barang yang tidak ada bonusnya)
+	munculkan bonus penagihan (bisa menggunakan persen atau nominal, defaultnya persen (nominal untuk seng)
+
+*bonus sales (per sales)
+	berupa cetakan bonus penjualan & penagihan
+	**bonus penjualan
+	dengan aturan, setiap penjualan mendapatkan 0,5% untuk setiap penjualan kecuali seng walau tidak mencapai target sales
+	**bonus penjualan berdasarkan target
+	mendapatkan tambahan bonus penjualan apabila >= target penjualan
+	dengan perhitungan menyesuaikan total jenis bonus penjualan (Middle atau Fast yang sudah di setting di master barang)
+	**bonus penagihan
+	mendapatkan tambahan bonus penagihan apabila penagihan masih belum jatuh tempo (aturan hitung dari master barang)
+
+***jika ada yang kurang dari catatan saya, tambahkan saja bang toni

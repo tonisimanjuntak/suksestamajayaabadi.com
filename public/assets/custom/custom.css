@@ -1,0 +1,364 @@
+body {
+    font-family: "Times New Roman", Times, serif;
+}
+
+.ui-autocomplete {
+    max-height: 400px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
+}
+
+/* IE 6 doesn't support max-height
+ * we use height instead, but this forces the menu to always be this tall
+ */
+* html .ui-autocomplete {
+    height: 100px;
+}
+
+.has-error .help-block {
+    color: red;
+}
+
+.required label {
+    font-weight: bold;
+}
+
+.required label:after {
+    color: #e32;
+    content: " *";
+    font-style: italic;
+    font-size: 12px;
+    display: inline;
+}
+
+#cardcontent .card-title {
+    font-size: 25px;
+    color: #a4a4a4;
+}
+
+#table thead {
+    /*background : linear-gradient(128deg, rgba(0,0,0,0.9444152661064426) 19%, rgba(21,117,144,1) 77%);*/
+    /*color : white;*/
+}
+
+#table th {
+    font-size: 12px;
+    font-weight: bold;
+    padding: 5px;
+}
+
+#table td {
+    font-size: 11px;
+    padding: 3px;
+    vertical-align: middle;
+}
+
+table.dataTable thead th {
+    vertical-align: middle;
+}
+
+table.dataTable tbody td {
+    padding: 3px !important;
+}
+
+.main-header {
+    background: linear-gradient(
+        128deg,
+        rgba(0, 0, 0, 0.9444152661064426) 50%,
+        #f4f6f9 80%
+    );
+}
+
+.main-sidebar {
+    background: linear-gradient(128deg, #018fd3 19%, #fed26f 77%);
+}
+
+.brand-link {
+    /* background: linear-gradient(
+        128deg,
+        rgba(0, 0, 0, 0.9444152661064426) 19%,
+        rgba(21, 117, 144, 1) 77%
+    ); */
+    background-color: #018fd3;
+}
+
+/* .main-sidebar { background-color: #3D99B4 !important } */
+
+.nav-link {
+    color: black !important;
+}
+.nav-item .active {
+    color: #f3f2f2 !important;
+}
+.nav-item .nav-item .active {
+    color: #080808 !important;
+}
+.nav-item .active {
+    color: #f5f4f4 !important;
+}
+
+/* .batas-menu {
+  margin-top: 2px;
+  margin-bottom: 2px;
+  border-width: 2px;
+}   */
+
+.kelapkelip {
+    animation: kelapkelipText 1.5s infinite;
+}
+
+@keyframes kelapkelipText {
+    0% {
+        color: #fe0303;
+    }
+
+    50% {
+        color: #ff6e6e;
+    }
+
+    60% {
+        color: #ffb7b7;
+    }
+
+    70% {
+        color: #ffcfcf;
+    }
+
+    80% {
+        color: #fff1f1;
+    }
+
+    90% {
+        color: transparent;
+    }
+
+    100% {
+        color: transparent;
+    }
+}
+
+.select2-container {
+    width: 100% !important;
+}
+
+.select2,
+.select2-search__field,
+.select2-results__option {
+    font-size: 1em !important;
+}
+
+.select2-selection__rendered {
+    /*line-height: 2em !important;*/
+}
+
+.select2-container .select2-selection--single {
+    /*height: 2em !important;*/
+    height: 40px;
+}
+
+.select2-selection__arrow {
+    height: 2.5em !important;
+}
+
+.form-group > .select2-container {
+    width: 100% !important;
+}
+
+.select2-container .select2-selection--single {
+    height: 40px !important;
+}
+
+< !-- input type date indonesia -- > .dateformatindonesia {
+    position: relative;
+    color: white;
+}
+
+.dateformatindonesia:before {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    content: attr(data-date);
+    display: inline-block;
+    color: black;
+}
+
+.dateformatindonesia::-webkit-datetime-edit,
+.dateformatindonesia::-webkit-inner-spin-button,
+.dateformatindonesia::-webkit-clear-button {
+    display: none;
+}
+
+.dateformatindonesia::-webkit-calendar-picker-indicator {
+    position: absolute;
+    top: 3px;
+    right: 0;
+    color: black;
+    opacity: 1;
+}
+
+.dataTables_scrollHeadInner {
+    width: 100% !important;
+}
+
+.dataTables_scrollHeadInner table {
+    width: 100% !important;
+}
+
+table.dataTable tbody td,
+table.dataTable thead th {
+    word-break: break-word;
+    vertical-align: middle;
+}
+
+#tablekwitansi tr {
+    width: 100% !important;
+}
+
+.table-inforegistrasi tr {
+    line-height: 10px;
+    font-size: 12px;
+    padding: 0;
+}
+
+a.btn-outline-primary:hover {
+    color: #ffffff !important;
+}
+
+a.btn-outline-success:hover {
+    color: #ffffff !important;
+}
+
+a.btn-outline-danger:hover {
+    color: #ffffff !important;
+}
+
+a.btn-outline-warning:hover {
+    color: #ffffff !important;
+}
+
+a.btn-outline-primary {
+    color: #1b89dd !important;
+}
+
+.modal-lg-30 {
+    max-width: 30%;
+}
+
+.modal-lg-40 {
+    max-width: 40%;
+}
+
+.modal-lg-50 {
+    max-width: 50%;
+}
+
+.modal-lg-60 {
+    max-width: 60%;
+}
+
+.modal-lg-70 {
+    max-width: 70%;
+}
+
+.modal-lg-80 {
+    max-width: 80%;
+}
+
+.modal-lg-90 {
+    max-width: 90%;
+}
+
+.modal-lg-100 {
+    max-width: 100%;
+}
+
+.text-12 {
+    font-size: 12px;
+}
+
+.text-10 {
+    font-size: 10px;
+}
+
+.text-10 input,
+select {
+    font-size: 10px !important;
+    height: 38px !important;
+}
+
+.text-10 .select2,
+.text-10 .select2-search__field,
+.text-10 .select2-results__option {
+    font-size: 1em !important;
+}
+
+.text-10 .select2-selection__rendered {
+    line-height: 2em !important;
+}
+
+.text-10 .select2-container .select2-selection--single {
+    height: 3em !important;
+    /*height: 30px;*/
+}
+
+.text-10 .select2-selection__arrow {
+    height: 3em !important;
+}
+
+.no-space .form-group {
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+}
+
+.no-space .form-group label,
+input,
+select {
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+}
+
+.form-control:focus {
+    border-color: #ea7c81 !important;
+    border-width: 2px;
+}
+
+.select2-container *:focus {
+    border-color: #ea7c81 !important;
+    border-width: 2px;
+}
+
+.uppercase {
+    text-transform: uppercase;
+}
+
+.loader {
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 50%;
+    height: 50%;
+    z-index: 9999;
+    background: url("//upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Phi_fenomeni.gif/50px-Phi_fenomeni.gif")
+        100% 100% no-repeat;
+}
+
+.mt-min1 {
+    margin-top: -10px;
+}
+
+/* .swal-overlay {
+  background-color: rgba(43, 165, 137, 0.45);
+} */
+
+.card-detail .label-detail {
+    font-size: small;
+}
+.card-detail .value-detail {
+    font-size: larger;
+    font-weight: bold;
+}
+
+.select2-selection__choice {
+    color: black !important; /* Warna teks hitam */
+}

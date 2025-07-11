@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<querybuilder version="8.3">
+<source>
+<database charset="utf8mb4" collation="utf8mb4_0900_ai_ci">pointofsales</database>
+</source>
+<canvas>
+<table tablename="returpenjualandetail" alias="" left="33" top="43" width="150" height="233" />
+<table tablename="returpenjualan" alias="" left="535" top="16" width="150" height="233" />
+<table tablename="barang" alias="" left="302" top="202" width="150" height="173" />
+<table tablename="bank" alias="" left="852" top="208" width="150" height="113" />
+<table tablename="penjualan" alias="" left="1009" top="16" width="150" height="158" />
+<join type = "Inner Join">
+<from tablename = "returpenjualandetail" alias = "">idreturpenjualan</from>
+<to tablename = "returpenjualan" alias = "">idreturpenjualan</to>
+</join>
+<join type = "Inner Join">
+<from tablename = "returpenjualandetail" alias = "">idbarang</from>
+<to tablename = "barang" alias = "">idbarang</to>
+</join>
+<join type = "Left Join">
+<from tablename = "returpenjualan" alias = "">idbank</from>
+<to tablename = "bank" alias = "">idbank</to>
+</join>
+<join type = "Inner Join">
+<from tablename = "returpenjualan" alias = "">idpenjualan</from>
+<to tablename = "penjualan" alias = "">idpenjualan</to>
+</join>
+</canvas>
+<grid>
+<column id="1">
+<table tablename="returpenjualandetail"></table>
+<field>idreturpenjualan</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>true</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="2">
+<table tablename="returpenjualan"></table>
+<field>tglretur</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>true</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="3">
+<table tablename="barang"></table>
+<field>kdakun</field>
+<alias>kdakunbarang</alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>true</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="4">
+<table tablename="returpenjualandetail"></table>
+<field>subtotalretur</field>
+<alias>subtotalretur</alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct>sum</aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="5">
+<table tablename="returpenjualan"></table>
+<field>carabayar</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>true</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="6">
+<table tablename="bank"></table>
+<field>kdakun</field>
+<alias>kdakunbank</alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>true</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="7">
+<table tablename="penjualan"></table>
+<field>noinvoice</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>true</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="8">
+<table tablename="penjualan"></table>
+<field>tglinvoice</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>true</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="9">
+<table tablename="returpenjualan"></table>
+<field>totalretur</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>true</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+</grid>
+</querybuilder>

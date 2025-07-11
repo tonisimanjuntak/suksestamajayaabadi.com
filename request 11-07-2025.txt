@@ -1,0 +1,17 @@
+*barang
+tambah field
+kode barang, stok minimal
+fast 0,25
+middle = 0,5
+
+
+*sales
+**bonus sales (semua barang 0,25 kecuali seng 100 rupiah)
+nominal di penjualan, target penjualan maupun penagihan adalah harga dpp nya bukan harga setelah pajak
+
+
+**buku utang ekspedisi
+jumlah pembayaran (di ganti DPP)
+PPN 1,1% (otomatis)
+jumlah pembayaran (otomatis)
+pph 23 2% dari DPP (otomatis)

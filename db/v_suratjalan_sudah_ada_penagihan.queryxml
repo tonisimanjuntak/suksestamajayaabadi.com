@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<querybuilder version="8.3">
+<source>
+<database charset="utf8mb4" collation="utf8mb4_0900_ai_ci">pointofsales</database>
+</source>
+<canvas>
+<table tablename="suratjalandetail" alias="" left="16" top="51" width="150" height="113" />
+<table tablename="penagihandetail" alias="" left="577" top="1" width="150" height="278" />
+<table tablename="piutang" alias="" left="331" top="5" width="150" height="233" />
+<join type = "Inner Join">
+<from tablename = "suratjalandetail" alias = "">idpenjualan</from>
+<to tablename = "piutang" alias = "">idpenjualan</to>
+</join>
+<join type = "Inner Join">
+<from tablename = "piutang" alias = "">idpiutang</from>
+<to tablename = "penagihandetail" alias = "">idpiutang</to>
+</join>
+</canvas>
+<grid>
+<column id="1">
+<table tablename="suratjalandetail"></table>
+<field>iddetailsuratjalan</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="2">
+<table tablename="suratjalandetail"></table>
+<field>idsuratjalan</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="3">
+<table tablename="suratjalandetail"></table>
+<field>idpenjualan</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="4">
+<table tablename="piutang"></table>
+<field>idpiutang</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="5">
+<table tablename="penagihandetail"></table>
+<field>jumlahtagihan</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+</grid>
+</querybuilder>

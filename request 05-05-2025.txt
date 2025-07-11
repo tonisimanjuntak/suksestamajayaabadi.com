@@ -1,0 +1,88 @@
+sudah selesai
+====================
+Format invoice 
+SJA/TAHUN(4DIGIT)BULAN(2DIGIT)/NO URUT (6 DIGIT)
+
+PENJUALAN
+middle (45)
+
+jumlah penjualan 
+jumlah diskon
+dpp (100/111)*(penjualan-diskon)
+ppn (11/111)*(penjualan-diskon)
+jumlah (dpp+ppn atau penjualan - diskon)
+
+error penjualan dan pembelian (sub total sewaktu tambah data masih menotalkan bukan mengurang dari diskon)
+bagian bawah tidak muncul (buang biay pengiriman)
+
+
+**master ekspedisi
+field
+samakan dengan konsumen, kecuali daerah dibuang
+
+di pembelian dan penjualan khusus buku utang dan piutang
+cara bayar tambah giro
+sewaktu pilih giro maka muncul field No Bilyet Giro
+
+
+cetakan invoice tambah jenis piutang (tekstualnya jenis) sebelum jatuh tempo
+no invoice di tengah2
+
+
+buku utang dan piutang
+fieldnya (total/gelondongan)
+no, no piutang, no invoice, tanggal penjualan/pembelian, tanggal jatuh tempo, piutang/utang, setor, sisa piutang/utang
+
+minta break down cicilan (tinggal tambah tanggal jatuh tempo)
+spasi tabel di kecilin
+
+saldo buku utang dan piutang (intinya nama supplier/konsumen dan sisa hutang/piutang)
+
+belum selesai
+=====================
+
+
+
+
+
+
+
+
+
+di data konsumen tambah field limit kredit (default 50jt) yang bisa edit hanya administrator
+limit dan jatuh tempo
+
+
+
+
+
+
+
+
+
+
+
+
+**surat jalan penjualan
+tambahkan ekspedisi, jenis ekspedisi (darat, laut, udara), identitas ekspedisi (no plat sejenisnya), biaya pengiriman
+
+rincian surat jalan (3 kolom, qty, satuan, keterangan)
+
+**penerimaan pembelian
+tambahkan ekspedisi, jenis ekspedisi (darat, laut, udara), identitas ekspedisi (no plat sejenisnya), biaya pengiriman
+khusus pembelian, biaya pengiriman default nya hutang ekspedisi
+(biaya pengiriman jangan dijurnal dulu)
+ 
+rincian manggil detail setiap pesanan
+nama barang, jumlah dan jumlah yang diterima dan selisih
+
+** buku utang ekspedisi (gak bisa cicil)
+** laporan buku utang ekspedisi
+
+
+fitur hpp non laba rugi
+
+gudang
+bisa entry brang masuk dan barang keluar (mirip pembelian dan penjualan tetapi tidak mempengaruhi stok kantor)
+
+administrator bisa audit stock gudang baik masuk maupun keluar
