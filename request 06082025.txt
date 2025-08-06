@@ -1,0 +1,16 @@
+laporan penagihan
+bed debt, isi nya sisa utang
+
+
+suratjalan
+rincian barang bisa panggil dari invoice atau tambah rincian
+
+
+
+
+
+YG SATUNYA
+=========
+domain : borneointidistribusindo
+akses level dynamin
+warna ganti

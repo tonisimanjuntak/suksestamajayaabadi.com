@@ -340,6 +340,10 @@ class PiutangController extends Controller
         $nokwitansi = Penjualan::createKwitansi($idpenjualan);
         $rsPenjualan = Penjualan::find($idpenjualan);
 
+        if (($rsPiutang->totaldebet - $rsPiutang->totalkredit) < $kredit) {
+            return redirect('/piutang/detail/' . Crypt::encrypt($idpiutang))->with('fail', 'Jumlah yang dibayar tidak boleh melebihi sisa piutang!');
+        }
+
         $data = array(
             'idpiutangdetail' => $idpiutangdetail,
             'idpiutang' => $idpiutang,
