@@ -1,6 +1,6 @@
 /*
 SQLyog Enterprise v10.42 
-MySQL - 8.0.30 : Database - pointofsales
+MySQL - 8.0.30 : Database - suksestamajayaabadi
 *********************************************************************
 */
 
@@ -12,78 +12,78 @@ MySQL - 8.0.30 : Database - pointofsales
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-CREATE DATABASE /*!32312 IF NOT EXISTS*/`pointofsales` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+CREATE DATABASE /*!32312 IF NOT EXISTS*/`suksestamajayaabadi` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 
-USE `pointofsales`;
+USE `suksestamajayaabadi`;
 
 /*Table structure for table `akun` */
 
 DROP TABLE IF EXISTS `akun`;
 
 CREATE TABLE `akun` (
-  `kdakun` char(9) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `namaakun` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `kdparent` char(7) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `levels` int DEFAULT NULL,
-  `statusaktif` enum('Aktif','Tidak Aktif') COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `inserted_date` datetime DEFAULT NULL,
-  `updated_date` datetime DEFAULT NULL,
+  `kdakun` CHAR(9) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `namaakun` VARCHAR(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `kdparent` CHAR(7) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `levels` INT DEFAULT NULL,
+  `statusaktif` ENUM('Aktif','Tidak Aktif') COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `inserted_date` DATETIME DEFAULT NULL,
+  `updated_date` DATETIME DEFAULT NULL,
   PRIMARY KEY (`kdakun`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 /*Data for the table `akun` */
 
-insert  into `akun`(`kdakun`,`namaakun`,`kdparent`,`levels`,`statusaktif`,`inserted_date`,`updated_date`) values ('1','Aset',NULL,1,'Aktif','2025-02-14 01:47:42','2025-02-14 06:17:20'),('1.1','Aset Lancar','1',2,'Aktif','2025-02-14 06:25:44','2025-02-14 07:19:50'),('1.1.01','Kas','1.1',3,'Aktif','2025-02-14 07:49:21','2025-02-14 07:52:15'),('1.1.01.01','Kas Tunai','1.1.01',4,'Aktif','2025-02-14 08:09:12','2025-03-16 17:31:58'),('1.1.01.02','Rekening May Bank','1.1.01',4,'Aktif','2025-02-14 08:12:41','2025-05-10 04:06:51'),('1.1.01.03','Rekening BCA','1.1.01',4,'Aktif','2025-03-16 17:32:13','2025-03-16 17:32:13'),('1.1.02','Persediaan Barang Dagang','1.1',3,'Aktif','2025-02-14 07:50:14','2025-02-14 07:50:14'),('1.1.02.01','Persediaan Bahan Baku','1.1.02',4,'Aktif','2025-02-14 08:22:10','2025-02-14 08:22:10'),('1.1.03','Piutang','1.1',3,'Aktif','2025-02-14 07:50:34','2025-03-16 18:13:52'),('1.1.03.01','Piutang Usaha','1.1.03',4,'Aktif','2025-03-16 18:13:37','2025-03-16 18:13:37'),('1.2','Aset Tidak Lancar','1',2,'Aktif','2025-02-14 06:26:10','2025-02-14 06:26:10'),('2','Liabilitas',NULL,1,'Aktif','2025-02-14 01:50:45','2025-02-14 06:17:37'),('2.1','Liabilitas Jangka Panjang','2',2,'Aktif','2025-02-14 06:38:40','2025-02-14 06:38:40'),('2.1.01','Utang','2.1',3,'Aktif','2025-03-17 05:17:27','2025-03-17 05:17:27'),('2.1.01.01','Utang Usaha (Ekspedisi)','2.1.01',4,'Aktif','2025-03-17 05:17:46','2025-05-20 14:53:48'),('2.2','Liabilitas Jangka Pendek','2',2,'Aktif','2025-02-14 06:39:03','2025-02-14 06:39:03'),('2.2.01','Utang Jangka Pendek','2.2',3,'Aktif','2025-04-25 06:32:42','2025-04-25 06:32:42'),('2.2.01.01','Utang Usaha (Supplier)','2.2.01',4,'Aktif','2025-04-25 06:33:34','2025-04-25 06:33:34'),('2.2.01.02','Utang Pajak (PPN Keluaran)','2.2.01',4,'Aktif','2025-04-25 06:34:03','2025-04-25 06:56:37'),('2.2.01.03','Utang Gaji','2.2.01',4,'Aktif','2025-04-25 06:34:23','2025-04-25 06:34:23'),('3','Modal',NULL,1,'Aktif','2025-02-14 01:50:54','2025-02-14 01:56:18'),('3.1','Modal','3',2,'Aktif','2025-04-25 14:38:46','2025-04-25 14:38:46'),('3.1.01','Modal','3.1',3,'Aktif','2025-04-25 14:39:00','2025-04-25 14:39:00'),('3.1.01.01','Modal Pemilik','3.1.01',4,'Aktif','2025-04-25 14:40:00','2025-04-25 14:40:00'),('4','Pendapatan',NULL,1,'Aktif','2025-02-14 01:51:58','2025-02-14 06:18:21'),('4.1','Pendapatan Usaha','4',2,'Aktif','2025-02-14 07:23:06','2025-02-14 07:23:06'),('4.1.01','Penjualan Usaha Dagang','4.1',3,'Aktif','2025-03-08 08:51:19','2025-03-08 08:51:19'),('4.1.01.01','Penjualan Barang Dagang','4.1.01',4,'Aktif','2025-03-08 08:52:10','2025-03-08 08:52:10'),('4.2','Pendapatan Diluar Usaha','4',2,'Aktif','2025-02-14 07:23:44','2025-02-14 07:23:44'),('4.2.01','Pendapatan Sewa','4.2',3,'Aktif','2025-03-08 08:51:34','2025-03-08 08:53:15'),('4.2.01.01','Pendapatan Sewa Truk','4.2.01',4,'Aktif','2025-03-08 08:52:33','2025-03-08 08:52:47'),('5','Beban',NULL,1,'Aktif','2025-02-14 01:52:15','2025-02-14 06:18:05'),('5.1','Beban Gaji','5',2,'Aktif','2025-02-14 07:33:40','2025-02-14 07:33:40'),('5.1.01','Gaji Pegawai','5.1',3,'Aktif','2025-03-08 07:26:30','2025-03-08 07:26:30'),('5.1.01.01','Gaji Pokok Pegawai','5.1.01',4,'Aktif','2025-03-08 07:37:31','2025-03-08 07:37:31'),('5.1.01.02','Gaji Tunjangan Pegawai','5.1.01',4,'Aktif','2025-03-08 07:37:45','2025-03-08 07:37:45'),('5.1.02','Gaji Non Pegawai','5.1',3,'Aktif','2025-03-08 07:26:54','2025-03-08 07:26:54'),('5.1.02.01','Upah Harian Non Pegawai','5.1.02',4,'Aktif','2025-03-08 07:38:08','2025-03-08 07:39:00'),('5.1.02.02','Upah Bulanan Non Pegawai','5.1.02',4,'Aktif','2025-03-08 07:38:27','2025-03-08 07:39:13'),('5.2','Beban Jasa','5',2,'Aktif','2025-02-14 07:34:55','2025-02-14 07:34:55'),('5.2.01','Jasa Pemeliharaan Barang Kantor','5.2',3,'Aktif','2025-03-08 07:33:17','2025-03-08 07:35:54'),('5.2.01.01','Jasa Pemeliharaan AC / Pendingin Ruangan','5.2.01',4,'Aktif','2025-03-08 07:39:44','2025-03-08 07:43:10'),('5.2.01.03','Jasa Pemeliharaan Komputer/ Laptop','5.2.01',4,'Aktif','2025-03-08 07:42:51','2025-03-08 07:43:20'),('5.2.02','Jasa Pemeliharaan Software','5.2',3,'Aktif','2025-03-08 07:33:54','2025-03-08 07:36:04'),('5.2.02.01','Jasa Pemeliharaan Web Aplikasi POS','5.2.02',4,'Aktif','2025-03-08 07:40:40','2025-03-08 07:43:37'),('5.3','Beban Peralatan dan Perlengkapan Kantor','5',2,'Aktif','2025-02-14 07:35:23','2025-02-14 07:35:23'),('5.3.01','Beban Barang Habis Pakai','5.3',3,'Aktif','2025-03-08 07:35:03','2025-03-08 07:36:16'),('5.3.01.01','Beban Kertas F4','5.3.01',4,'Aktif','2025-03-08 07:41:12','2025-03-08 07:41:12'),('5.3.01.02','Beban Kertas Blanko Kwitansi','5.3.01',4,'Aktif','2025-03-08 07:41:49','2025-03-08 07:41:49'),('5.3.02','Beban Peralatan Kantor','5.3',3,'Aktif','2025-03-08 07:36:37','2025-03-08 07:36:37'),('5.3.02.01','Beban Komputer/ PC','5.3.02',4,'Aktif','2025-03-08 07:42:12','2025-03-08 07:42:12'),('5.3.02.02','Beban Laptop','5.3.02',4,'Aktif','2025-03-08 07:42:26','2025-03-08 07:42:26'),('5.3.03','Beban Perlengkapan Kantor','5.3',3,'Aktif','2025-03-08 07:36:56','2025-03-08 07:37:05'),('5.3.03.01','Beban Lemari Berkas','5.3.03',4,'Aktif','2025-03-08 07:44:10','2025-03-08 07:44:10'),('5.4','Beban Operasional','5',2,'Aktif','2025-04-25 06:43:55','2025-04-25 06:43:55'),('5.4.01','Beban Penjualan','5.4',3,'Aktif','2025-04-25 06:44:30','2025-04-25 06:44:30'),('5.4.01.01','Beban Transportasi','5.4.01',4,'Aktif','2025-04-25 06:45:25','2025-04-25 06:45:25'),('5.4.01.02','Beban Iklan','5.4.01',4,'Aktif','2025-04-25 06:45:39','2025-04-25 06:45:39'),('6','Pembelian',NULL,1,'Aktif','2025-04-25 07:35:01','2025-04-25 07:35:01'),('6.1','Pembelian','6',2,'Aktif','2025-04-25 07:35:17','2025-04-25 07:35:17'),('6.1.01','Pembelian','6.1',3,'Aktif','2025-04-25 07:35:38','2025-04-25 07:35:38'),('6.1.01.01','Pembelian','6.1.01',4,'Aktif','2025-04-25 07:35:50','2025-04-25 07:35:50');
+INSERT  INTO `akun`(`kdakun`,`namaakun`,`kdparent`,`levels`,`statusaktif`,`inserted_date`,`updated_date`) VALUES ('1','Aset',NULL,1,'Aktif','2025-02-14 01:47:42','2025-02-14 06:17:20'),('1.1','Aset Lancar','1',2,'Aktif','2025-02-14 06:25:44','2025-02-14 07:19:50'),('1.1.01','Kas','1.1',3,'Aktif','2025-02-14 07:49:21','2025-02-14 07:52:15'),('1.1.01.01','Kas Tunai','1.1.01',4,'Aktif','2025-02-14 08:09:12','2025-03-16 17:31:58'),('1.1.01.02','Rekening May Bank','1.1.01',4,'Aktif','2025-02-14 08:12:41','2025-05-10 04:06:51'),('1.1.01.03','Rekening BCA','1.1.01',4,'Aktif','2025-03-16 17:32:13','2025-03-16 17:32:13'),('1.1.02','Persediaan Barang Dagang','1.1',3,'Aktif','2025-02-14 07:50:14','2025-02-14 07:50:14'),('1.1.02.01','Persediaan Bahan Baku','1.1.02',4,'Aktif','2025-02-14 08:22:10','2025-02-14 08:22:10'),('1.1.03','Piutang','1.1',3,'Aktif','2025-02-14 07:50:34','2025-03-16 18:13:52'),('1.1.03.01','Piutang Usaha','1.1.03',4,'Aktif','2025-03-16 18:13:37','2025-03-16 18:13:37'),('1.2','Aset Tidak Lancar','1',2,'Aktif','2025-02-14 06:26:10','2025-02-14 06:26:10'),('2','Liabilitas',NULL,1,'Aktif','2025-02-14 01:50:45','2025-02-14 06:17:37'),('2.1','Liabilitas Jangka Panjang','2',2,'Aktif','2025-02-14 06:38:40','2025-02-14 06:38:40'),('2.1.01','Utang','2.1',3,'Aktif','2025-03-17 05:17:27','2025-03-17 05:17:27'),('2.1.01.01','Utang Usaha (Ekspedisi)','2.1.01',4,'Aktif','2025-03-17 05:17:46','2025-05-20 14:53:48'),('2.2','Liabilitas Jangka Pendek','2',2,'Aktif','2025-02-14 06:39:03','2025-02-14 06:39:03'),('2.2.01','Utang Jangka Pendek','2.2',3,'Aktif','2025-04-25 06:32:42','2025-04-25 06:32:42'),('2.2.01.01','Utang Usaha (Supplier)','2.2.01',4,'Aktif','2025-04-25 06:33:34','2025-04-25 06:33:34'),('2.2.01.02','Utang Pajak (PPN Keluaran)','2.2.01',4,'Aktif','2025-04-25 06:34:03','2025-04-25 06:56:37'),('2.2.01.03','Utang Gaji','2.2.01',4,'Aktif','2025-04-25 06:34:23','2025-04-25 06:34:23'),('3','Modal',NULL,1,'Aktif','2025-02-14 01:50:54','2025-02-14 01:56:18'),('3.1','Modal','3',2,'Aktif','2025-04-25 14:38:46','2025-04-25 14:38:46'),('3.1.01','Modal','3.1',3,'Aktif','2025-04-25 14:39:00','2025-04-25 14:39:00'),('3.1.01.01','Modal Pemilik','3.1.01',4,'Aktif','2025-04-25 14:40:00','2025-04-25 14:40:00'),('4','Pendapatan',NULL,1,'Aktif','2025-02-14 01:51:58','2025-02-14 06:18:21'),('4.1','Pendapatan Usaha','4',2,'Aktif','2025-02-14 07:23:06','2025-02-14 07:23:06'),('4.1.01','Penjualan Usaha Dagang','4.1',3,'Aktif','2025-03-08 08:51:19','2025-03-08 08:51:19'),('4.1.01.01','Penjualan Barang Dagang','4.1.01',4,'Aktif','2025-03-08 08:52:10','2025-03-08 08:52:10'),('4.2','Pendapatan Diluar Usaha','4',2,'Aktif','2025-02-14 07:23:44','2025-02-14 07:23:44'),('4.2.01','Pendapatan Sewa','4.2',3,'Aktif','2025-03-08 08:51:34','2025-03-08 08:53:15'),('4.2.01.01','Pendapatan Sewa Truk','4.2.01',4,'Aktif','2025-03-08 08:52:33','2025-03-08 08:52:47'),('5','Beban',NULL,1,'Aktif','2025-02-14 01:52:15','2025-02-14 06:18:05'),('5.1','Beban Gaji','5',2,'Aktif','2025-02-14 07:33:40','2025-02-14 07:33:40'),('5.1.01','Gaji Pegawai','5.1',3,'Aktif','2025-03-08 07:26:30','2025-03-08 07:26:30'),('5.1.01.01','Gaji Pokok Pegawai','5.1.01',4,'Aktif','2025-03-08 07:37:31','2025-03-08 07:37:31'),('5.1.01.02','Gaji Tunjangan Pegawai','5.1.01',4,'Aktif','2025-03-08 07:37:45','2025-03-08 07:37:45'),('5.1.02','Gaji Non Pegawai','5.1',3,'Aktif','2025-03-08 07:26:54','2025-03-08 07:26:54'),('5.1.02.01','Upah Harian Non Pegawai','5.1.02',4,'Aktif','2025-03-08 07:38:08','2025-03-08 07:39:00'),('5.1.02.02','Upah Bulanan Non Pegawai','5.1.02',4,'Aktif','2025-03-08 07:38:27','2025-03-08 07:39:13'),('5.2','Beban Jasa','5',2,'Aktif','2025-02-14 07:34:55','2025-02-14 07:34:55'),('5.2.01','Jasa Pemeliharaan Barang Kantor','5.2',3,'Aktif','2025-03-08 07:33:17','2025-03-08 07:35:54'),('5.2.01.01','Jasa Pemeliharaan AC / Pendingin Ruangan','5.2.01',4,'Aktif','2025-03-08 07:39:44','2025-03-08 07:43:10'),('5.2.01.03','Jasa Pemeliharaan Komputer/ Laptop','5.2.01',4,'Aktif','2025-03-08 07:42:51','2025-03-08 07:43:20'),('5.2.02','Jasa Pemeliharaan Software','5.2',3,'Aktif','2025-03-08 07:33:54','2025-03-08 07:36:04'),('5.2.02.01','Jasa Pemeliharaan Web Aplikasi POS','5.2.02',4,'Aktif','2025-03-08 07:40:40','2025-03-08 07:43:37'),('5.3','Beban Peralatan dan Perlengkapan Kantor','5',2,'Aktif','2025-02-14 07:35:23','2025-02-14 07:35:23'),('5.3.01','Beban Barang Habis Pakai','5.3',3,'Aktif','2025-03-08 07:35:03','2025-03-08 07:36:16'),('5.3.01.01','Beban Kertas F4','5.3.01',4,'Aktif','2025-03-08 07:41:12','2025-03-08 07:41:12'),('5.3.01.02','Beban Kertas Blanko Kwitansi','5.3.01',4,'Aktif','2025-03-08 07:41:49','2025-03-08 07:41:49'),('5.3.02','Beban Peralatan Kantor','5.3',3,'Aktif','2025-03-08 07:36:37','2025-03-08 07:36:37'),('5.3.02.01','Beban Komputer/ PC','5.3.02',4,'Aktif','2025-03-08 07:42:12','2025-03-08 07:42:12'),('5.3.02.02','Beban Laptop','5.3.02',4,'Aktif','2025-03-08 07:42:26','2025-03-08 07:42:26'),('5.3.03','Beban Perlengkapan Kantor','5.3',3,'Aktif','2025-03-08 07:36:56','2025-03-08 07:37:05'),('5.3.03.01','Beban Lemari Berkas','5.3.03',4,'Aktif','2025-03-08 07:44:10','2025-03-08 07:44:10'),('5.4','Beban Operasional','5',2,'Aktif','2025-04-25 06:43:55','2025-04-25 06:43:55'),('5.4.01','Beban Penjualan','5.4',3,'Aktif','2025-04-25 06:44:30','2025-04-25 06:44:30'),('5.4.01.01','Beban Transportasi','5.4.01',4,'Aktif','2025-04-25 06:45:25','2025-04-25 06:45:25'),('5.4.01.02','Beban Iklan','5.4.01',4,'Aktif','2025-04-25 06:45:39','2025-04-25 06:45:39'),('6','Pembelian',NULL,1,'Aktif','2025-04-25 07:35:01','2025-04-25 07:35:01'),('6.1','Pembelian','6',2,'Aktif','2025-04-25 07:35:17','2025-04-25 07:35:17'),('6.1.01','Pembelian','6.1',3,'Aktif','2025-04-25 07:35:38','2025-04-25 07:35:38'),('6.1.01.01','Pembelian','6.1.01',4,'Aktif','2025-04-25 07:35:50','2025-04-25 07:35:50');
 
 /*Table structure for table `bank` */
 
 DROP TABLE IF EXISTS `bank`;
 
 CREATE TABLE `bank` (
-  `idbank` char(5) COLLATE utf8mb4_general_ci NOT NULL,
-  `namabank` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `cabang` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `norekening` varchar(25) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `kdakun` char(9) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `inserted_date` datetime DEFAULT NULL,
-  `updated_date` datetime DEFAULT NULL,
-  `statusaktif` enum('Aktif','Tidak Aktif') COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `atasnama` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `idbank` CHAR(5) COLLATE utf8mb4_general_ci NOT NULL,
+  `namabank` VARCHAR(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `cabang` VARCHAR(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `norekening` VARCHAR(25) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `kdakun` CHAR(9) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `inserted_date` DATETIME DEFAULT NULL,
+  `updated_date` DATETIME DEFAULT NULL,
+  `statusaktif` ENUM('Aktif','Tidak Aktif') COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `atasnama` VARCHAR(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`idbank`),
   KEY `kdakun` (`kdakun`),
   CONSTRAINT `bank_ibfk_1` FOREIGN KEY (`kdakun`) REFERENCES `akun` (`kdakun`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 /*Data for the table `bank` */
 
-insert  into `bank`(`idbank`,`namabank`,`cabang`,`norekening`,`kdakun`,`inserted_date`,`updated_date`,`statusaktif`,`atasnama`) values ('BN001','May Bank','Pontianak','7844555666','1.1.01.02','2025-02-28 08:03:40','2025-05-10 04:07:20','Aktif','Budi Santoso'),('MD001','Bank Central Asia','Kota Pontianak','56889966','1.1.01.03','2025-02-28 11:59:35','2025-04-22 06:53:40','Aktif','Budi Santoso');
+INSERT  INTO `bank`(`idbank`,`namabank`,`cabang`,`norekening`,`kdakun`,`inserted_date`,`updated_date`,`statusaktif`,`atasnama`) VALUES ('BN001','May Bank','Pontianak','7844555666','1.1.01.02','2025-02-28 08:03:40','2025-05-10 04:07:20','Aktif','Budi Santoso'),('MD001','Bank Central Asia','Kota Pontianak','56889966','1.1.01.03','2025-02-28 11:59:35','2025-04-22 06:53:40','Aktif','Budi Santoso');
 
 /*Table structure for table `barang` */
 
 DROP TABLE IF EXISTS `barang`;
 
 CREATE TABLE `barang` (
-  `idbarang` char(10) COLLATE utf8mb4_general_ci NOT NULL,
-  `kdbarang` char(15) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `namabarang` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `idkategori` char(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `kdakun` char(9) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `stok` int DEFAULT '0',
-  `fotobarang` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `hargabeli` decimal(18,0) DEFAULT '0',
-  `hargajualasli` decimal(18,0) DEFAULT '0',
-  `hargajualdiskon` decimal(10,0) DEFAULT '0',
-  `statusaktif` enum('Aktif','Tidak Aktif') COLLATE utf8mb4_general_ci DEFAULT 'Aktif',
-  `inserted_date` datetime DEFAULT NULL,
-  `updated_date` datetime DEFAULT NULL,
-  `idjenisbarang` char(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `jenisbonuspenjualan` enum('Nominal','Persen') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'Persen',
-  `persenbonuspenjualan` decimal(3,2) DEFAULT '0.00',
-  `jumlahbonuspenjualan` decimal(18,0) DEFAULT '0',
-  `jenisbonustagihan` enum('Nominal','Persen') COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `persenbonustagihan` decimal(3,2) DEFAULT '0.00',
-  `jumlahbonustagihan` decimal(18,0) DEFAULT '0',
-  `stokminimum` int DEFAULT '0',
+  `idbarang` CHAR(10) COLLATE utf8mb4_general_ci NOT NULL,
+  `kdbarang` CHAR(15) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `namabarang` VARCHAR(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `idkategori` CHAR(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `kdakun` CHAR(9) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `stok` INT DEFAULT '0',
+  `fotobarang` VARCHAR(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `hargabeli` DECIMAL(18,0) DEFAULT '0',
+  `hargajualasli` DECIMAL(18,0) DEFAULT '0',
+  `hargajualdiskon` DECIMAL(10,0) DEFAULT '0',
+  `statusaktif` ENUM('Aktif','Tidak Aktif') COLLATE utf8mb4_general_ci DEFAULT 'Aktif',
+  `inserted_date` DATETIME DEFAULT NULL,
+  `updated_date` DATETIME DEFAULT NULL,
+  `idjenisbarang` CHAR(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `jenisbonuspenjualan` ENUM('Nominal','Persen') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'Persen',
+  `persenbonuspenjualan` DECIMAL(3,2) DEFAULT '0.00',
+  `jumlahbonuspenjualan` DECIMAL(18,0) DEFAULT '0',
+  `jenisbonustagihan` ENUM('Nominal','Persen') COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `persenbonustagihan` DECIMAL(3,2) DEFAULT '0.00',
+  `jumlahbonustagihan` DECIMAL(18,0) DEFAULT '0',
+  `stokminimum` INT DEFAULT '0',
   PRIMARY KEY (`idbarang`),
   UNIQUE KEY `kdbarang` (`kdbarang`),
   KEY `idkategori` (`idkategori`),
@@ -92,37 +92,37 @@ CREATE TABLE `barang` (
   CONSTRAINT `barang_ibfk_1` FOREIGN KEY (`idkategori`) REFERENCES `kategoribarang` (`idkategori`),
   CONSTRAINT `barang_ibfk_2` FOREIGN KEY (`kdakun`) REFERENCES `akun` (`kdakun`),
   CONSTRAINT `barang_ibfk_3` FOREIGN KEY (`idjenisbarang`) REFERENCES `jenisbarang` (`idjenisbarang`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 /*Data for the table `barang` */
 
-insert  into `barang`(`idbarang`,`kdbarang`,`namabarang`,`idkategori`,`kdakun`,`stok`,`fotobarang`,`hargabeli`,`hargajualasli`,`hargajualdiskon`,`statusaktif`,`inserted_date`,`updated_date`,`idjenisbarang`,`jenisbonuspenjualan`,`persenbonuspenjualan`,`jumlahbonuspenjualan`,`jenisbonustagihan`,`persenbonustagihan`,`jumlahbonustagihan`,`stokminimum`) values ('B001000001',NULL,'Paku 1 Inc (1 Kg)','B001','1.1.02.01',0,NULL,20000,22000,22000,'Aktif','2025-05-23 13:51:11','2025-05-23 15:02:10','002','Nominal',0.00,1000,NULL,0.00,0,0),('B001000002','ASD3819111','Besi Pagar','B001','1.1.02.01',0,NULL,20000,22000,22000,'Aktif','2025-07-10 17:04:55','2025-07-10 17:32:33','001','Persen',0.25,0,'Persen',0.25,0,120),('K001000001',NULL,'Papan Mal','K001','1.1.02.01',990,NULL,14000,15000,15000,'Aktif','2025-02-20 03:33:46','2025-05-28 15:44:12','001','Persen',0.50,0,'Persen',0.30,0,0),('K001000002','266S8182AB','Kayu 4x6 Pelang','K001','1.1.02.01',1000,NULL,45000,48000,48000,'Aktif','2025-02-20 07:25:57','2025-07-10 17:19:01','001','Persen',0.50,0,'Persen',0.30,0,0),('K001000003',NULL,'Papan 26Inc','K001','1.1.02.01',100,NULL,45000,54000,54000,'Aktif','2025-05-27 17:41:54','2025-05-27 17:47:10','001','Persen',0.50,0,'Nominal',0.00,200,0),('W001000001',NULL,'Pipa 5In','W001','1.1.02.01',900,NULL,100000,120000,120000,'Aktif','2025-05-10 03:46:26','2025-05-28 15:44:30','001','Persen',0.50,0,'Persen',0.30,0,0);
+INSERT  INTO `barang`(`idbarang`,`kdbarang`,`namabarang`,`idkategori`,`kdakun`,`stok`,`fotobarang`,`hargabeli`,`hargajualasli`,`hargajualdiskon`,`statusaktif`,`inserted_date`,`updated_date`,`idjenisbarang`,`jenisbonuspenjualan`,`persenbonuspenjualan`,`jumlahbonuspenjualan`,`jenisbonustagihan`,`persenbonustagihan`,`jumlahbonustagihan`,`stokminimum`) VALUES ('B001000001',NULL,'Paku 1 Inc (1 Kg)','B001','1.1.02.01',0,NULL,20000,22000,22000,'Aktif','2025-05-23 13:51:11','2025-05-23 15:02:10','002','Nominal',0.00,1000,NULL,0.00,0,0),('B001000002','ASD3819111','Besi Pagar','B001','1.1.02.01',0,NULL,20000,22000,22000,'Aktif','2025-07-10 17:04:55','2025-07-10 17:32:33','001','Persen',0.25,0,'Persen',0.25,0,120),('K001000001',NULL,'Papan Mal','K001','1.1.02.01',990,NULL,14000,15000,15000,'Aktif','2025-02-20 03:33:46','2025-05-28 15:44:12','001','Persen',0.50,0,'Persen',0.30,0,0),('K001000002','266S8182AB','Kayu 4x6 Pelang','K001','1.1.02.01',1000,NULL,45000,48000,48000,'Aktif','2025-02-20 07:25:57','2025-07-10 17:19:01','001','Persen',0.50,0,'Persen',0.30,0,0),('K001000003',NULL,'Papan 26Inc','K001','1.1.02.01',100,NULL,45000,54000,54000,'Aktif','2025-05-27 17:41:54','2025-05-27 17:47:10','001','Persen',0.50,0,'Nominal',0.00,200,0),('W001000001',NULL,'Pipa 5In','W001','1.1.02.01',900,NULL,100000,120000,120000,'Aktif','2025-05-10 03:46:26','2025-05-28 15:44:30','001','Persen',0.50,0,'Persen',0.30,0,0);
 
 /*Table structure for table `bonus` */
 
 DROP TABLE IF EXISTS `bonus`;
 
 CREATE TABLE `bonus` (
-  `idbonus` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `tglbonus` date DEFAULT NULL,
-  `idsales` char(10) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `keterangan` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `totalpenjualan` decimal(18,0) DEFAULT '0',
-  `totalpenagihan` decimal(18,0) DEFAULT '0',
-  `totalbonuspenjualan` decimal(18,0) DEFAULT '0',
-  `totalbonuspenagihan` decimal(18,0) DEFAULT '0',
-  `targetpenjualan` decimal(18,0) DEFAULT NULL,
-  `pencapaiantarget` decimal(18,0) DEFAULT NULL,
-  `totalbonustarget` decimal(18,0) DEFAULT '0',
-  `inserted_date` datetime DEFAULT NULL,
-  `updated_date` datetime DEFAULT NULL,
-  `idpengguna` char(10) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `idbonus` VARCHAR(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `tglbonus` DATE DEFAULT NULL,
+  `idsales` CHAR(10) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `keterangan` VARCHAR(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `totalpenjualan` DECIMAL(18,0) DEFAULT '0',
+  `totalpenagihan` DECIMAL(18,0) DEFAULT '0',
+  `totalbonuspenjualan` DECIMAL(18,0) DEFAULT '0',
+  `totalbonuspenagihan` DECIMAL(18,0) DEFAULT '0',
+  `targetpenjualan` DECIMAL(18,0) DEFAULT NULL,
+  `pencapaiantarget` DECIMAL(18,0) DEFAULT NULL,
+  `totalbonustarget` DECIMAL(18,0) DEFAULT '0',
+  `inserted_date` DATETIME DEFAULT NULL,
+  `updated_date` DATETIME DEFAULT NULL,
+  `idpengguna` CHAR(10) COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`idbonus`),
   KEY `idsales` (`idsales`),
   KEY `idpengguna` (`idpengguna`),
   CONSTRAINT `bonus_ibfk_1` FOREIGN KEY (`idsales`) REFERENCES `sales` (`idsales`),
   CONSTRAINT `bonus_ibfk_2` FOREIGN KEY (`idpengguna`) REFERENCES `pengguna` (`idpengguna`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 /*Data for the table `bonus` */
 
@@ -131,12 +131,12 @@ CREATE TABLE `bonus` (
 DROP TABLE IF EXISTS `bonuspenagihan`;
 
 CREATE TABLE `bonuspenagihan` (
-  `idbonuspenagihan` int NOT NULL AUTO_INCREMENT,
-  `idbonus` char(15) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `idpiutang` char(12) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `idpenjualan` char(15) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `totaltagihan` decimal(18,0) DEFAULT '0',
-  `totalbonus` decimal(18,0) DEFAULT '0',
+  `idbonuspenagihan` INT NOT NULL AUTO_INCREMENT,
+  `idbonus` CHAR(15) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `idpiutang` CHAR(12) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `idpenjualan` CHAR(15) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `totaltagihan` DECIMAL(18,0) DEFAULT '0',
+  `totalbonus` DECIMAL(18,0) DEFAULT '0',
   PRIMARY KEY (`idbonuspenagihan`),
   KEY `idbonus` (`idbonus`),
   KEY `idpiutang` (`idpiutang`),
@@ -144,7 +144,7 @@ CREATE TABLE `bonuspenagihan` (
   CONSTRAINT `bonuspenagihan_ibfk_1` FOREIGN KEY (`idbonus`) REFERENCES `bonus` (`idbonus`),
   CONSTRAINT `bonuspenagihan_ibfk_3` FOREIGN KEY (`idpiutang`) REFERENCES `piutang` (`idpiutang`),
   CONSTRAINT `bonuspenagihan_ibfk_4` FOREIGN KEY (`idpenjualan`) REFERENCES `penjualan` (`idpenjualan`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=INNODB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 /*Data for the table `bonuspenagihan` */
 

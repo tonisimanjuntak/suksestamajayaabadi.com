@@ -87,7 +87,7 @@
                     <th width="8%" class="add-border-top add-border-bottom" style="text-align:right;">TOTAL INVOICE</th>
                     <th width="8%" class="add-border-top add-border-bottom" style="text-align:right;">LANCAR</th>
                     <th width="8%" class="add-border-top add-border-bottom" style="text-align:right;"> > 90 Hari</th>
-                    <th width="8%" class="add-border-top add-border-bottom" style="text-align:right;">BAD</th>
+                    <th width="8%" class="add-border-top add-border-bottom" style="text-align:right;">BAD DEBT</th>
                     <th width="8%" class="add-border-top add-border-bottom" style="text-align:center;">SISA UMUR</th>
                     <th width="8%" class="add-border-top add-border-bottom" style="text-align:center;">KET</th>
                 </tr>

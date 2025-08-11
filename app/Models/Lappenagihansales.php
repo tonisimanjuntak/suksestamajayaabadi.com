@@ -21,4 +21,6 @@ class Lappenagihansales extends Model
             ->orderBy('namakonsumen', 'desc')
             ->get();
     }
+
+    
 }
