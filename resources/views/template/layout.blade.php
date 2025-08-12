@@ -80,6 +80,10 @@
     <script src="{{ asset('') }}assets/sweetalert/sweetalert.min.js"></script>
     <!-- CK Editor -->
     <script type="text/javascript" src="{{ asset('') }}assets/ckeditor/ckeditor.js"></script>
+
+    <!-- Bootstrap Switch -->
+    <script src="{{ asset('') }}assets/AdminLTE32/plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+
     <!-- Custom -->
     <script type="text/javascript" src="{{ asset('') }}assets/custom/custom.js"></script>
 

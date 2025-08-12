@@ -48,6 +48,22 @@ class PenggunaController extends Controller
     }
 
 
+    public function otorisasi($idpengguna)
+    {
+        try {
+            $idpengguna = Crypt::decrypt($idpengguna);
+            $rsPengguna = Pengguna::findOrFail($idpengguna);
+        } catch (ModelNotFoundException $e) {
+            return redirect('/pengguna')->with('other', 'Data tidak ditemukan!');
+        }
+        $data['rsPengguna'] = $rsPengguna;
+        $data['rsMenus'] = $this->model->getMenus();
+        $data['menu'] = 'pengguna';
+        $data['idpengguna'] = $idpengguna;
+        return view('pengguna.otorisasi', $data);
+    }
+
+
     public function listdata(Request $request)
     {
         // Query dasar
@@ -130,6 +146,7 @@ class PenggunaController extends Controller
                                     </button>
                                     <div class="dropdown-menu">
                                         <a href="' . url('pengguna/hapus/' . Crypt::encrypt($row->idpengguna)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
+                                        <a href="' . url('pengguna/otorisasi/' . Crypt::encrypt($row->idpengguna)) . '" class="dropdown-item">Otorisasi Pengguna</a>
                                     </div>
                                 </div>
                                 <a href="' . url('pengguna/edit/' . Crypt::encrypt($row->idpengguna)) . '" class="btn btn-warning">Edit</a>                                

@@ -77,9 +77,11 @@ Route::get('home/getInfoGrafikPenjualan', [HomeController::class, 'getInfoGrafik
 Route::get('pengguna', [PenggunaController::class, 'index']);
 Route::get('pengguna/tambah', [PenggunaController::class, 'tambah']);
 Route::get('pengguna/edit/{PenggunaID}', [PenggunaController::class, 'edit']);
+Route::get('pengguna/otorisasi/{PenggunaID}', [PenggunaController::class, 'otorisasi']);
 Route::get('pengguna/getDataID', [PenggunaController::class, 'getDataID']);
 Route::get('pengguna/hapus/{id}', [PenggunaController::class, 'hapus']);
 Route::post('pengguna/simpanData', [PenggunaController::class, 'simpanData']);
+Route::post('pengguna/simpanOtorisasi', [PenggunaController::class, 'simpanOtorisasi']);
 Route::get('pengguna/listdata', [PenggunaController::class, 'listdata'])->name('pengguna.listdata');
 Route::get('pengguna/searchOtorisasi', [PenggunaController::class, 'searchOtorisasi'])->name('pengguna.searchOtorisasi');
 Route::get('pengguna/searchKasir', [PenggunaController::class, 'searchKasir'])->name('pengguna.searchKasir');

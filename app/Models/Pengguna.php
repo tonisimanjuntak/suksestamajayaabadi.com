@@ -109,4 +109,12 @@ class Pengguna extends Model
     {
         return DB::select("SELECT create_idpengguna('$namapengguna') AS id")[0]->id;
     }
+
+    public function getMenus()
+    {
+        return DB::table('menus')
+            ->where('statusaktif', 'Aktif')
+            ->orderBy('urut', 'ASC')
+            ->get();
+    }
 }
