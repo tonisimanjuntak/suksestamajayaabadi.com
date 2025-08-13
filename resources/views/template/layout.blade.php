@@ -17,6 +17,9 @@
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ asset('') }}assets/AdminLTE32/dist/css/adminlte.min.css">
 
+    <!-- iCheck for checkboxes and radio inputs -->
+    <link rel="stylesheet" href="{{ asset('') }}assets/AdminLTE32/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+
     <!-- datatables -->
     <link href="{{ asset('') }}assets/datatables/css/jquery.dataTables.min.css" rel="stylesheet">
     <!-- jquery-ui -->

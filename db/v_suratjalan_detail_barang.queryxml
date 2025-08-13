@@ -4,22 +4,37 @@
 <database charset="utf8mb4" collation="utf8mb4_general_ci">suksestamajayaabadi</database>
 </source>
 <canvas>
-<view tablename="v_suratjalan" alias="" left="10" top="21" width="150" height="218" />
-<view tablename="v_suratjalandetail" alias="" left="323" top="1" width="150" height="113" />
+<table tablename="suratjalan" alias="" left="10" top="21" width="150" height="248" />
+<table tablename="suratjalandetail" alias="" left="263" top="23" width="150" height="158" />
+<table tablename="penjualan" alias="" left="462" top="33" width="150" height="113" />
+<table tablename="penjualandetail" alias="" left="667" top="57" width="150" height="218" />
+<table tablename="barang" alias="" left="903" top="25" width="150" height="113" />
 <join type = "Inner Join">
-<from tablename = "v_suratjalan" alias = "">idsuratjalan</from>
-<to tablename = "v_suratjalandetail" alias = "">idsuratjalan</to>
+<from tablename = "suratjalandetail" alias = "">idsuratjalan</from>
+<to tablename = "suratjalan" alias = "">idsuratjalan</to>
+</join>
+<join type = "Inner Join">
+<from tablename = "suratjalandetail" alias = "">idpenjualan</from>
+<to tablename = "penjualan" alias = "">idpenjualan</to>
+</join>
+<join type = "Inner Join">
+<from tablename = "penjualandetail" alias = "">idpenjualan</from>
+<to tablename = "penjualan" alias = "">idpenjualan</to>
+</join>
+<join type = "Inner Join">
+<from tablename = "penjualandetail" alias = "">idbarang</from>
+<to tablename = "barang" alias = "">idbarang</to>
 </join>
 </canvas>
 <grid>
 <column id="1">
-<table tablename="v_suratjalan"></table>
+<table tablename="suratjalan"></table>
 <field>idsuratjalan</field>
 <alias></alias>
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>true</groupby>
+<groupby>false</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -28,13 +43,13 @@
 <or4></or4>
 </column>
 <column id="2">
-<table tablename="v_suratjalan"></table>
+<table tablename="suratjalan"></table>
 <field>tglsuratjalan</field>
 <alias></alias>
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>true</groupby>
+<groupby>false</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -43,13 +58,13 @@
 <or4></or4>
 </column>
 <column id="3">
-<table tablename="v_suratjalan"></table>
-<field>idkonsumen</field>
+<table tablename="suratjalandetail"></table>
+<field>idpenjualan</field>
 <alias></alias>
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>true</groupby>
+<groupby>false</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -58,13 +73,13 @@
 <or4></or4>
 </column>
 <column id="4">
-<table tablename="v_suratjalan"></table>
-<field>namakonsumen</field>
+<table tablename="penjualandetail"></table>
+<field>idbarang</field>
 <alias></alias>
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>true</groupby>
+<groupby>false</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -73,13 +88,13 @@
 <or4></or4>
 </column>
 <column id="5">
-<table tablename="v_suratjalan"></table>
-<field>idjenisekspedisi</field>
+<table tablename="barang"></table>
+<field>namabarang</field>
 <alias></alias>
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>true</groupby>
+<groupby>false</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -88,13 +103,13 @@
 <or4></or4>
 </column>
 <column id="6">
-<table tablename="v_suratjalan"></table>
-<field>namajenisekspedisi</field>
+<table tablename="penjualandetail"></table>
+<field>jumlahjual</field>
 <alias></alias>
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>true</groupby>
+<groupby>false</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -103,13 +118,13 @@
 <or4></or4>
 </column>
 <column id="7">
-<table tablename="v_suratjalan"></table>
-<field>idekspedisi</field>
+<table tablename="penjualandetail"></table>
+<field>hargasatuan</field>
 <alias></alias>
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>true</groupby>
+<groupby>false</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -118,13 +133,13 @@
 <or4></or4>
 </column>
 <column id="8">
-<table tablename="v_suratjalan"></table>
-<field>namaekspedisi</field>
+<table tablename="penjualandetail"></table>
+<field>hargadpp</field>
 <alias></alias>
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>true</groupby>
+<groupby>false</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -133,13 +148,13 @@
 <or4></or4>
 </column>
 <column id="9">
-<table tablename="v_suratjalan"></table>
-<field>identitasekspedisi</field>
+<table tablename="penjualandetail"></table>
+<field>jumlahppn</field>
 <alias></alias>
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>true</groupby>
+<groupby>false</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -148,13 +163,13 @@
 <or4></or4>
 </column>
 <column id="10">
-<table tablename="v_suratjalan"></table>
-<field>biayapengiriman</field>
+<table tablename="penjualandetail"></table>
+<field>jumlahdiskon</field>
 <alias></alias>
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>true</groupby>
+<groupby>false</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -163,13 +178,13 @@
 <or4></or4>
 </column>
 <column id="11">
-<table tablename="v_suratjalan"></table>
-<field>rincianinputmanual</field>
+<table tablename="penjualandetail"></table>
+<field>subtotaljual</field>
 <alias></alias>
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>true</groupby>
+<groupby>false</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>

@@ -166,6 +166,7 @@ class SuratjalanController extends Controller
         $biayapengiriman = untitik($request->get('biayapengiriman'));
         $identitasekspedisi = $request->get('identitasekspedisi');
         $total = untitik($request->get('total'));
+        $rincianinputmanual = $request->get('rincianinputmanual');
         $isidatatable = $request->get('isidatatable');
         $isidatatableRincian = $request->get('isidatatableRincian');
         $inserted_date = date('Y-m-d H:i:s');
@@ -215,6 +216,7 @@ class SuratjalanController extends Controller
                 'inserted_date' => $inserted_date,
                 'updated_date' => $updated_date,
                 'idpengguna' => session('idpengguna'),
+                'rincianinputmanual' => $rincianinputmanual,
             );
 
             $simpan = $this->model->simpanData($data, $dataDetail, $dataDetailRincian, $idsuratjalan);
@@ -248,6 +250,7 @@ class SuratjalanController extends Controller
                 'totaltagihan' => $total,
                 'updated_date' => $updated_date,
                 'idpengguna' => session('idpengguna'),
+                'rincianinputmanual' => $rincianinputmanual,
             );
 
             $simpan = $this->model->updateData($data, $dataDetail, $dataDetailRincian, $idsuratjalan);
@@ -314,8 +317,10 @@ class SuratjalanController extends Controller
     public function cetaksuratjalan_temp($idsuratjalan)
     {
         $idsuratjalan = Crypt::decrypt($idsuratjalan);
-
         $rsSuratJalan = Suratjalan::findOrFail($idsuratjalan);
+
+
+
         $rsDetail = $this->model->getDetail($idsuratjalan);
 
         if ($rsDetail->isEmpty()) {
@@ -332,14 +337,36 @@ class SuratjalanController extends Controller
     {
         $idsuratjalan = Crypt::decrypt($idsuratjalan);
         $rsSuratJalan = Suratjalan::findOrFail($idsuratjalan);
-        $rsRincian = $this->model->getDetailRincian($idsuratjalan);
+        $rincianinputmanual = $rsSuratJalan->rincianinputmanual;
 
         $rowKonsumen = Konsumen::find($rsSuratJalan->idkonsumen);
+        if ($rincianinputmanual==0) {
 
-        $data['idsuratjalan'] = $idsuratjalan;
-        $data['rowSuratJalan'] = $rsSuratJalan;
-        $data['rsRincian'] = $rsRincian;
-        $data['rowKonsumen'] = $rowKonsumen;
-        return view('suratjalan.cetaksuratjalan', $data);
+            $rsDetail = $this->model->getDetailBarang($idsuratjalan);
+
+            if ($rsDetail->isEmpty()) {
+                return redirect('/suratjalan')->with('fail', 'Data tidak ditemukan!');
+            }
+
+            $data['idsuratjalan'] = $idsuratjalan;
+            $data['rsDetail'] = $rsDetail;
+            $data['rowSuratJalan'] = $rsSuratJalan;
+            $data['rowKonsumen'] = $rowKonsumen;
+            return view('suratjalan.cetaksuratjalan_tanparincian', $data);
+
+        }else{
+            
+            $rsRincian = $this->model->getDetailRincian($idsuratjalan);
+    
+            
+    
+            $data['idsuratjalan'] = $idsuratjalan;
+            $data['rowSuratJalan'] = $rsSuratJalan;
+            $data['rsRincian'] = $rsRincian;
+            $data['rowKonsumen'] = $rowKonsumen;
+            return view('suratjalan.cetaksuratjalan', $data);            
+        }
+
+
     }
 }

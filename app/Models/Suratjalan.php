@@ -439,6 +439,16 @@ class Suratjalan extends Model
             ->get();
     }
 
+
+    public function getDetailBarang($idsuratjalan)
+    {
+        return DB::table('v_suratjalan_detail_barang')
+            ->where('idsuratjalan', $idsuratjalan)
+            ->orderBy('idpenjualan', 'ASC')
+            ->orderBy('namabarang', 'ASC')
+            ->get();
+    }
+
     public function getDetailRincian($idsuratjalan)
     {
         return DB::table('suratjalanrincian')

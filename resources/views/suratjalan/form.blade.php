@@ -154,29 +154,41 @@
                                     <div class="card">
                                         <div class="card-body">
                                             <div class="row">
-                                                <div class="col-md-8">
-                                                    <h3 class="text-muted">Detail Rincian Barang</h3>
+                                                <div class="col-md-12 mb-3 text-lg text-primary">
+                                                    <div class="icheck-primary d-inline">
+                                                        <input type="checkbox" id="rincianinputmanual" value="1">
+                                                        <label for="rincianinputmanual">Input Rincian Barang Secara Manual</label>
+                                                    </div>                                                    
                                                 </div>
-                                                <div class="col-md-4">
-                                                    <button class="btn btn-md btn-info float-right" id="btnTambahDetailRincian"><i class="fa fa-plus-circle mr-1"></i> Tambah Rincian</button>
-                                                </div>
-                                                <div class="col-12 mt-3">
-                                                    <div class="table-responsive">
-                                                        <table id="tableDetailRincian" class="table" style="width: 100%;">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th style="width: 5%; text-align: center;">No</th>
-                                                                    <th style="width: 10%; text-align: center;">Qty</th>
-                                                                    <th style="width: 15%; text-align: center;">Satuan</th>
-                                                                    <th style="text-align: left;">Keterangan</th>
-                                                                    <th style="text-align: center;">Aksi</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                            </tbody>
-                                                        </table>
+                                                <div class="col-12" id="divRincianInputManual" style="display: none;">
+                                                    <div class="row">
+                                                        <div class="col-md-8">
+                                                            <h3 class="text-muted">Detail Rincian Barang</h3>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <button class="btn btn-md btn-info float-right" id="btnTambahDetailRincian"><i class="fa fa-plus-circle mr-1"></i> Tambah Rincian</button>
+                                                        </div>
+                                                        <div class="col-12 mt-3">
+                                                            <div class="table-responsive">
+                                                                <table id="tableDetailRincian" class="table" style="width: 100%;">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th style="width: 5%; text-align: center;">No</th>
+                                                                            <th style="width: 10%; text-align: center;">Qty</th>
+                                                                            <th style="width: 15%; text-align: center;">Satuan</th>
+                                                                            <th style="text-align: left;">Keterangan</th>
+                                                                            <th style="text-align: center;">Aksi</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+
                                                     </div>
                                                 </div>
+                                                
                                                 
 
                                             </div>
@@ -256,6 +268,11 @@
                     $('#idjenisekspedisi').val(rsSuratJalan['idjenisekspedisi']).trigger('change');
                     $('#biayapengiriman').val(totitik(rsSuratJalan['biayapengiriman']));
                     $('#identitasekspedisi').val(rsSuratJalan['identitasekspedisi']);
+                    if (rsSuratJalan['rincianinputmanual'] == '1') {
+                        $('#rincianinputmanual').prop('checked', true).trigger('change');                        
+                    }else{
+                        $('#rincianinputmanual').prop('checked', false).trigger('change');;
+                    }
 
 
                     var rsDetail = response.rsDetail;
@@ -330,6 +347,12 @@
         var idjenisekspedisi = $("#idjenisekspedisi").val();
         var biayapengiriman = $("#biayapengiriman").val();
         var identitasekspedisi = $("#identitasekspedisi").val();
+        if ($('#rincianinputmanual').prop('checked')) {
+            var rincianinputmanual = 1;            
+        }else{
+            var rincianinputmanual = 0;            
+        }
+
         $('#simpan').attr('disabled', true);
 
         var tableData = [];
@@ -406,19 +429,21 @@
         }
 
 
-        if ($("#tableDetailRincian tbody tr").length == 0) {
-            $('#simpan').attr('disabled', false);
-            swal("Informasi", "Rincian barang belum ada!!", "info");
-            return;
-        }
-
         isidatatableRincian = [];
-        for (var i = 0; i < tableDataRincian.length; i++) {
-            isidatatableRincian.push({
-                'qty': tableDataRincian[i][1],
-                'satuan': tableDataRincian[i][2],
-                'keterangan': tableDataRincian[i][3],
-            })
+        if ($('#rincianinputmanual').prop('checked')) {            
+            if ($("#tableDetailRincian tbody tr").length == 0) {
+                $('#simpan').attr('disabled', false);
+                swal("Informasi", "Rincian barang belum ada!!", "info");
+                return;
+            }
+
+            for (var i = 0; i < tableDataRincian.length; i++) {
+                isidatatableRincian.push({
+                    'qty': tableDataRincian[i][1],
+                    'satuan': tableDataRincian[i][2],
+                    'keterangan': tableDataRincian[i][3],
+                })
+            }
         }
 
         var formData = {
@@ -430,6 +455,7 @@
             "biayapengiriman": biayapengiriman,
             "identitasekspedisi": identitasekspedisi,
             "total": total,            
+            "rincianinputmanual": rincianinputmanual,
             "isidatatable": isidatatable,
             "isidatatableRincian": isidatatableRincian,
         };
@@ -526,6 +552,14 @@
         }
 
         $('#modalTambahRincian').modal('show');
+    });
+    
+    $(document).on('change', '#rincianinputmanual', function() {
+        if ($(this).is(':checked')) {
+            $('#divRincianInputManual').show();
+        } else {
+            $('#divRincianInputManual').hide();
+        }
     });
 </script>
 
