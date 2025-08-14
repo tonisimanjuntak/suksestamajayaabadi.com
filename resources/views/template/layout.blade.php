@@ -31,7 +31,7 @@
     <!-- Custom -->
     <link rel="stylesheet" type="text/css" href="{{ asset('') }}assets/custom/custom.css">
 
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.4/css/bootstrap3/bootstrap-switch.min.css">
 </head>
 
 <body class="hold-transition sidebar-mini">
@@ -85,7 +85,7 @@
     <script type="text/javascript" src="{{ asset('') }}assets/ckeditor/ckeditor.js"></script>
 
     <!-- Bootstrap Switch -->
-    <script src="{{ asset('') }}assets/AdminLTE32/plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"></script>
 
     <!-- Custom -->
     <script type="text/javascript" src="{{ asset('') }}assets/custom/custom.js"></script>

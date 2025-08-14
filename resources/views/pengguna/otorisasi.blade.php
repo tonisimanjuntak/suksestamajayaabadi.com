@@ -95,22 +95,22 @@
                                                         </td>
                                                         <td>
                                                             @if (str_contains($row->event_exist, 'Lihat'))
-                                                                <input type="checkbox" class="Switch-Lihat" name="Lihat{{ $row->idmenus }}" data-bootstrap-switch data-off-color="danger" data-on-color="success" data-idmenus="{{ $row->idmenus }}">
+                                                                <input type="checkbox" class="Switch-Lihat" name="Lihat[]" data-bootstrap-switch data-off-color="danger" data-on-color="success" data-idmenus="{{ $row->idmenus }}">
                                                             @endif
                                                         </td>
                                                         <td>
                                                             @if (str_contains($row->event_exist, 'Tambah'))
-                                                                <input type="checkbox" name="Tambah{{ $row->idmenus }}" data-bootstrap-switch data-off-color="danger" data-on-color="success" disabled>
+                                                                <input type="checkbox" name="Tambah[]" data-bootstrap-switch data-off-color="danger" data-on-color="success">
                                                             @endif
                                                         </td>
                                                         <td>
                                                             @if (str_contains($row->event_exist, 'Edit'))
-                                                                <input type="checkbox" name="Edit{{ $row->idmenus }}" data-bootstrap-switch data-off-color="danger" data-on-color="success" disabled>
+                                                                <input type="checkbox" name="Edit[]" data-bootstrap-switch data-off-color="danger" data-on-color="success">
                                                             @endif
                                                         </td>
                                                         <td>
                                                             @if (str_contains($row->event_exist, 'Hapus'))
-                                                                <input type="checkbox" name="Hapus{{ $row->idmenus }}" data-bootstrap-switch data-off-color="danger" data-on-color="success" disabled>
+                                                                <input type="checkbox" name="Hapus[]" data-bootstrap-switch data-off-color="danger" data-on-color="success">
                                                             @endif
                                                         </td>
                                                     </tr>
@@ -150,26 +150,41 @@
 
     $(document).ready(function() {
         $("input[data-bootstrap-switch]").bootstrapSwitch();
-
+        
         // Pasang event listener untuk perubahan switch
         $(document).on('switchChange.bootstrapSwitch', '.Switch-Lihat', function(event, state) {
             var $tr = $(this).closest('tr');
             
-            // Cari semua input switch di baris ini, kecuali yang "Lihat"
-            $tr.find('input[name^="Tambah"], input[name^="Edit"], input[name^="Hapus"]').each(function() {
+            $tr.find('input[name^="Tambah[]"], input[name^="Edit[]"], input[name^="Hapus[]"]').each(function() {
                 var $input = $(this);
-                
+                // console.log(state); 
                 if (state) {
-                    // Jika "Lihat" di-ON, aktifkan switch lain
-                    $input.removeAttr('disabled').bootstrapSwitch('enable');
+                    // $input.removeAttr('disabled').bootstrapSwitch('enable');
+                    // $input.bootstrapSwitch('state', true); // Mengaktifkan switch
+                    $input.attr('readonly', true);
+
+                    // Aktifkan switch
+                    // $input.bootstrapSwitch('enable');  // Aktifkan switch
                 } else {
-                    // Jika "Lihat" di-OFF, disable switch lain
-                    $input.attr('disabled', true).bootstrapSwitch('disable');
+                    // $input.attr('disabled', true).bootstrapSwitch('disable');
+                    // $input.bootstrapSwitch('state', false); // Menonaktifkan switch
+                    $input.attr('readonly', true);
+
+                    // Nonaktifkan switch
+                    // $input.bootstrapSwitch('disable'); // Nonaktifkan switch
                 }
             });
         });
 
+        // $(document).on('change', '.Switch-Lihat', function() {
+        //     var state = $(this).prop('checked');
+        //     console.log('Switch changed:', state);
+        // });
+
     });
+
+
+
 
 
 </script>
