@@ -105,6 +105,29 @@ class Pengguna extends Model
         }
     }
 
+    public function simpanotorisasi($idpengguna, $dataOtorisasi)
+    {
+        try {
+
+            DB::beginTransaction();
+            
+            DB:: table('pengguna_menus')
+                ->where('idpengguna', $idpengguna)
+                ->delete();
+
+            DB::table('pengguna_menus')
+                ->insert($dataOtorisasi);
+
+            DB::commit();
+
+            return ['status' => 'success', 'message' => "Data berhasil disimpan"];
+        } catch (QueryException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        } catch (\Exception $e) {
+            return ['status' => 'error', 'message' => 'Terjadi kesalahan: ' . $e->getMessage()];
+        }
+    }
+
     public function createID($namapengguna)
     {
         return DB::select("SELECT create_idpengguna('$namapengguna') AS id")[0]->id;
@@ -115,6 +138,21 @@ class Pengguna extends Model
         return DB::table('menus')
             ->where('statusaktif', 'Aktif')
             ->orderBy('urut', 'ASC')
+            ->get();
+    }
+
+    public function getMenusSystem()
+    {
+        return DB::select("
+            select * from menus where idmenus in ('M001', 'M010')
+        ");
+    }
+
+    public function getOtorisasi($idpengguna)
+    {
+        return DB::table('pengguna_menus')
+            ->where('idpengguna', $idpengguna)
+            ->orderBy('idmenus', 'ASC')
             ->get();
     }
 }

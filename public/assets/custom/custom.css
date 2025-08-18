@@ -362,3 +362,47 @@ select {
 .select2-selection__choice {
     color: black !important; /* Warna teks hitam */
 }
+
+/* .loader {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    background: url("//upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Phi_fenomeni.gif/50px-Phi_fenomeni.gif")
+        no-repeat center center;
+    background-size: 150px 150px;
+    display: none;
+} */
+
+/* .loader {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            background: url("{{ asset('images/spinner.gif') }}")
+                no-repeat center center;
+            background-size: 150px 150px; 
+            display: none;
+        } */
+
+/* .loader {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    background: url("//upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Phi_fenomeni.gif/50px-Phi_fenomeni.gif")
+        no-repeat center 40%;
+    background-size: 150px 150px;
+    display: none;
+}
+
+.loader.show {
+    display: block;
+    opacity: 1;
+} */

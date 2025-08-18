@@ -81,10 +81,11 @@ Route::get('pengguna/otorisasi/{PenggunaID}', [PenggunaController::class, 'otori
 Route::get('pengguna/getDataID', [PenggunaController::class, 'getDataID']);
 Route::get('pengguna/hapus/{id}', [PenggunaController::class, 'hapus']);
 Route::post('pengguna/simpanData', [PenggunaController::class, 'simpanData']);
-Route::post('pengguna/simpanOtorisasi', [PenggunaController::class, 'simpanOtorisasi']);
+Route::post('pengguna/simpanotorisasi', [PenggunaController::class, 'simpanotorisasi']);
 Route::get('pengguna/listdata', [PenggunaController::class, 'listdata'])->name('pengguna.listdata');
 Route::get('pengguna/searchOtorisasi', [PenggunaController::class, 'searchOtorisasi'])->name('pengguna.searchOtorisasi');
 Route::get('pengguna/searchKasir', [PenggunaController::class, 'searchKasir'])->name('pengguna.searchKasir');
+Route::get('pengguna/getOtorisasi', [PenggunaController::class, 'getOtorisasi'])->name('pengguna.getOtorisasi');
 
 Route::get('wilayah', [WilayahController::class, 'index']);
 Route::get('wilayah/tambah', [WilayahController::class, 'tambah']);
@@ -479,3 +480,4 @@ Route::get('laplabarugi/cetak/{tglawal}/{tglakhir}', [LaplabarugiController::cla
 Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('login', [LoginController::class, 'login']);
 Route::get('logout', [LoginController::class, 'logout'])->name('logout');
+Route::get('login/loadMenus', [LoginController::class, 'loadMenus']);

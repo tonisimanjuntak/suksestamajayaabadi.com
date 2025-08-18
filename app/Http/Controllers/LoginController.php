@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pengguna;
+use App\Models\Login;
 use App\Models\Pengaturan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -12,10 +13,12 @@ class LoginController extends Controller
 {
 
     var $PenggunaModel;
+    var $LoginModel;
 
     public function __construct()
     {
         $this->PenggunaModel = new Pengguna;
+        $this->LoginModel = new Login;
     }
 
     public function showLoginForm()
@@ -57,9 +60,10 @@ class LoginController extends Controller
             );
             $this->PenggunaModel->updateData($dataLogin, $user->idpengguna);
 
-            return redirect()->intended('/');
+            // return redirect()->intended('/');
+            return response()->json(['success' => true]);
         } else {
-            return back()->with(['message' => 'Username atau password salah']);
+            return response()->json(['success' => false, 'message' => 'Username atau password salah']);
         }
     }
 
@@ -67,5 +71,14 @@ class LoginController extends Controller
     {
         Session::flush();
         return redirect('/login');
+    }
+
+    public function loadMenus(Request $request)
+    {
+        $idpengguna = Session::get('idpengguna');
+        $rsMenus = $this->LoginModel->getMenus($idpengguna);
+        $request->session()->put('user_menus', $rsMenus);        
+        Session::put('user_menus', $rsMenus);
+        return response()->json(['success' => true, 'rsMenus' => $rsMenus]);
     }
 }

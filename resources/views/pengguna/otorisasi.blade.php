@@ -39,7 +39,7 @@
 
                                 @csrf
 
-                                <input type="hidden" name="idpengguna" id="idpengguna">
+                                <input type="hidden" name="idpengguna" id="idpengguna" value="{{ $idpengguna }}">
                                 <div class="row">
                                     <div class="col-md-4 text-center">
                                         <img src="{{ ($rsPengguna->fotopengguna == '') ? url('images/profil1.png') : url('uploads/pengguna/'.$rsPengguna->fotopengguna) }}" alt=""
@@ -88,30 +88,32 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                                {{-- switch tetap diinisiasi tapi di hidden saja karena untuk ambil urutan arraay name nya --}}
                                                 @foreach ($rsMenus as $row)
                                                     <tr>
                                                         <td>
                                                             {!! str_repeat('&nbsp;', $row->levels * 5 ) !!} {{ $row->menus }}
+                                                            <input type="hidden" name="idmenus[]" value="{{ $row->idmenus }}">
                                                         </td>
                                                         <td>
-                                                            @if (str_contains($row->event_exist, 'Lihat'))
-                                                                <input type="checkbox" class="Switch-Lihat" name="Lihat[]" data-bootstrap-switch data-off-color="danger" data-on-color="success" data-idmenus="{{ $row->idmenus }}">
-                                                            @endif
+                                                            <div class="switch-container" style="{{ (str_contains($row->event_exist, 'Lihat')) ? 'display: block;' : 'display: none;' }}">
+                                                                <input type="checkbox" class="Switch-Lihat" name="Lihat{{$row->idmenus}}" id="Lihat{{$row->idmenus}}" data-bootstrap-switch data-off-color="danger" data-on-color="success" data-idmenus="{{ $row->idmenus }}" value="{{ $row->idmenus }}">
+                                                            </div>
                                                         </td>
                                                         <td>
-                                                            @if (str_contains($row->event_exist, 'Tambah'))
-                                                                <input type="checkbox" name="Tambah[]" data-bootstrap-switch data-off-color="danger" data-on-color="success">
-                                                            @endif
+                                                            <div class="switch-container" style="{{ (str_contains($row->event_exist, 'Tambah')) ? 'display: block;' : 'display: none;' }}">
+                                                                <input type="checkbox" name="Tambah{{$row->idmenus}}" id="Tambah{{$row->idmenus}}" data-bootstrap-switch data-off-color="danger" data-on-color="success" value="{{ $row->idmenus }}" readonly>
+                                                            </div>
                                                         </td>
                                                         <td>
-                                                            @if (str_contains($row->event_exist, 'Edit'))
-                                                                <input type="checkbox" name="Edit[]" data-bootstrap-switch data-off-color="danger" data-on-color="success">
-                                                            @endif
+                                                            <div class="switch-container" style="{{ (str_contains($row->event_exist, 'Edit')) ? 'display: block;' : 'display: none;' }}">
+                                                                <input type="checkbox" name="Edit{{$row->idmenus}}" id="Edit{{$row->idmenus}}" data-bootstrap-switch data-off-color="danger" data-on-color="success" value="{{ $row->idmenus }}" readonly>
+                                                            </div>
                                                         </td>
                                                         <td>
-                                                            @if (str_contains($row->event_exist, 'Hapus'))
-                                                                <input type="checkbox" name="Hapus[]" data-bootstrap-switch data-off-color="danger" data-on-color="success">
-                                                            @endif
+                                                            <div class="switch-container" style="{{ (str_contains($row->event_exist, 'Hapus')) ? 'display: block;' : 'display: none;' }}">
+                                                                <input type="checkbox" name="Hapus{{$row->idmenus}}" id="Hapus{{$row->idmenus}}" data-bootstrap-switch data-off-color="danger" data-on-color="success" value="{{ $row->idmenus }}" readonly>
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                 @endforeach
@@ -149,43 +151,99 @@
     var idpengguna = "{{ $idpengguna }}";
 
     $(document).ready(function() {
+        // Inisialisasi bootstrapSwitch
         $("input[data-bootstrap-switch]").bootstrapSwitch();
+
+        $.ajax({
+            url: "{{ url('pengguna/getOtorisasi') }}",
+            type: 'GET',
+            dataType: 'json',
+            data: {'idpengguna': idpengguna},
+        })
+        .done(function(response) {
+            for (let i = 0; i < response.length; i++) {
+                var hakaksi = response[i]['hakaksi'];
+                var arrHakAksi = hakaksi.split(',');
+                
+                for (let j = 0; j < arrHakAksi.length; j++) {
+                    var NamaSwitch = arrHakAksi[j]+response[i]['idmenus'];
+                    $('#'+NamaSwitch).bootstrapSwitch('state', true);
+                }               
+            }
+        })
+        .fail(function() {
+            console.log('error getOtorisasi');
+        });
         
-        // Pasang event listener untuk perubahan switch
+        // Event: Ketika switch "Lihat" diubah
         $(document).on('switchChange.bootstrapSwitch', '.Switch-Lihat', function(event, state) {
-            var $tr = $(this).closest('tr');
-            
-            $tr.find('input[name^="Tambah[]"], input[name^="Edit[]"], input[name^="Hapus[]"]').each(function() {
-                var $input = $(this);
-                // console.log(state); 
-                if (state) {
-                    // $input.removeAttr('disabled').bootstrapSwitch('enable');
-                    // $input.bootstrapSwitch('state', true); // Mengaktifkan switch
-                    $input.attr('readonly', true);
+            var idmenus = $(this).data('idmenus');
 
-                    // Aktifkan switch
-                    // $input.bootstrapSwitch('enable');  // Aktifkan switch
-                } else {
-                    // $input.attr('disabled', true).bootstrapSwitch('disable');
-                    // $input.bootstrapSwitch('state', false); // Menonaktifkan switch
-                    $input.attr('readonly', true);
+            // Aktifkan/non-aktifkan switch lain berdasarkan status "Lihat"
+            $('#Tambah' + idmenus).bootstrapSwitch('state', state); // Opsional: reset status
+            $('#Edit' + idmenus).bootstrapSwitch('state', state);
+            $('#Hapus' + idmenus).bootstrapSwitch('state', state);
 
-                    // Nonaktifkan switch
-                    // $input.bootstrapSwitch('disable'); // Nonaktifkan switch
+            $('#Tambah' + idmenus).bootstrapSwitch('readonly', !state);
+            $('#Edit' + idmenus).bootstrapSwitch('readonly', !state);
+            $('#Hapus' + idmenus).bootstrapSwitch('readonly', !state);
+        });
+
+        // Handle form submission dengan AJAX
+        $('#form').on('submit', function(e) {
+            e.preventDefault(); // Cegah submit default
+
+            let formData = new FormData(this); // Ambil semua data form termasuk file
+            $('#btnSimpan').prop('disabled', true).text('Menyimpan...');
+
+            $.ajax({
+                url: $(this).attr('action'), // URL dari atribut action
+                method: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                dataType: 'json',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    console.log(response);
+                    $('#btnSimpan').prop('disabled', false).html('<i class="fa fa-save mr-1"></i>Simpan');
+
+                    if (response.status === 'success') {
+                        swal({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: response.message,
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            window.location.href = "{{ url('pengguna') }}";
+                        });
+                    } else {
+                        swal({
+                            icon: 'error',
+                            title: 'Gagal!',
+                            text: response.message
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    $('#btnSimpan').prop('disabled', false).html('<i class="fa fa-save mr-1"></i>Simpan');
+
+                    let errorMessage = 'Terjadi kesalahan pada server.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+
+                    swal({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: errorMessage
+                    });
                 }
             });
         });
-
-        // $(document).on('change', '.Switch-Lihat', function() {
-        //     var state = $(this).prop('checked');
-        //     console.log('Switch changed:', state);
-        // });
-
     });
-
-
-
-
-
 </script>
 @endsection
