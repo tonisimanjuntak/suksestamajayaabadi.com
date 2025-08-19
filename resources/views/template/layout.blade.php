@@ -43,7 +43,7 @@
 			width: 50%;
 			height: 50%;
 			z-index: 9999;
-			background: url("{{ asset('images/spinner.gif') }}") 100% 100% no-repeat;
+			background: url("{{ asset('images/Loading.gif') }}") 100% 100% no-repeat;
 		}
 
 
@@ -127,6 +127,14 @@
         swal("Upps!", "{{ session('other') }}", "info");
     </script>
     @endif
+
+    @if (session('error'))
+    <script>
+        swal("Upps!", "{{ session('error') }}", "error");
+    </script>
+    @endif
+
+    
 
 
     <script>

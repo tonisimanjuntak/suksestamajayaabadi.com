@@ -17,6 +17,9 @@ class HomeController extends Controller
 
     public function index()
     {
+
+        // dd(session('user_menus'));
+
         $data['menu'] = 'home';
         return view('home', $data);
     }

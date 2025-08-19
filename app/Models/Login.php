@@ -21,11 +21,19 @@ class Login extends Model
             ->keyBy('idmenus'); // sangat penting: agar pencarian parent cepat
 
         // 2. Ambil menu yang diizinkan untuk pengguna
-        $userMenus = DB::table('menus')
-            ->join('pengguna_menus', 'pengguna_menus.idmenus', '=', 'menus.idmenus')
-            ->where('pengguna_menus.idpengguna', $idpengguna)
-            ->select('menus.*', 'pengguna_menus.hakaksi')
-            ->get();
+        if ($idpengguna == '9999999999') {
+            //Administrator boleh semua menu
+            $userMenus = DB::table('menus')
+                ->where('event_exist', '!=', '')
+                ->select('menus.*', 'menus.event_exist as hakaksi')
+                ->get();
+        }else{
+            $userMenus = DB::table('menus')
+                ->join('pengguna_menus', 'pengguna_menus.idmenus', '=', 'menus.idmenus')
+                ->where('pengguna_menus.idpengguna', $idpengguna)
+                ->select('menus.*', 'pengguna_menus.hakaksi')
+                ->get();
+        }
 
         // 3. Set untuk menyimpan id menu yang harus ditampilkan (unik)
         $includedMenuIds = [];

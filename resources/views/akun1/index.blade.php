@@ -34,7 +34,9 @@
                             <div class="d-flex justify-content-between">
                                 <h3 class="card-title font-weight-bold"><i class="far fa-list-alt mr-1"></i>List Data
                                     Akun Lv. 1</h3>
-                                <a href="{{ url('akun1/tambah') }}" class="btn btn-sm btn-primary"><i
+                                <a href="{{ url('akun1/tambah') }}" class="btn btn-sm btn-primary" @if (!str_contains(strtolower(session('hakaksi_aktif')), 'tambah') )
+                                            style="display: none;"
+                                        @endif><i
                                         class="fa fa-plus-circle mr-1"></i> Tambah Data</a>
                             </div>
                         </div>

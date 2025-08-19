@@ -69,6 +69,8 @@ class PenggunaController extends Controller
         // Query dasar
         $query = Pengguna::select(['idpengguna', 'namapengguna', 'namaotorisasi', 'lastlogin', 'statusaktif', 'jeniskelamin', 'notelppengguna', 'emailpengguna', 'fotopengguna', 'username']);
 
+        $query->where('idpengguna', '!=', '9999999999');
+
         if ($request->has('statusFilter') && $request->input('statusFilter') != 'Semua') {
             $status = $request->input('statusFilter');
             $query->where('statusaktif', $status);
@@ -381,14 +383,14 @@ class PenggunaController extends Controller
             }
         }
 
-        $rsMenuSystem = $this->model->getMenusSystem();
-        foreach ($rsMenuSystem as $row) {
-            $dataOtorisasi[] = [
-                    'idpengguna' => $idpengguna,
-                    'idmenus' => $row->idmenus,
-                    'hakaksi' => 'Lihat',
-                ];
-        }
+        // $rsMenuSystem = $this->model->getMenusSystem();
+        // foreach ($rsMenuSystem as $row) {
+        //     $dataOtorisasi[] = [
+        //             'idpengguna' => $idpengguna,
+        //             'idmenus' => $row->idmenus,
+        //             'hakaksi' => 'Lihat',
+        //         ];
+        // }
 
         // Simpan ke database
         $simpan = $this->model->simpanotorisasi($idpengguna, $dataOtorisasi);

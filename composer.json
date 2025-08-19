@@ -32,7 +32,8 @@
         },
         "files": [
             "app/Helpers/MyHelpers.php",
-            "app/Helpers/ConstantsHelper.php"
+            "app/Helpers/ConstantsHelper.php",
+            "app/Helpers/MenusHelper.php"
         ]
     },
     "autoload-dev": {
