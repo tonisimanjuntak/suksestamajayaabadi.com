@@ -96,7 +96,7 @@
                 // Tampilkan loading atau disable button
                 const submitBtn = $(this).find('button[type="submit"]');
                 const originalText = submitBtn.html();
-                submitBtn.html('<i class="fa fa-spinner fa-spin"></i> Loading...').prop('disabled', true);
+                submitBtn.html('<i class="fa fa-spinner fa-spin mr-2"></i> Loading...').prop('disabled', true);
 
                 $.ajax({
                     url: "{{ url('login') }}",
@@ -106,7 +106,7 @@
                     success: function (response) {
 
                         if (response.success) {
-                            submitBtn.html('<i class="fa fa-spinner fa-spin"></i> Loading menu pengguna...');
+                            submitBtn.html('<i class="fa fa-spinner fa-spin mr-2"></i> Loading menu pengguna...');
 
                             $.ajax({
                                 url: "{{ url('login/loadMenus') }}",
