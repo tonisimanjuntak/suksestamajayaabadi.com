@@ -1,5 +1,5 @@
 /*
-SQLyog Enterprise v10.42 
+SQLyog Ultimate v10.42 
 MySQL - 8.0.30 : Database - suksestamajayaabadi
 *********************************************************************
 */
@@ -43,7 +43,7 @@ DROP TABLE IF EXISTS `pengguna_menus`;
 
 CREATE TABLE `pengguna_menus` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `idpengguna` char(10) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `idpengguna` char(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `idmenus` char(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `hakaksi` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -51,11 +51,11 @@ CREATE TABLE `pengguna_menus` (
   KEY `idpengguna` (`idpengguna`),
   CONSTRAINT `pengguna_menus_ibfk_1` FOREIGN KEY (`idmenus`) REFERENCES `menus` (`idmenus`),
   CONSTRAINT `pengguna_menus_ibfk_2` FOREIGN KEY (`idpengguna`) REFERENCES `pengguna` (`idpengguna`)
-) ENGINE=InnoDB AUTO_INCREMENT=127 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=348 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 /*Data for the table `pengguna_menus` */
 
-insert  into `pengguna_menus`(`id`,`idpengguna`,`idmenus`,`hakaksi`) values (116,'USRBID0001','M011','Lihat'),(117,'USRBID0001','M012','Lihat'),(118,'USRBID0001','M013','Lihat'),(119,'USRBID0001','M014','Lihat'),(120,'USRBID0001','M015','Lihat'),(121,'USRBID0001','M025','Lihat,Tambah,Edit,Hapus'),(122,'USRBID0001','M026','Lihat'),(123,'USRBID0001','M030','Lihat,Tambah,Edit,Hapus'),(124,'USRBID0001','M031','Lihat,Tambah,Edit,Hapus'),(125,'USRBID0001','M032','Lihat,Tambah,Edit,Hapus'),(126,'USRBID0001','M033','Lihat');
+insert  into `pengguna_menus`(`id`,`idpengguna`,`idmenus`,`hakaksi`) values (300,'USRBID0001','M011','Lihat'),(301,'USRBID0001','M012','Lihat'),(302,'USRBID0001','M013','Lihat'),(303,'USRBID0001','M014','Lihat'),(304,'USRBID0001','M015','Lihat'),(305,'USRBID0001','M017','Lihat'),(306,'USRBID0001','M018','Lihat'),(307,'USRBID0001','M019','Lihat'),(308,'USRBID0001','M020','Lihat'),(309,'USRBID0001','M021','Lihat'),(310,'USRBID0001','M022','Lihat'),(311,'USRBID0001','M023','Lihat'),(312,'USRBID0001','M024','Lihat'),(313,'USRBID0001','M025','Lihat,Tambah,Edit,Hapus'),(314,'USRBID0001','M026','Lihat,Tambah,Edit,Hapus'),(315,'USRBID0001','M027','Lihat,Tambah,Edit,Hapus'),(316,'USRBID0001','M028','Lihat'),(317,'USRBID0001','M029','Lihat'),(318,'USRBID0001','M030','Lihat'),(319,'USRBID0001','M031','Lihat'),(320,'USRBID0001','M032','Lihat'),(321,'USRBID0001','M033','Lihat'),(322,'USRBID0001','M034','Lihat'),(323,'USRBID0001','M035','Lihat'),(324,'USRBID0001','M036','Lihat'),(325,'USRBID0001','M037','Lihat'),(326,'USRBID0001','M039','Lihat'),(327,'USRBID0001','M040','Lihat'),(328,'USRBID0001','M041','Lihat'),(329,'USRBID0001','M042','Lihat'),(330,'USRBID0001','M043','Lihat'),(331,'USRBID0001','M044','Lihat'),(332,'USRBID0001','M045','Lihat'),(333,'USRBID0001','M047','Lihat'),(334,'USRBID0001','M048','Lihat'),(335,'USRBID0001','M049','Lihat'),(336,'USRBID0001','M050','Lihat'),(337,'USRBID0001','M051','Lihat'),(338,'USRBID0001','M052','Lihat'),(339,'USRBID0001','M053','Lihat'),(340,'USRBID0001','M054','Lihat'),(341,'USRBID0001','M055','Lihat'),(342,'USRBID0001','M056','Lihat'),(343,'USRBID0001','M057','Lihat'),(344,'USRBID0001','M058','Lihat'),(345,'USRBID0001','M059','Lihat'),(346,'USRBID0001','M060','Lihat'),(347,'USRBID0001','M061','Lihat');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
