@@ -11,6 +11,11 @@ class CheckMenuAccess
 {
     public function handle(Request $request, Closure $next)
     {
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return $next($request);
+        }
+        
         $userMenus = Session::get('user_menus', []);
         $currentController = $request->segment(1);
         $currentAction = strtolower($request->segment(2)); // tambah, edit, hapus, dll
