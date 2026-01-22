@@ -71,8 +71,12 @@ use App\Models\Kategoribarang;
 
 Route::controller(HomeController::class)->group(function () {
     Route::get('/', 'index')->name('home');
+    Route::get('home/lihatRiwayatAktifitas', 'lihatRiwayatAktifitas');
     Route::get('home/getInfoBox', 'getInfoBox');
     Route::get('home/getInfoGrafikPenjualan', 'getInfoGrafikPenjualan');    
+    Route::get('home/loadRiwayatAktifitas', 'loadRiwayatAktifitas');    
+    Route::get('home/listdatariwayataktifitas', 'listdatariwayataktifitas')->name('home.listdatariwayataktifitas');
+    Route::get('home/cetakriwayataktifitas/{tglawal}/{tglakhir}/{idpengguna}', 'cetakriwayataktifitas');            
 });
 
 
@@ -99,6 +103,7 @@ Route::middleware(['check.menu.access'])->group(function () {
             Route::get('pengguna/listdata', 'listdata')->name('pengguna.listdata');
             Route::get('pengguna/searchOtorisasi', 'searchOtorisasi')->name('pengguna.searchOtorisasi');
             Route::get('pengguna/searchKasir', 'searchKasir')->name('pengguna.searchKasir');
+            Route::get('pengguna/searchPengguna', 'searchPengguna')->name('pengguna.searchPengguna');
             Route::get('pengguna/getOtorisasi', 'getOtorisasi')->name('pengguna.getOtorisasi');
         });
 

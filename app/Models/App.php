@@ -15,6 +15,7 @@ class App extends Model
     {
         $dataRiwayat = array(
             'deskripsi' => json_encode($data),
+            'idpengguna' => session()->get('idpengguna'),
             'namapengguna' => session()->get('namapengguna'),
             'inserted_date' => date('Y-m-d H:i:s'),
             'namatabel' => $namatabel,

@@ -312,6 +312,28 @@ class PenggunaController extends Controller
         return response()->json(['results' => $formattedResults]);
     }
 
+    public function searchPengguna(Request $request)
+    {
+        $search = $request->input('q'); // Ambil parameter pencarian
+
+        // Query pencarian
+        $results = Pengguna::where(function ($query) use ($search) {
+                $query->where('idpengguna', 'LIKE', "%{$search}%")
+                    ->orWhere('namapengguna', 'LIKE', "%{$search}%");
+            })
+            ->limit(50)
+            ->get();
+
+        // Format data untuk Select2
+        $formattedResults = $results->map(function ($item) {
+            return [
+                'id' => $item->idpengguna,
+                'text' => $item->namapengguna,
+            ];
+        });
+        return response()->json(['results' => $formattedResults]);
+    }
+
 
     public function searchKasir(Request $request)
     {

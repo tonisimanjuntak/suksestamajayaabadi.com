@@ -89,4 +89,20 @@ class Home extends Model
                         WHERE YEAR(tglfaktur) = '$tahun'
             ");
     }
+
+    public function loadRiwayatAktifitasAwal()
+    {
+        return DB::table('riwayataktifitas')
+                ->orderBy('inserted_date', 'desc')
+                ->limit(12)
+                ->get();
+    }
+
+    public function loadRiwayatAktifitas($tglLoadRiwayat)
+    {
+        return DB::table('riwayataktifitas')
+                ->where('inserted_date', '>', $tglLoadRiwayat)
+                ->orderBy('inserted_date', 'desc')
+                ->get();
+    }
 }
