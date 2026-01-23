@@ -41,3 +41,12 @@ DELETE FROM pengeluaran;
 DELETE FROM penerimaandetail;
 DELETE FROM penerimaan;
 
+DELETE FROM saldoawaldetail;
+DELETE FROM saldoawal;
+
+DELETE FROM saleswilayah;
+DELETE FROM sales;
+DELETE FROM konsumen;
+DELETE FROM wilayah;
+
+DELETE FROM supplier;
