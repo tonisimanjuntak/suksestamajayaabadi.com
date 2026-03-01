@@ -189,6 +189,38 @@ class PenjualanController extends Controller
         ]);
     }
 
+    public function cekPiutang(Request $request)
+    {
+        $idpenjualan = $request->get('idpenjualan');
+        $idkonsumen = $request->get('idkonsumen');
+        $carabayar = $request->get('carabayar');
+        $totalinvoice = $request->get('totalinvoice');
+
+        if ($carabayar == 'Piutang') {
+
+            //jika konsumen lewat jatuh tempo maka tidak diijinkan untuk melakukan piutang lagi
+            if ($this->model->adaPiutangKadaluarsa($idpenjualan)) {
+                return response()->json(array("msg" => "Ada piutang konsumen yang sudah melewati tanggal jatuh tempo! Konsumen tidak dapat membeli lagi dengan cara piutang!"));
+            }
+
+            //cek jika limit kredit tidak cukup
+            $rsKonsumen = Konsumen::find($idkonsumen);
+            $sisakredit = $rsKonsumen->limitkredit - $rsKonsumen->jumlahpiutang;
+            if (empty($idpenjualan)) { // tambah data
+                if ($totalinvoice > $sisakredit) {
+                    return response()->json(array("msg" => "Kredit konsumen tidak mencukupi! Sisa kredit konsumen : Rp." . format_rupiah($sisakredit)));
+                }
+            } else { // edit data
+                $rsPenjualan = Penjualan::find($idpenjualan);
+                if (($totalinvoice - $rsPenjualan->totalinvoice) > $sisakredit) {
+                    return response()->json(array("msg" => "Kredit konsumen tidak mencukupi! Sisa kredit konsumen : Rp." . format_rupiah($sisakredit)));
+                }
+            }
+        }
+
+        return response()->json(array("success" => true));
+    }
+
     public function simpanData(Request $request)
     {
         $idpenjualan = $request->get('idpenjualan');
@@ -230,31 +262,7 @@ class PenjualanController extends Controller
 
         if ($carabayar != 'Piutang') {
             $idjenispiutang = null;
-        }
-
-
-        if ($carabayar == 'Piutang') {
-
-            //jika konsumen lewat jatuh tempo maka tidak diijinkan untuk melakukan piutang lagi
-            if ($this->model->adaPiutangKadaluarsa($idpenjualan)) {
-                return response()->json(array("msg" => "Ada piutang konsumen yang sudah melewati tanggal jatuh tempo! Konsumen tidak dapat membeli lagi dengan cara piutang!"));
-            }
-
-            //cek jika limit kredit tidak cukup
-            $rsKonsumen = Konsumen::find($idkonsumen);
-            $sisakredit = $rsKonsumen->limitkredit - $rsKonsumen->jumlahpiutang;
-            if (empty($idpenjualan)) { // tambah data
-                if ($totalinvoice > $sisakredit) {
-                    return response()->json(array("msg" => "Kredit konsumen tidak mencukupi! Sisa kredit konsumen : Rp." . format_rupiah($sisakredit)));
-                }
-            } else { // edit data
-                $rsPenjualan = Penjualan::find($idpenjualan);
-                if (($totalinvoice - $rsPenjualan->totalinvoice) > $sisakredit) {
-                    return response()->json(array("msg" => "Kredit konsumen tidak mencukupi! Sisa kredit konsumen : Rp." . format_rupiah($sisakredit)));
-                }
-            }
-        }
-
+        }        
 
         if (empty($idpenjualan)) {
 

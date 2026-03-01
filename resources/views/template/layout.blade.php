@@ -346,6 +346,30 @@
                 ajax: {
                     url: "{{ route('barang.searchBarang') }}", // URL untuk pencarian
                     dataType: 'json',
+                    delay: 2000, // Delay saat mengetik (ms)
+                    data: function(params) {
+                        return {
+                            q: params.term, // Parameter pencarian
+                        };
+                    },
+                    processResults: function(data) {
+                        return {
+                            results: data.results, // Format data untuk Select2
+                        };
+                    },
+                    cache: true
+                },
+                templateResult: formatBarang, // Fungsi untuk menampilkan hasil di dropdown
+                templateSelection: formatBarangSelection // Fungsi untuk menampilkan hasil yang dipilih
+            });
+
+            $('.searchBarangModal').select2({
+                placeholder: 'Cari nama barang...',
+                minimumInputLength: 0, // Minimal karakter untuk memulai pencarian
+                dropdownParent: $('#formModalTambahDetail'),
+                ajax: {
+                    url: "{{ route('barang.searchBarang') }}", // URL untuk pencarian
+                    dataType: 'json',
                     delay: 250, // Delay saat mengetik (ms)
                     data: function(params) {
                         return {

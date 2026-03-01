@@ -22,7 +22,7 @@
                                             <div class="col-md-9">
                                                 <div class="row">
                                                     <div class="col-12">
-                                                        <select name="idbarang" id="idbarang" class="form-control searchBarang"></select>
+                                                        <select name="idbarang" id="idbarang" class="form-control searchBarangModal" nama-parent="formModalTambahDetail"></select>
                                                         <input type="hidden" name="stok" id="stok">
                                                         <input type="hidden" name="namabarang" id="namabarang">
                                                     </div>

@@ -1,0 +1,4 @@
+
+- jatuhtempobonus ditambahkan di jenispiutang (berlakunya utuk bonus penagihan)
+- di table barang tambah field hpp, (isinya perhitungan by system bukan diinput)
+- tambah field noinvoice di table piutang (di input manual, dan otomatis Ketika penjualan sistem)

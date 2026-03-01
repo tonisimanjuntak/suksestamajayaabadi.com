@@ -279,6 +279,7 @@ Route::middleware(['check.menu.access'])->group(function () {
             Route::get('penjualan/getDataID', [PenjualanController::class, 'getDataID']);
             Route::get('penjualan/hapus/{id}', [PenjualanController::class, 'hapus']);
             Route::post('penjualan/simpanData', [PenjualanController::class, 'simpanData']);
+            Route::post('penjualan/cekPiutang', [PenjualanController::class, 'cekPiutang']);
             Route::get('penjualan/listdata', [PenjualanController::class, 'listdata'])->name('penjualan.listdata');
             Route::get('penjualan/cetakInvoice/{id}', [PenjualanController::class, 'cetakInvoice']);
             Route::get('penjualan/cetakKwitansi/{id}', [PenjualanController::class, 'cetakKwitansi']);
