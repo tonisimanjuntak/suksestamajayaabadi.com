@@ -194,7 +194,7 @@ class PenjualanController extends Controller
         $idpenjualan = $request->get('idpenjualan');
         $idkonsumen = $request->get('idkonsumen');
         $carabayar = $request->get('carabayar');
-        $totalinvoice = $request->get('totalinvoice');
+        $totalinvoice = untitik($request->get('totalinvoice'));
 
         if ($carabayar == 'Piutang') {
 
@@ -205,6 +205,7 @@ class PenjualanController extends Controller
 
             //cek jika limit kredit tidak cukup
             $rsKonsumen = Konsumen::find($idkonsumen);
+            
             $sisakredit = $rsKonsumen->limitkredit - $rsKonsumen->jumlahpiutang;
             if (empty($idpenjualan)) { // tambah data
                 if ($totalinvoice > $sisakredit) {
@@ -212,6 +213,7 @@ class PenjualanController extends Controller
                 }
             } else { // edit data
                 $rsPenjualan = Penjualan::find($idpenjualan);
+
                 if (($totalinvoice - $rsPenjualan->totalinvoice) > $sisakredit) {
                     return response()->json(array("msg" => "Kredit konsumen tidak mencukupi! Sisa kredit konsumen : Rp." . format_rupiah($sisakredit)));
                 }
@@ -368,6 +370,10 @@ class PenjualanController extends Controller
                 'nokwitansi' => $nokwitansi,
                 'nobilyetgiro' => $nobilyetgiro,
             );
+
+            // return response()->json(array('data' => $data));
+
+
 
             $simpan = $this->model->updateData($data, $dataDetail, $idpenjualan, $nokwitansi);
         }

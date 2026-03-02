@@ -372,6 +372,7 @@
                     $('#hargasatuan').val(numberWithCommas(response['hargajualasli']));
 
                     $('#jumlahjual').val(1);
+                    $('#jumlahjual').change();
                     $('#jumlahjual').focus();
 
 

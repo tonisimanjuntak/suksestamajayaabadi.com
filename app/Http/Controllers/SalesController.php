@@ -175,14 +175,15 @@ class SalesController extends Controller
         $filekontrak = $request->file('filekontrak');
         $filekontrak_lama = $request->get('filekontrak_lama');
 
+        
         if (empty($tglkontrak)) {
-            $tglkontrak = 'NULL';
+            $tglkontrak = NULL;
         } else {
             $tglkontrak = tglymd($tglkontrak);
         }
 
         if (empty($email)) {
-            $email = 'NULL';
+            $email = NULL;
         }
 
         $filekontrak_name = '';
@@ -260,6 +261,9 @@ class SalesController extends Controller
                 'statusaktif' => $statusaktif,
                 'targetpenjualan' => $targetpenjualan,
             );
+
+            // dd($data);
+
             $simpan = $this->model->updateData($data, $idsales, $salesWilayah);
         }
 

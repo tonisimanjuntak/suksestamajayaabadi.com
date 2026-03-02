@@ -528,7 +528,8 @@
             encode: true
         })
         .done(function(response) {
-            // console.log(response);
+            console.log(response);
+            
             if (response.success) {
 
                 
@@ -544,7 +545,7 @@
                     encode: true
                 })
                 .done(function(result) {
-                    console.log(result);
+                    // console.log(result);
                     // $('#simpan').attr('disabled', false);
                     // return;
 
