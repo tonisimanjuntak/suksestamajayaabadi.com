@@ -81,7 +81,7 @@ class Stockopname extends Model
             }
 
             $this->App->riwayatAktifitas($data, 'stockopname', 'simpanData');
-            $this->App->riwayatAktifitas($dataDetail, 'stockopnamedetail', 'simpanData');
+            // $this->App->riwayatAktifitas($dataDetail, 'stockopnamedetail', 'simpanData');
 
             DB::commit();
 

@@ -35,11 +35,9 @@
                                 <h3 class="card-title font-weight-bold"><i class="far fa-list-alt mr-1"></i>List Data
                                     Barang Dagang</h3>
                                 <a href="{{ url('barang/tambah') }}" class="btn btn-sm btn-primary"
-                                    @if (!str_contains(strtolower(session('hakaksi_aktif')), 'tambah') )
-                                        style="display: none;"
-                                    @endif
-                                ><i
-                                        class="fa fa-plus-circle mr-1"></i> Tambah Data</a>
+                                    @if(!str_contains(strtolower(session('hakaksi_aktif')),'tambah'))
+                                    style="display: none;" @endif>
+                                    <i class="fa fa-plus-circle mr-1"></i> Tambah Data</a>
                             </div>
                         </div>
                         <div class="card-body">
@@ -51,15 +49,18 @@
                                         </div>
                                         <div class="col-12">
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="statusFilter" id="semua" value="Semua">
+                                                <input class="form-check-input" type="radio" name="statusFilter"
+                                                    id="semua" value="Semua">
                                                 <label class="form-check-label" for="semua">Semua</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="statusFilter" id="aktif" value="Aktif" checked>
+                                                <input class="form-check-input" type="radio" name="statusFilter"
+                                                    id="aktif" value="Aktif" checked>
                                                 <label class="form-check-label" for="aktif">Aktif</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="statusFilter" id="tidakAktif" value="Tidak Aktif">
+                                                <input class="form-check-input" type="radio" name="statusFilter"
+                                                    id="tidakAktif" value="Tidak Aktif">
                                                 <label class="form-check-label" for="tidakAktif">Tidak Aktif</label>
                                             </div>
                                         </div>
@@ -144,6 +145,7 @@
                     name: 'hargabeli',
                     className: 'dt-body-center',
                     orderable: true,
+                    visible: false,
                 },
                 {
                     data: 'hargajualdiskon',
