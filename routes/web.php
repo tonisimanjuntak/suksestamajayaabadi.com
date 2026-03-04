@@ -33,6 +33,7 @@ use App\Http\Controllers\LaplabarugiController;
 use App\Http\Controllers\LappembelianController;
 use App\Http\Controllers\LappenjualanController;
 use App\Http\Controllers\LappersediaanController;
+use App\Http\Controllers\KartustokbarangController;
 use App\Http\Controllers\LapneracasaldoController;
 use App\Http\Controllers\LappenagihansalesController;
 use App\Http\Controllers\LappenerimaanController;
@@ -547,6 +548,14 @@ Route::middleware(['check.menu.access'])->group(function () {
             Route::get('lappersediaan/getDataID', 'getDataID');
             Route::get('lappersediaan/cetak/{jenisCetakan}/{idkategori}', 'cetak');
             Route::get('lappersediaan/listdata', 'listdata')->name('lappersediaan.listdata');
+        });
+
+
+        Route::controller(KartustokbarangController::class)->group(function () {
+            Route::get('kartustokbarang', 'index');
+            Route::get('kartustokbarang/getDataID', 'getDataID');
+            Route::get('kartustokbarang/cetak/{jenisCetakan}/{idkategori}/{tglwal}/{tglakhir}', 'cetak');
+            Route::get('kartustokbarang/listdata', 'listdata')->name('kartustokbarang.listdata');
         });
 
         Route::controller(LappengeluaranController::class)->group(function () {

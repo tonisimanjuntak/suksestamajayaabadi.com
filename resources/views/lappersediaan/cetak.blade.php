@@ -56,13 +56,15 @@
             <tr>
                 <th class="" style="width: 10%; text-align: center;" rowspan="3"><img
                         src="{{ public_path('images/'. session('usaha_logo')) }}" alt="" style="width: 50px;"></th>
-                <th style="width: 90%; font-size: 15px; text-align: left; padding-right: 50px;" colspan="6">{{ session('usaha_nama') }}</th>
+                <th style="width: 90%; font-size: 15px; text-align: left; padding-right: 50px;" colspan="6">{{
+                    session('usaha_nama') }}</th>
             </tr>
             <tr>
                 <th style="font-size: 10px; text-align: left;" colspan="6">{{ session('usaha_alamat') }}</th>
             </tr>
             <tr>
-                <th class="" style="font-size: 10px; text-align: left;" colspan="6">No Telepon. {{ session('usaha_telepon') }}
+                <th class="" style="font-size: 10px; text-align: left;" colspan="6">No Telepon. {{
+                    session('usaha_telepon') }}
                 </th>
             </tr>
         </thead>
@@ -78,9 +80,8 @@
                 <tr style="font-size: 9px; font-weight: bold;">
                     <th style="width: 5%; text-align: center;">NO</th>
                     <th style="width: 10%; text-align: center;">ID BARANG</th>
-                    <th style="width: 25%; text-align: left;">NAMA BARANG</th>
+                    <th style="width: 40%; text-align: left;">NAMA BARANG</th>
                     <th style="width: 20%; text-align: center;">KATEGORI</th>
-                    <th style="width: 15%; text-align: right;">HARGA BELI</th>
                     <th style="width: 15%; text-align: right;">HARGA JUAL</th>
                     <th style="width: 10%; text-align: center;">STOK</th>
                 </tr>
@@ -96,11 +97,10 @@
                 <tr style="font-size: 9px;">
                     <td style="width: 5%; text-align: center;">{{ $no++ }}</td>
                     <td style="width: 10%; text-align: center;">{{ $p->idbarang }}</td>
-                    <td style="width: 25%; text-align: left;">
+                    <td style="width: 40%; text-align: left;">
                         {{ $p->namabarang }}
                     </td>
                     <td style="width: 20%; text-align: center;">{{ $p->namakategori }}</td>
-                    <td style="width: 15%; text-align: right;">{{ format_rupiah($p->hargabeli) }}</td>
                     <td style="width: 15%; text-align: right;">{{ format_rupiah($p->hargajualasli) }}</td>
                     <td style="width: 10%; text-align: center;">{{ $p->stok }}</td>
                 </tr>

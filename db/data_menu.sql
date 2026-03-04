@@ -17,6 +17,7 @@ INSERT INTO menus (idmenus, menus, parent, urlmenus, iconmenus, urut, levels, st
 ('M003', 'Barang', NULL, NULL, 'fas fa-shapes', 130, 0, 'Aktif', ''),
 ('M021', 'Kategori Barang', 'M003', 'kategoribarang', 'far fa-circle', 140, 1, 'Aktif', 'Lihat, Tambah, Edit, Hapus'),
 ('M022', 'Barang', 'M003', 'barang', 'far fa-circle', 150, 1, 'Aktif', 'Lihat, Tambah, Edit, Hapus'),
+('MB01', 'Kartu Stok Barang', 'M003', 'kartustokbarang', 'far fa-circle', 155, 1, 'Aktif', 'Lihat'),
 ('M023', 'Stock Opname', 'M003', 'stockopname', 'far fa-circle', 160, 1, 'Aktif', 'Lihat, Tambah, Edit, Hapus'),
 ('M024', 'Laporan Persediaan', 'M003', 'lappersediaan', 'far fa-circle', 170, 1, 'Aktif', 'Lihat'),
 ('M004', 'Sales', NULL, NULL, 'fas fa-universal-access', 180, 0, 'Aktif', ''),
