@@ -675,20 +675,24 @@
         var totalDPP = 0;
         var totalPPN = 0;
         var totalDiskon = 0;
-        var totalinvoice = 0;;
+        var totalInvoice = 0;;
 
         for (var i = 0; i < arrTable.length; i++) {
-            totalDPP += parseInt(untitik(arrTable[i][8])) * parseInt(untitik(arrTable[i][10]));
-            totalPPN += parseInt(untitik(arrTable[i][8])) * parseInt(untitik(arrTable[i][11]));
+            // totalDPP += parseInt(untitik(arrTable[i][8])) * parseInt(untitik(arrTable[i][10]));
+            // totalPPN += parseInt(untitik(arrTable[i][8])) * parseInt(untitik(arrTable[i][11]));
             totalDiskon += parseInt(untitik(arrTable[i][8])) * parseInt(untitik(arrTable[i][6]));
-            totalinvoice += parseInt(untitik(arrTable[i][13]));
+            totalInvoice += parseInt(untitik(arrTable[i][13]));
         }
+
+        totalPPN = parseInt((11 / 111) * (parseInt(totalInvoice)));
+        console.log(totalPPN);
+        totalDPP = parseInt(totalInvoice) - totalPPN;
 
 
         $('#totaldpp').val(totitik(totalDPP));
         $('#totalppn').val(totitik(totalPPN));
         $('#totaldiskon').val(totitik(totalDiskon));
-        $('#totalinvoice').val(totitik(totalinvoice));
+        $('#totalinvoice').val(totitik(totalInvoice));
     }
 
     

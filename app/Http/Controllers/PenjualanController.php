@@ -15,6 +15,7 @@ use App\Models\App;
 use App\Models\Bank;
 use App\Models\Returpenjualan;
 use App\Models\Sales;
+use TCPDF;
 
 class PenjualanController extends Controller
 {
@@ -430,7 +431,7 @@ class PenjualanController extends Controller
         return response()->json(array('rsPenjualan' => $rsPenjualan, 'rsDetail' => $rsDetail));
     }
 
-    public function cetakInvoice($idpenjualan)
+    public function cetakInvoice_2026_03_11($idpenjualan)
     {
         $idpenjualan = Crypt::decrypt($idpenjualan);
         $rsPenjualan = Penjualan::findOrFail($idpenjualan);
@@ -453,6 +454,65 @@ class PenjualanController extends Controller
         $data['rsBank'] = $rsBank;
         $data['tgljatuhtempo'] = $tgljatuhtempo;
         return view('penjualan.cetakInvoice', $data);
+    }
+
+    public function cetakInvoice($idpenjualan)
+    {
+        $idpenjualan = Crypt::decrypt($idpenjualan);
+        $rsPenjualan = Penjualan::findOrFail($idpenjualan);
+        $rsDetail = $this->model->getDetail($idpenjualan);
+
+        $tgljatuhtempo = '-';
+        if ($rsPenjualan->carabayar == "Piutang") {
+            $tgljatuhtempo = tglindonesia(App::createTglJatuhTempo($rsPenjualan->idjenispiutang, $rsPenjualan->tglinvoice));
+        }
+
+        $rowKonsumen = Konsumen::find($rsPenjualan->idkonsumen);
+        $rowSales = Sales::find($rsPenjualan->idsales);
+        $rsBank = Bank::where('statusaktif', 'Aktif')->first();
+
+        $data['idpenjualan'] = $idpenjualan;
+        $data['rowPenjualan'] = $rsPenjualan;
+        $data['rsDetail'] = $rsDetail;
+        $data['rowKonsumen'] = $rowKonsumen;
+        $data['rowSales'] = $rowSales;
+        $data['rsBank'] = $rsBank;
+        $data['tgljatuhtempo'] = $tgljatuhtempo;
+        $view = view('penjualan.cetakInvoice', $data);
+
+        // Buat instance TCPDF
+        $pdf = new TCPDF();
+
+        // Set properti dokumen
+        $pdf->SetCreator(PDF_CREATOR);
+        $pdf->SetAuthor('TZ Developer');
+        $pdf->SetTitle('Invoice');
+        $pdf->SetSubject('Invoice');
+        $pdf->SetKeywords('TCPDF, PDF, laporan, invoice');
+        $pdf->SetFont('times', '', 10);
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+
+        // Atur ukuran kertas khusus (218 mm x 140 mm)
+        $customPaperSize = array(218, 140); // Lebar: 218 mm, Tinggi: 140 mm
+        $pdf->AddPage('L', $customPaperSize); // 'P' untuk portrait, 'L' untuk landscape
+
+        // Atur margin (1 cm = 10 mm)
+        $margin = 10; // 1 cm = 10 mm
+        $pdf->SetMargins($margin, $margin, $margin); // Margin kiri, atas, kanan
+        $pdf->SetAutoPageBreak(true, $margin);       // Margin bawah (untuk auto page break)
+
+        // Hilangkan padding internal cell
+        $pdf->SetCellPadding(0);
+
+        // Gambar garis bantu untuk debugging
+        // $pdf->Rect($margin, $margin, $pdf->getPageWidth() - $margin * 2, $pdf->getPageHeight() - $margin * 2);
+
+        // Tulis konten HTML ke dalam PDF
+        $pdf->writeHTML($view, true, false, true, false, '');
+
+        // Output PDF
+        $pdf->Output('invoice.pdf', 'I');
     }
 
     public function cetakKwitansi($idpenjualan)

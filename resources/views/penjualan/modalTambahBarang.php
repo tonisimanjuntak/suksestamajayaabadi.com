@@ -65,19 +65,24 @@
                                             </div>
                                         </div>
 
-                                        <div class="form-group row p-1">
+                                        <div class="form-group row p-1" style="display: none">
                                             <label for="jumlahdppsatuan" class="col-md-4 col-form-label p-1">Jumlah DPP</label>
                                             <div class="col-md-8 p-1">
-                                                <input type="hidden" name="jumlahdppsatuan" id="jumlahdppsatuan" class="form-control rupiah" value="0" readonly>
+                                                <input type="text" name="jumlahdppsatuan" id="jumlahdppsatuan" class="form-control rupiah" value="0" readonly>
                                                 <input type="text" name="jumlahdppsatuan_display" id="jumlahdppsatuan_display" class="form-control rupiah" value="0" readonly>
                                             </div>
+                                        </div>
 
+                                        <div class="form-group row p-1" style="display: none">
                                             <label for="jumlahppnsatuan" class="col-md-4 col-form-label p-1">Jumlah PPN (<?php echo session()->get('ppn_penjualan') ?>%)</label>
                                             <div class="col-md-8 p-1">
-                                                <input type="hidden" name="jumlahppnsatuan" id="jumlahppnsatuan" class="form-control rupiah" value="0" readonly>
+                                                <input type="text" name="jumlahppnsatuan" id="jumlahppnsatuan" class="form-control rupiah" value="0" readonly>
                                                 <input type="text" name="jumlahppnsatuan_display" id="jumlahppnsatuan_display" class="form-control rupiah" value="0" readonly>
                                             </div>
+                                        </div>
+                                        
 
+                                        <div class="form-group row p-1">
                                             <label for="jumlahdiskonsatuan" class="col-md-4 col-form-label p-1">Jumlah Diskon</label>
                                             <div class="col-md-8 p-1">
                                                 <input type="hidden" name="jumlahdiskonsatuan" id="jumlahdiskonsatuan" class="form-control rupiah" value="0" readonly>
@@ -415,11 +420,7 @@
         var hargasatuan = untitik($('#hargasatuan').val());
 
 
-
-
-
         var jenisdiskon = $('input[name="jenisdiskon"]:checked').val();
-
         if (jenisdiskon == 'Nominal') {
             var jumlahdiskon = untitik($('#jumlahdiskon').val());
             var jumlahdiskonsatuan = parseInt(jumlahdiskon);
@@ -433,8 +434,6 @@
             var jumlahdiskon1 = parseInt(hargasatuan) * (parseInt(diskon1) / 100);
             var jumlahdiskon2 = (parseInt(hargasatuan) - parseInt(jumlahdiskon1)) * (parseInt(diskon2) / 100);
             var jumlahdiskon3 = (parseInt(hargasatuan) - parseInt(jumlahdiskon1) - parseInt(jumlahdiskon2)) * (parseInt(diskon3) / 100);
-
-
             var jumlahdiskon = parseInt(jumlahdiskon1) + parseInt(jumlahdiskon2) + parseInt(jumlahdiskon3);
             $('#jumlahdiskon').val(numberWithCommas(jumlahdiskon));
             var jumlahdiskonsatuan = parseInt(jumlahdiskon);
@@ -442,9 +441,12 @@
             $('#jumlahdiskonsatuan_display').val(numberWithCommas(parseInt(jumlahdiskonsatuan) * parseInt(jumlahjual)));
         }
 
-        var jumlahppnsatuan = parseInt((11 / 111) * (parseInt(hargasatuan)));
+        var hargasetelahdiskon = parseInt(hargasatuan) - parseInt(jumlahdiskonsatuan);
 
-        var jumlahdppsatuan = parseInt(hargasatuan) - parseInt(jumlahppnsatuan);
+        // var jumlahppnsatuan = parseInt((11 / 111) * (parseInt(hargasetelahdiskon)));
+        // var jumlahdppsatuan = parseInt(hargasetelahdiskon) - parseInt(jumlahppnsatuan);
+        var jumlahppnsatuan = 0;
+        jumlahdppsatuan = 0;
 
 
         $('#jumlahdppsatuan').val(numberWithCommas(jumlahdppsatuan));
@@ -452,7 +454,8 @@
         $('#jumlahppnsatuan').val(numberWithCommas(jumlahppnsatuan));
         $('#jumlahppnsatuan_display').val(numberWithCommas(parseInt(jumlahppnsatuan) * parseInt(jumlahjual)));
 
-        var subtotal = parseInt(jumlahjual) * parseInt(jumlahdppsatuan + jumlahppnsatuan - jumlahdiskonsatuan);
+        // var subtotal = parseInt(jumlahjual) * parseInt(jumlahdppsatuan + jumlahppnsatuan - jumlahdiskonsatuan);
+        var subtotal = parseInt(jumlahjual) * parseInt(hargasatuan - jumlahdiskonsatuan);
         $('#subtotalsemua').val(numberWithCommas(subtotal));
     }
 
