@@ -1,0 +1,2 @@
+UPDATE penjualandetail SET hargadpp = 0, jumlahppn = 0, subtotaljual = jumlahjual * (hargasatuan - jumlahdiskon);
+UPDATE penjualan SET totalppn = ROUND( (11/111) * totalinvoice), totaldpp = totalinvoice - (ROUND( (11/111) * totalinvoice));
