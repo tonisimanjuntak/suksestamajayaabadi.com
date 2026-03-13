@@ -278,6 +278,10 @@
                     align="left">
                     <span class="terbilang"><strong>TERBILANG: </strong> {{
                         terbilang($rowPenjualan->totalinvoice) }} rupiah</span>
+                    <div style="font-size: 5px;">&nbsp;</div>
+
+                    <span class="terbilang">&nbsp; Keterangan:
+                        {{$rowPenjualan->keterangan}}</span>
                 </td>
                 <td class="add-border-top add-border-bottom add-border-left add-border-right font-weight-bold"
                     colspan="2" align="right">JUMLAH DPP</td>
