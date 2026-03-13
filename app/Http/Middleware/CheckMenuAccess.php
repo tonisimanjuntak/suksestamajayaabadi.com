@@ -26,6 +26,11 @@ class CheckMenuAccess
         if (in_array($currentController, $except)) {
             return $next($request);
         }
+            
+        //developer tidak perlu cek menu
+        if (Session::get('idpengguna') == '9999999999') {
+            return $next($request);        
+        }
 
         $allowedController = false;
         $allowedAction = true; // Default: jika tidak ada action (index), dianggap boleh
