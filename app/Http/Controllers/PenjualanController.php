@@ -501,7 +501,7 @@ class PenjualanController extends Controller
         // Atur margin (1 cm = 10 mm)
         $marginKiri = 10; // 1 cm = 10 mm
         $marginAtas = 0; // 1 cm = 10 mm
-        $marginKanan = 10; // 1 cm = 10 mm
+        $marginKanan = 15; // 1 cm = 10 mm
         $margin = 0; // 1 cm = 10 mm
         $pdf->SetMargins($marginKiri, $marginAtas, $marginKanan); // Margin kiri, atas, kanan
         $pdf->SetAutoPageBreak(true, $margin);       // Margin bawah (untuk auto page break)
