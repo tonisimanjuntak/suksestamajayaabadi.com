@@ -114,7 +114,7 @@
                     <td class="fs-10 font-weight-bold">{{ session()->get('usaha_nama') }}</td>
                 </tr>
                 <tr>
-                    <td class="fs-8">{{ session()->get('usaha_alamat') }} No Telepon. {{
+                    <td class="fs-8">{{ session()->get('usaha_alamat') }} <br>No Telp. {{
                         session()->get('usaha_telepon')}}
                     </td>
                 </tr>
