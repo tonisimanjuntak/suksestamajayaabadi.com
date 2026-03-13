@@ -469,7 +469,8 @@ class PenjualanController extends Controller
 
         $rowKonsumen = Konsumen::find($rsPenjualan->idkonsumen);
         $rowSales = Sales::find($rsPenjualan->idsales);
-        $rsBank = Bank::where('statusaktif', 'Aktif')->first();
+        $rsBank = Bank::where('statusaktif', 'Aktif')
+                ->limit(2)->get();
 
         $data['idpenjualan'] = $idpenjualan;
         $data['rowPenjualan'] = $rsPenjualan;
@@ -498,8 +499,11 @@ class PenjualanController extends Controller
         $pdf->AddPage('L', $customPaperSize); // 'P' untuk portrait, 'L' untuk landscape
 
         // Atur margin (1 cm = 10 mm)
-        $margin = 10; // 1 cm = 10 mm
-        $pdf->SetMargins($margin, $margin, $margin); // Margin kiri, atas, kanan
+        $marginKiri = 10; // 1 cm = 10 mm
+        $marginAtas = 0; // 1 cm = 10 mm
+        $marginKanan = 10; // 1 cm = 10 mm
+        $margin = 0; // 1 cm = 10 mm
+        $pdf->SetMargins($marginKiri, $marginAtas, $marginKanan); // Margin kiri, atas, kanan
         $pdf->SetAutoPageBreak(true, $margin);       // Margin bawah (untuk auto page break)
 
         // Hilangkan padding internal cell

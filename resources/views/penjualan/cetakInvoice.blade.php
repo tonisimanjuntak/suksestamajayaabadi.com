@@ -88,6 +88,22 @@
     .font-weight-bold {
         font-weight: bold;
     }
+
+    .add-border-top {
+        border-top: 1px solid black;
+    }
+
+    .add-border-bottom {
+        border-bottom: 1px solid black;
+    }
+
+    .add-border-left {
+        border-left: 1px solid black;
+    }
+
+    .add-border-right {
+        border-right: 1px solid black;
+    }
 </style>
 
 <table width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -105,23 +121,23 @@
             </table>
         </td>
         <td width="35%" align="center">
-            <span class="fs-16 font-weight-bold">I N V O I C E</span><br>
-            <span class="fs-12 font-weight-bold">No. {{ $rowPenjualan->noinvoice }}</span>
+            <span class="fs-14 font-weight-bold">I N V O I C E</span><br>
+            <span class="fs-10 font-weight-bold">No. {{ $rowPenjualan->noinvoice }}</span>
         </td>
         <td width="30%">
             <table width="100%" cellpadding="0">
-                <tr>
+                <tr class="fs-8">
                     <td width="50%">Tgl. Invoice</td>
                     <td width="5%">:</td>
                     <td width="45%">{{ tglindonesia($rowPenjualan->tglinvoice) }}</td>
                 </tr>
                 @if ($rowPenjualan->carabayar == 'Piutang')
-                <tr>
+                <tr class="fs-8">
                     <td>Jenis Piutang</td>
                     <td>:</td>
                     <td>{{ $rowPenjualan->namajenispiutang }}</td>
                 </tr>
-                <tr>
+                <tr class="fs-8">
                     <td>Jatuh Tempo</td>
                     <td>:</td>
                     <td>{{ tglindonesia($tgljatuhtempo) }}</td>
@@ -134,20 +150,20 @@
 
 <div style="font-size: 5px;">&nbsp;</div>
 
-<table width="100%">
+<table width="100%" cellpadding="0">
     <tr>
         <td width="70%">
             <table border="0" cellpadding="0">
                 <tbody>
-                    <tr class="fs-10 font-weight-bold">
+                    <tr class="fs-9 font-weight-bold">
                         <td colspan="3" width="100%">Kepada: {{ $rowKonsumen->namakonsumen }}</td>
                     </tr>
-                    <tr class="fs-10">
+                    <tr class="fs-9">
                         <td width="25%">Alamat</td>
                         <td width="5%" align="center">:</td>
                         <td width="70%">{{ $rowKonsumen->alamatkonsumen }}</td>
                     </tr>
-                    <tr class="fs-10">
+                    <tr class="fs-9">
                         <td>No. Telp/ Email</td>
                         <td align="center">:</td>
                         <td>{{ $rowKonsumen->notelpkonsumen . ' / ' . $rowKonsumen->emailkonsumen }}</td>
@@ -158,10 +174,10 @@
         <td width="30%">
             <table cellpadding="0" border="0" width="100%">
                 <tbody>
-                    <tr class="fs-10">
+                    <tr class="fs-9">
                         <td width="100%" align="left">Sales : {{ $rowSales->namasales }}</td>
                     </tr>
-                    <tr class="fs-10">
+                    <tr class="fs-9">
                         <td width="100%" align="left">No. HP : {{ $rowSales->nowa }}</td>
                     </tr>
                 </tbody>
@@ -173,25 +189,29 @@
 
     </tr>
 
-    @if ($rsBank)
+</table>
 
-    <tr>
-        <td width="100%" colspan="2">
-            <br>
-            <br>
-            {{ $rsBank->namabank .' No Rek. '. $rsBank->norekening . ' An. '.$rsBank->atasnama }} .
-            &nbsp;
-        </td>
-    </tr>
-    @else
-    <tr>
-        <td width="100%" colspan="2">
-            <br>
-            <br>
-            &nbsp;
-        </td>
-    </tr>
-    @endif
+<div style="font-size: 5px;">&nbsp;</div>
+
+<table>
+    <tbody>
+        @if ($rsBank)
+        @foreach ($rsBank as $row)
+        <tr class="fs-9">
+            <td width="100%" colspan="2">
+                {{ $row->namabank .' No Rek. '. $row->norekening . ' An. '.$row->atasnama }} .
+                &nbsp;
+            </td>
+        </tr>
+        @endforeach
+        @else
+        <tr class="fs-9">
+            <td width="100%" colspan="2">
+                &nbsp;
+            </td>
+        </tr>
+        @endif
+    </tbody>
 </table>
 
 <table width="100%">
@@ -200,15 +220,21 @@
     </tr>
 </table>
 
-<table border="1" cellpadding="3" width="100%">
+<table border="0" cellpadding="2" width="100%">
     <thead>
-        <tr class="fs-10">
-            <th width="7%" align="center">NO</th>
-            <th width="38%" align="center">Nama Barang</th>
-            <th width="10%" align="center">Qty</th>
-            <th width="15%" align="center">Harga Satuan</th>
-            <th width="15%" align="center">Discount</th>
-            <th width="15%" align="center">Jumlah</th>
+        <tr class="fs-9">
+            <th class="add-border-top add-border-bottom add-border-left add-border-right" width="4%" align="center">NO
+            </th>
+            <th class="add-border-top add-border-bottom add-border-left add-border-right" width="53%" align="center">
+                Nama Barang</th>
+            <th class="add-border-top add-border-bottom add-border-left add-border-right" width="7%" align="center">Qty
+            </th>
+            <th class="add-border-top add-border-bottom add-border-left add-border-right" width="12%" align="center">
+                Harga Satuan</th>
+            <th class="add-border-top add-border-bottom add-border-left add-border-right" width="12%" align="center">
+                Discount</th>
+            <th class="add-border-top add-border-bottom add-border-left add-border-right" width="12%" align="center">
+                Jumlah</th>
         </tr>
     </thead>
     <tbody>
@@ -216,80 +242,75 @@
         $no = 1;
         @endphp
         @foreach ($rsDetail as $row)
-        <tr class="fs-12">
-            <td width="7%" align="center">{{ $no++ }}</td>
-            <td width="38%" align="left">{{ $row->namabarang }}</td>
-            <td width="10%" align="center">{{ $row->jumlahjual }}</td>
-            <td width="15%" align="right">
+        <tr class="fs-9">
+            <td class="add-border-left add-border-right" width="4%" align="center">{{ $no++ }}</td>
+            <td class="add-border-left add-border-right" width="53%" align="left">{{ $row->namabarang }}</td>
+            <td class="add-border-left add-border-right" width="7%" align="center">{{ $row->jumlahjual }}</td>
+            <td class="add-border-left add-border-right" width="12%" align="right">
                 @php
                 echo $row->hargasatuan > 0 ? format_rupiah($row->hargasatuan) : '-';
                 @endphp
             </td>
-            <td width="15%" align="right">
+            <td class="add-border-left add-border-right" width="12%" align="right">
                 @php
                 echo $row->jumlahdiskon > 0 ? format_rupiah($row->jumlahdiskon) : '-';
                 @endphp
             </td>
-            <td width="15%" align="right">{{ format_rupiah($row->subtotaljual) }}</td>
+            <td class="add-border-left add-border-right" width="12%" align="right">{{ format_rupiah($row->subtotaljual)
+                }}</td>
         </tr>
         @endforeach
 
-        @if ($no < 4) @for ($i=$no; $i <=4; $i++) <tr>
-            <td align="center">&nbsp;</td>
-            <td align="left"></td>
-            <td align="center"></td>
-            <td align="right"></td>
-            <td align="right"></td>
-            <td align="right"></td>
+        @if ($no < 9) @for ($i=$no; $i <=9; $i++) <tr>
+            <td class="add-border-left add-border-right" align="center">&nbsp;</td>
+            <td class="add-border-left add-border-right" align="left"></td>
+            <td class="add-border-left add-border-right" align="center"></td>
+            <td class="add-border-left add-border-right" align="right"></td>
+            <td class="add-border-left add-border-right" align="right"></td>
+            <td class="add-border-left add-border-right" align="right"></td>
             </tr>
             @endfor
             @endif
 
 
-            <tr class="fs-10">
-                <td colspan="3" rowspan="3" align="left">
+            <tr class="fs-9">
+                <td class="add-border-top add-border-bottom add-border-left add-border-right" colspan="3" rowspan="3"
+                    align="left">
                     <span class="terbilang"><strong>TERBILANG: </strong> {{
                         terbilang($rowPenjualan->totalinvoice) }} rupiah</span>
                 </td>
-                <td colspan="2" align="right" class="font-weight-bold">JUMLAH DPP</td>
-                <td align="right" class="font-weight-bold">{{ format_rupiah($rowPenjualan->totaldpp) }}
+                <td class="add-border-top add-border-bottom add-border-left add-border-right font-weight-bold"
+                    colspan="2" align="right">JUMLAH DPP</td>
+                <td class="add-border-top add-border-bottom add-border-left add-border-right font-weight-bold"
+                    align="right">{{ format_rupiah($rowPenjualan->totaldpp) }}
                 </td>
             </tr>
-            <tr class="fs-10">
-                <td colspan="2" align="right" class="font-weight-bold">PPN ({{$rowPenjualan->ppnpersen}}%)
+            <tr class="fs-9">
+                <td class="add-border-top add-border-bottom add-border-left add-border-right font-weight-bold"
+                    colspan="2" align="right">PPN ({{$rowPenjualan->ppnpersen}}%)
                 </td>
-                <td align="right" class="font-weight-bold">{{ format_rupiah($rowPenjualan->totalppn) }}
+                <td class="add-border-top add-border-bottom add-border-left add-border-right font-weight-bold"
+                    align="right">{{ format_rupiah($rowPenjualan->totalppn) }}
                 </td>
             </tr>
 
-            <tr class="fs-10 font-weight-bold">
-                <td colspan="2" align="right">TOTAL INVOICE</td>
-                <td align="right">{{ format_rupiah($rowPenjualan->totalinvoice)
+            <tr class="fs-9 font-weight-bold">
+                <td class="add-border-top add-border-bottom add-border-left add-border-right" colspan="2" align="right">
+                    TOTAL INVOICE</td>
+                <td class="add-border-top add-border-bottom add-border-left add-border-right" align="right">{{
+                    format_rupiah($rowPenjualan->totalinvoice)
                     }}</td>
             </tr>
     </tbody>
 </table>
 
-<table width="100%">
-    <tr>
-        <td height="10">&nbsp;</td>
-    </tr>
-</table>
+
+<div style="font-size: 5px;">&nbsp;</div>
 
 <table width="100%" style="margin-top: 30px;">
     <tr class="fs-10">
         <td width="33%" align="center">Tanda Terima</td>
         <td width="33%" align="center">Driver/Supir</td>
-        <td width="33%" align="center">Gudang</td>
-    </tr>
-    <tr>
-        <td height="20"></td>
-        <td height="20"></td>
-        <td height="20"></td>
-    </tr>
-    <tr>
-        <td align="center">({!! str_repeat('&nbsp;', 30) !!})</td>
-        <td align="center">({!! str_repeat('&nbsp;', 30) !!})</td>
-        <td align="center">({!! str_repeat('&nbsp;', 30) !!})</td>
+        <td width="33%" align="center">Hormat Kami</td>
     </tr>
 </table>
