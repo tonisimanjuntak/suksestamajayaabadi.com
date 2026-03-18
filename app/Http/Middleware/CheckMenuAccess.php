@@ -28,9 +28,9 @@ class CheckMenuAccess
         }
             
         //developer tidak perlu cek menu
-        if (Session::get('idpengguna') == '9999999999') {
-            return $next($request);        
-        }
+        // if (Session::get('idpengguna') == '9999999999') {
+        //     return $next($request);        
+        // }
 
         $allowedController = false;
         $allowedAction = true; // Default: jika tidak ada action (index), dianggap boleh
@@ -108,11 +108,11 @@ class CheckMenuAccess
         }
 
         // Jika tidak punya akses ke controller atau action
-        if (!$allowedController) {
+        if (!$allowedController && Session::get('idpengguna') != '9999999999') {
             return $this->forbiddenResponse($request, 'Anda tidak memiliki akses ke menu ini.');
         }
 
-        if (!$allowedAction) {
+        if (!$allowedAction && Session::get('idpengguna') != '9999999999') {
             return $this->forbiddenResponse($request, 'Anda tidak memiliki hak akses untuk aksi ini.');
         }
 

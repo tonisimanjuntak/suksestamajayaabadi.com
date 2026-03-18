@@ -228,6 +228,14 @@
                 var jumlahppnsatuan = untitik($('#jumlahppnsatuan').val());
                 var jumlahdiskonsatuan = untitik($('#jumlahdiskonsatuan').val());
                 var stok = untitik($('#stok').val());
+                
+                if (parseInt(subtotalsemua) < 0) {
+                    swal('Informasi', 'Subtotal tidak boleh lebih kecil dari 0', 'error')
+                        .then(function() {
+                            $('#tambahkan').attr('disabled', false);
+                        });
+                    return false;
+                }
 
                 addTableRow(idbarang, namabarang, jumlahjual, hargasatuan, jumlahdppsatuan, jumlahppnsatuan, subtotalsemua, jenisdiskon, jumlahdiskonsatuan, diskonpersen1, diskonpersen2, diskonpersen3, stok, 1);
                 $('#tambahkan').attr('disabled', false);
@@ -283,8 +291,8 @@
         for (var i = 0; i < tableData.length; i++) {
             totalSemua += parseInt(untitik(tableData[i][11]));
 
-            if (idbarang == tableData[i][1]) {
-                swal("Informasi", "Data barang sudah ada!", "info");
+            if (idbarang == tableData[i][1] && parseInt(hargasatuan) != 0) {
+                swal("Informasi", "Data barang sudah ada! Jika ini adalah bonus maka harga jual nya harus nol!", "info");
                 return;
             }
         }

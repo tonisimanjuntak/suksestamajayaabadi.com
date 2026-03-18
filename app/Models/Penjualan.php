@@ -491,6 +491,7 @@ class Penjualan extends Model
     {
         return DB::table('v_penjualandetail')
             ->where('idpenjualan', $idpenjualan)
+            ->orderBy('id', 'asc')
             ->get();
     }
 
