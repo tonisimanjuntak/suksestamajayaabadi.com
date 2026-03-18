@@ -41,11 +41,14 @@
                                         <div class="col-md-2"></div>
                                         <label for="" class="col-md-2">Kategori</label>
                                         <div class="col-md-3">
-                                            <select name="idkategori" id="idkategori" class="form-control searchKategori"></select>
+                                            <select name="idkategori" id="idkategori"
+                                                class="form-control searchKategori"></select>
                                         </div>
                                         <div class="col-md-5">
-                                            <button class="btn btn-sm btn-success" id="btnCetakExcel"><i class="fa fa-file-excel"></i> Cetak Excel</button>
-                                            <button class="btn btn-sm btn-danger" id="btnCetakPdf"><i class="fa fa-file-pdf"></i> Cetak PDF</button>
+                                            <button class="btn btn-sm btn-success" id="btnCetakExcel"><i
+                                                    class="fa fa-file-excel"></i> Cetak Excel</button>
+                                            <button class="btn btn-sm btn-danger" id="btnCetakPdf"><i
+                                                    class="fa fa-file-pdf"></i> Cetak PDF</button>
                                         </div>
 
                                     </div>
@@ -69,7 +72,7 @@
                                 </div>
                             </div>
 
-                            
+
                         </div>
                     </div>
 
@@ -130,6 +133,8 @@
                     name: 'hargabeli',
                     className: 'dt-body-center',
                     orderable: true,
+                    //hide aja kolom ini
+                    visible: false                    
                 },
                 {
                     data: 'hargajualdiskon',
