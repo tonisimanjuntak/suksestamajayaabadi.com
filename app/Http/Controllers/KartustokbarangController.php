@@ -96,10 +96,11 @@ class KartustokbarangController extends Controller
         */
 
         $rsKartuStok = $this->Kartustokbarang->getKartuStok($idbarang, $tglawal, $tglakhir);
+        // dd($rsKartuStok);
 
         $data['tglawal'] = tgldmy($tglawal);
         $data['tglakhir'] = tgldmy($tglakhir);
-        $data['rowBarang'] = Barang::find($idbarang)->first();
+        $data['rowBarang'] = Barang::find($idbarang);
         $data['rsKartuStok'] = $rsKartuStok;
         $view = view('kartustokbarang.cetak', $data);
 
