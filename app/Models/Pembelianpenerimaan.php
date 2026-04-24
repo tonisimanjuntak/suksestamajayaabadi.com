@@ -93,6 +93,10 @@ class Pembelianpenerimaan extends Model
             /*
                 Update Stok Barang
             */
+            $idsupplier = $data['idsupplier'];
+            $rowSupplier = Supplier::find($idsupplier);
+            $namasupplier = $rowSupplier->namasupplier;
+
             foreach ($dataDetail as $detail) {
                 $stokawal = Barang::getRiwayatStokAkhir($detail['idbarang']);
                 $stokmasuk = $detail['jumlahbeli'];
@@ -114,7 +118,7 @@ class Pembelianpenerimaan extends Model
                     'jumlahppn' => $detail['jumlahppn'],
                     'jumlahdiskon' => $detail['jumlahdiskon'],
                     'subtotal' => $detail['subtotalbeli'],
-                    'deskripsi' => 'Penerimaan faktur pembelian',
+                    'deskripsi' => 'Penerimaan PO dengan No Faktur ' . $data['nofaktur']. ' dan nama supplier ' . $namasupplier,
                     'idpengguna' => session()->get('idpengguna'),
                     'namapengguna' => session()->get('namapengguna'),
                     'jenistransaksi' => 'Pembelian',
@@ -236,6 +240,9 @@ class Pembelianpenerimaan extends Model
 
             DB::beginTransaction();
 
+            $nofaktur = $rsPembelian->nofaktur;
+            $namasupplier = $rsPembelian->namasupplier;
+
             $detailOld = DB::table('pembeliandetail')
                 ->where('idpembelian', $idpembelian)
                 ->get();
@@ -257,7 +264,7 @@ class Pembelianpenerimaan extends Model
                     'stokakhir' => $stokakhir,
                     'hargasebelumdiskon' => $rowDetail->hargasatuan,
                     'hargasetelahdiskon' => $rowDetail->hargasatuan - $rowDetail->jumlahdiskon,
-                    'deskripsi' => 'Hapus data pembelian',
+                    'deskripsi' => 'Hapus Penerimaan PO dengan No. Faktur ' . $nofaktur . ' dan Supplier ' . $namasupplier,
                     'idpengguna' => session()->get('idpengguna'),
                     'namapengguna' => session()->get('namapengguna'),
                     'jenistransaksi' => 'Pembelian',

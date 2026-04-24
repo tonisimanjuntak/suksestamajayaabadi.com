@@ -68,9 +68,12 @@ class Suratjalan extends Model
                 foreach ($dataDetail as $rowDetail) {
                     $idpenjualan = $rowDetail['idpenjualan'];
 
-                    $rsPenjualan = DB::table('penjualan')
+                    $rsPenjualan = DB::table('v_penjualan')
                         ->where('idpenjualan', $idpenjualan)
                         ->first();
+                    $noinvoice = $rsPenjualan->noinvoice;
+                    $namakonsumen = $rsPenjualan->namakonsumen;
+
 
                     $rsDetailPenjualan = DB::table('penjualandetail')
                         ->where('idpenjualan', $idpenjualan)
@@ -97,7 +100,7 @@ class Suratjalan extends Model
                             'jumlahppn' => $rowDetailPenjualan->jumlahppn,
                             'jumlahdiskon' => $rowDetailPenjualan->jumlahdiskon,
                             'subtotal' => $rowDetailPenjualan->subtotaljual,
-                            'deskripsi' => 'Tambah data surat jalan',
+                            'deskripsi' => 'Tambah data surat jalan ' . $idsuratjalan . ' dengan No. Invoice ' . $noinvoice . ' untuk konsumen ' . $namakonsumen,
                             'idpengguna' => session()->get('idpengguna'),
                             'namapengguna' => session()->get('namapengguna'),
                             'jenistransaksi' => 'Penjualan',
@@ -174,7 +177,7 @@ class Suratjalan extends Model
             if (session('stok_penjualan_dari_surat_jalan') == '1') {
 
 
-
+                
                 //karena update data kembalikan stok barang ke stok semula
                 $rsDetailSuratJalanOld = DB::table('suratjalandetail')
                     ->where('idsuratjalan', $idsuratjalan)
@@ -182,6 +185,11 @@ class Suratjalan extends Model
 
                 foreach ($rsDetailSuratJalanOld as $rowDetailOld) {
                     $idpenjualan = $rowDetailOld->idpenjualan;
+
+                    $rsPenjualan = Penjualan::find($idpenjualan);
+                    $noinvoice = $rsPenjualan->noinvoice;
+                    $namakonsumen = $rsPenjualan->namakonsumen;
+
 
                     $rsDetailPenjualan = DB::table('penjualandetail')
                         ->where('idpenjualan', $idpenjualan)
@@ -209,7 +217,7 @@ class Suratjalan extends Model
                             'jumlahppn' => $rowDetailPenjualan->jumlahppn,
                             'jumlahdiskon' => $rowDetailPenjualan->jumlahdiskon,
                             'subtotal' => $rowDetailPenjualan->subtotaljual,
-                            'deskripsi' => 'Update data surat jalan',
+                            'deskripsi' => 'Update data surat jalan No. ' . $data['idsuratjalan'] . ' dengan No. Invoice ' . $noinvoice . ' untuk konsumen ' . $namakonsumen,
                             'idpengguna' => session()->get('idpengguna'),
                             'namapengguna' => session()->get('namapengguna'),
                             'jenistransaksi' => 'Penjualan',
@@ -230,6 +238,10 @@ class Suratjalan extends Model
                 //update data stok barang
                 foreach ($dataDetail as $rowDetail) {
                     $idpenjualan = $rowDetail['idpenjualan'];
+
+                    $rsPenjualan = Penjualan::find($idpenjualan);
+                    $noinvoice = $rsPenjualan->noinvoice;
+                    $namakonsumen = $rsPenjualan->namakonsumen;
 
                     $rsDetailPenjualan = DB::table('penjualandetail')
                         ->where('idpenjualan', $idpenjualan)
@@ -256,7 +268,7 @@ class Suratjalan extends Model
                             'jumlahppn' => $rowDetailPenjualan->jumlahppn,
                             'jumlahdiskon' => $rowDetailPenjualan->jumlahdiskon,
                             'subtotal' => $rowDetailPenjualan->subtotaljual,
-                            'deskripsi' => 'Update data surat jalan',
+                            'deskripsi' => 'Update data surat jalan No. ' . $data['idsuratjalan'] . ' dengan No. Invoice ' . $noinvoice . ' untuk konsumen ' . $namakonsumen,
                             'idpengguna' => session()->get('idpengguna'),
                             'namapengguna' => session()->get('namapengguna'),
                             'jenistransaksi' => 'Penjualan',
@@ -344,6 +356,9 @@ class Suratjalan extends Model
 
                 foreach ($rsDetailSuratJalanOld as $rowDetailOld) {
                     $idpenjualan = $rowDetailOld->idpenjualan;
+                    $rsPenjualan = Penjualan::find($idpenjualan);
+                    $noinvoice = $rsPenjualan->noinvoice;
+                    $namakonsumen = $rsPenjualan->namakonsumen;
 
                     $rsDetailPenjualan = DB::table('penjualandetail')
                         ->where('idpenjualan', $idpenjualan)
@@ -370,7 +385,7 @@ class Suratjalan extends Model
                             'jumlahppn' => $rowDetailPenjualan->jumlahppn,
                             'jumlahdiskon' => $rowDetailPenjualan->jumlahdiskon,
                             'subtotal' => $rowDetailPenjualan->subtotaljual,
-                            'deskripsi' => 'Update data surat jalan',
+                            'deskripsi' => 'Hapus data surat jalan No Invoice. ' . $noinvoice . ' untuk konsumen ' . $namakonsumen,
                             'idpengguna' => session()->get('idpengguna'),
                             'namapengguna' => session()->get('namapengguna'),
                             'jenistransaksi' => 'Penjualan',
