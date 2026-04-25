@@ -208,6 +208,8 @@ class BarangController extends Controller
 
         if (empty($idbarang)) {
             $idbarang = $this->model->createID($idkategori);
+            $kdbarang = $idbarang; // request 18-04-2026, samakan kdbarang dengan idbarang
+
             $data = array(
                 'idbarang' => $idbarang,
                 'kdbarang' => $kdbarang,

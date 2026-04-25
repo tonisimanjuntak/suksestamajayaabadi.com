@@ -25,8 +25,7 @@
             <div class="row">
                 <div class="col-lg-12">
 
-                    <form action="{{ url('barang/simpanData') }}" method="POST" id="form"
-                        enctype="multipart/form-data">
+                    <form action="{{ url('barang/simpanData') }}" method="POST" id="form" enctype="multipart/form-data">
                         <div class="card">
                             <div class="card-header">
                                 <div class="d-flex justify-content-between">
@@ -43,15 +42,15 @@
                                     <div class="col-md-3 required">
                                         <div class="form-group">
                                             <label for="kdbarang">Kode Barang</label>
-                                            <input type="text" name="kdbarang" id="kdbarang"
-                                                class="form-control" placeholder="Nama barang" autofocus="">
+                                            <input type="text" name="kdbarang" id="kdbarang" class="form-control"
+                                                readonly>
                                         </div>
                                     </div>
                                     <div class="col-md-9 required">
                                         <div class="form-group">
                                             <label for="namabarang">Nama Barang</label>
-                                            <input type="text" name="namabarang" id="namabarang"
-                                                class="form-control" placeholder="Nama barang">
+                                            <input type="text" name="namabarang" id="namabarang" class="form-control"
+                                                placeholder="Nama barang" autofocus="">
                                         </div>
                                     </div>
                                     <div class="col-md-4 required">
@@ -74,7 +73,8 @@
                                     <div class="col-md-4 required">
                                         <div class="form-group">
                                             <label for="idjenisbarang">Jenis Barang</label>
-                                            <select name="idjenisbarang" id="idjenisbarang" class="form-control searchJenisBarang">
+                                            <select name="idjenisbarang" id="idjenisbarang"
+                                                class="form-control searchJenisBarang">
                                             </select>
                                         </div>
                                     </div>
@@ -82,21 +82,24 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="hargabeli">Harga Beli</label>
-                                            <input type="text" name="hargabeli" id="hargabeli" class="form-control rupiah">
+                                            <input type="text" name="hargabeli" id="hargabeli"
+                                                class="form-control rupiah">
                                         </div>
                                     </div>
 
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="hargajualdiskon">Harga Jual</label>
-                                            <input type="text" name="hargajualdiskon" id="hargajualdiskon" class="form-control rupiah">
+                                            <input type="text" name="hargajualdiskon" id="hargajualdiskon"
+                                                class="form-control rupiah">
                                         </div>
                                     </div>
 
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="stokminimum">Stok Minimum</label>
-                                            <input type="number" name="stokminimum" id="stokminimum" class="form-control rupiah">
+                                            <input type="number" name="stokminimum" id="stokminimum"
+                                                class="form-control rupiah">
                                         </div>
                                     </div>
 
@@ -116,13 +119,15 @@
 
                                     <div class="col-md-3">
                                         <div class="form-check">
-                                            <input class="form-check-input mt-1" type="radio" name="jenisbonuspenjualan" id="jenisbonuspenjualan1" value="Persen" checked>
+                                            <input class="form-check-input mt-1" type="radio" name="jenisbonuspenjualan"
+                                                id="jenisbonuspenjualan1" value="Persen" checked>
                                             <label class="form-check-label" for="jenisbonuspenjualan1">
                                                 Persen
                                             </label>
                                         </div>
                                         <div class="form-check">
-                                            <input class="form-check-input mt-1" type="radio" name="jenisbonuspenjualan" id="jenisbonuspenjualan2" value="Nominal">
+                                            <input class="form-check-input mt-1" type="radio" name="jenisbonuspenjualan"
+                                                id="jenisbonuspenjualan2" value="Nominal">
                                             <label class="form-check-label" for="jenisbonuspenjualan2">
                                                 Nominal
                                             </label>
@@ -131,16 +136,20 @@
 
                                     <div class="col-md-4" id="divPersenPenjualan" style="display: none;">
                                         <div class="form-group">
-                                            <label for="persenbonuspenjualan">Persen Bonus (%) <small class="text-danger">(2 digit Decimal)</small></label>
-                                            <input type="text" name="persenbonuspenjualan" id="persenbonuspenjualan" class="form-control persen" value="{{ session('bonus_penjualan_default') }}">
-                                            
+                                            <label for="persenbonuspenjualan">Persen Bonus (%) <small
+                                                    class="text-danger">(2 digit Decimal)</small></label>
+                                            <input type="text" name="persenbonuspenjualan" id="persenbonuspenjualan"
+                                                class="form-control persen"
+                                                value="{{ session('bonus_penjualan_default') }}">
+
                                         </div>
                                     </div>
 
                                     <div class="col-md-4" id="divJumlahPenjualan" style="display: none;">
                                         <div class="form-group">
                                             <label for="jumlahbonuspenjualan">Jumlah Bonus</label>
-                                            <input type="text" name="jumlahbonuspenjualan" id="jumlahbonuspenjualan" class="form-control rupiah">
+                                            <input type="text" name="jumlahbonuspenjualan" id="jumlahbonuspenjualan"
+                                                class="form-control rupiah">
                                         </div>
                                     </div>
 
@@ -151,13 +160,15 @@
 
                                     <div class="col-md-3">
                                         <div class="form-check">
-                                            <input class="form-check-input mt-1" type="radio" name="jenisbonustagihan" id="jenisbonustagihan1" value="Persen" checked>
+                                            <input class="form-check-input mt-1" type="radio" name="jenisbonustagihan"
+                                                id="jenisbonustagihan1" value="Persen" checked>
                                             <label class="form-check-label" for="jenisbonustagihan1">
                                                 Persen
                                             </label>
                                         </div>
                                         <div class="form-check">
-                                            <input class="form-check-input mt-1" type="radio" name="jenisbonustagihan" id="jenisbonustagihan2" value="Nominal">
+                                            <input class="form-check-input mt-1" type="radio" name="jenisbonustagihan"
+                                                id="jenisbonustagihan2" value="Nominal">
                                             <label class="form-check-label" for="jenisbonustagihan2">
                                                 Nominal
                                             </label>
@@ -166,20 +177,24 @@
 
                                     <div class="col-md-4" id="divPersenTagihan" style="display: none;">
                                         <div class="form-group">
-                                            <label for="persenbonustagihan">Persen Bonus (%) <small class="text-danger">(2 digit Decimal)</small></label>
-                                            <input type="text" name="persenbonustagihan" id="persenbonustagihan" class="form-control persen" value="{{ session('bonus_penagihan_default') }}">
-                                            
+                                            <label for="persenbonustagihan">Persen Bonus (%) <small
+                                                    class="text-danger">(2 digit Decimal)</small></label>
+                                            <input type="text" name="persenbonustagihan" id="persenbonustagihan"
+                                                class="form-control persen"
+                                                value="{{ session('bonus_penagihan_default') }}">
+
                                         </div>
                                     </div>
 
                                     <div class="col-md-4" id="divJumlahTagihan" style="display: none;">
                                         <div class="form-group">
                                             <label for="jumlahbonustagihan">Jumlah Bonus</label>
-                                            <input type="text" name="jumlahbonustagihan" id="jumlahbonustagihan" class="form-control rupiah">
+                                            <input type="text" name="jumlahbonustagihan" id="jumlahbonustagihan"
+                                                class="form-control rupiah">
                                         </div>
                                     </div>
 
-                                    
+
                                 </div>
 
                             </div>
@@ -285,17 +300,6 @@
                     validating: 'glyphicon glyphicon-refresh'
                 },
                 fields: {
-                    kdbarang: {
-                        validators: {
-                            notEmpty: {
-                                message: 'kode barang tidak boleh kosong'
-                            },
-                            stringLength: {
-                                max: 15, // Maksimal 10 karakter
-                                message: 'Kode akun maksimal 15 karakter'
-                            }
-                        }
-                    },
                     namabarang: {
                         validators: {
                             notEmpty: {
