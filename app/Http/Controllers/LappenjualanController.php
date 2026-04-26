@@ -42,18 +42,28 @@ class LappenjualanController extends Controller
         $idsales = $request->input('idsales');
         $idwilayah = $request->input('idwilayah');
         $idpenjualan = $request->input('idpenjualan');
+        $orderBy = $request->input('orderBy');
 
 
         /*
             composer require tecnickcom/tcpdf
         */
 
-        $data['rsPenjualan'] = $this->model->getPenjualan($tglawal, $tglakhir, $idkonsumen, $idpengguna, $carabayar, $idsales, $idwilayah, $idpenjualan);
-        $data['tglawal'] = $tglawal;
-        $data['tglakhir'] = $tglakhir;
-        $data['idkonsumen'] = $idkonsumen;
-        $data['idpengguna'] = $idpengguna;
-        $view = view('lappenjualan.cetak', $data)->render();
+        if ($orderBy == 'bysales') {
+            $data['rsPenjualan'] = $this->model->getPenjualanBySales($tglawal, $tglakhir, $idkonsumen, $idpengguna, $carabayar, $idsales, $idwilayah, $idpenjualan);
+            $data['tglawal'] = $tglawal;
+            $data['tglakhir'] = $tglakhir;
+            $data['idkonsumen'] = $idkonsumen;
+            $data['idpengguna'] = $idpengguna;
+            $view = view('lappenjualan.cetakbysales', $data)->render();
+        }else{
+            $data['rsPenjualan'] = $this->model->getPenjualan($tglawal, $tglakhir, $idkonsumen, $idpengguna, $carabayar, $idsales, $idwilayah, $idpenjualan);
+            $data['tglawal'] = $tglawal;
+            $data['tglakhir'] = $tglakhir;
+            $data['idkonsumen'] = $idkonsumen;
+            $data['idpengguna'] = $idpengguna;
+            $view = view('lappenjualan.cetakbytgl', $data)->render();
+        }
 
 
         if ($jenisCetakan == 'excel') {

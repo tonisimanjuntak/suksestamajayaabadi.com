@@ -1,16 +1,16 @@
-1. kartu stok (tambahkan Nama konsumen/supplier dan no pembelian/penjualan)
-2. di lap pembelian dan penjualan (munculkan DPP dan PPN sebelum jumlah)
+1. (DONE) kartu stok (tambahkan Nama konsumen/supplier dan no pembelian/penjualan)
+2. (DONE) di lap pembelian dan penjualan (munculkan DPP dan PPN sebelum jumlah)
 3 & 4. excel barang untuk menambah satuan dan kategori nanti di sesuaikan (tetapi harus di buatkan excel kategori barang dulu), sekalian DPP
 
 5. fitur konversi stok dan bisa ada cetakan nya (HARUS ADA HPP)
 6. akan bisa kalau sudah ada HPP DAN BUKU PIUTANG
 7. BUKU HUTANG DAN PIUTANG di proses
 8. PEMBELIAN = sub total - diskon - potongan = total faktur, baru bisa menentukan DPP dan PPN (260404BL0000001) di menu penerimaan PO (SUKSES TAMA)
-9. kode  barang di kunci dan urut otomatis
+9. (DONE) kode  barang di kunci dan urut otomatis
 10. sama dengan 2
-11. UMUR DI LAPORAN PENJUALAN (sudah ada, tetapi mau nya ada filter selain sales bisa semua sales order  by sales)
+11. (DONE) UMUR DI LAPORAN PENJUALAN (sudah ada, tetapi mau nya ada filter selain sales bisa semua sales order  by sales)
 
-12. CETAK LAPORAN PENJUALAN JUGA HARUS ORDER BY SALES dan umur KALAU CETAK KESELURUHAN DAN TAMBAHKAN FILTER SUM PER SALES (BAIK DARI DPP, PPN, FAKTUR)
+12. (DONE) CETAK LAPORAN PENJUALAN JUGA HARUS ORDER BY SALES dan umur KALAU CETAK KESELURUHAN DAN TAMBAHKAN FILTER SUM PER SALES (BAIK DARI DPP, PPN, FAKTUR)
 13. LAPORAN PERSEDIAAN MUNCUL FILTER SAMPAI TANGGAL BRP (TANGGAL AWAL PASTI DEFAULT 01-01-2026)
 
 14. BUKU PIUTANG/HUTANG BARU MIRIP DENGAN PENAGIHAN PIUTANG
