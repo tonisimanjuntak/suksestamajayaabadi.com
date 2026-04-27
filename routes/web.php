@@ -11,6 +11,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\KonsumenController;
 use App\Http\Controllers\KategoribarangController;
+use App\Http\Controllers\SatuanController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\BonussalesController;
 use App\Http\Controllers\EkspedisiController;
@@ -409,6 +410,17 @@ Route::middleware(['check.menu.access'])->group(function () {
             Route::post('kategoribarang/simpanData', 'simpanData');
             Route::get('kategoribarang/listdata', 'listdata')->name('kategoribarang.listdata');
             Route::get('kategoribarang/searchKategori', 'searchKategori')->name('kategoribarang.searchKategori');            
+        });
+
+        Route::controller(SatuanController::class)->group(function () {
+            Route::get('satuan', 'index');
+            Route::get('satuan/tambah', 'tambah');
+            Route::get('satuan/edit/{PenggunaID}', 'edit');
+            Route::get('satuan/getDataID', 'getDataID');
+            Route::get('satuan/hapus/{id}', 'hapus');
+            Route::post('satuan/simpanData', 'simpanData');
+            Route::get('satuan/listdata', 'listdata')->name('satuan.listdata');
+            Route::get('satuan/searchKategori', 'searchKategori')->name('satuan.searchKategori');            
         });
 
         Route::controller(JenisbarangController::class)->group(function () {
