@@ -188,26 +188,28 @@
                     <td width="22%" style="text-align:left;">{{ $row->namabarang }}</td>
                     <td width="5%" style="text-align:center;">{{ $row->jumlahbeli }}</td>
                     <td width="8%" style="text-align:right;">{{ format_rupiah($row->hargasatuan) }}</td>
-                    <td width="8%" style="text-align:right;">{{ format_rupiah($row->totaldpp) }}</td>
-                    <td width="8%" style="text-align:right;">{{ format_rupiah($row->totalppn) }}</td>
-                    <td width="8%" style="text-align:right;">{{ format_rupiah($row->totalpotongan) }}</td>
+                    <td width="8%" style="text-align:right;">{{ format_rupiah($row->jumlahbeli * $row->hargadpp) }}</td>
+                    <td width="8%" style="text-align:right;">{{ format_rupiah($row->jumlahbeli * $row->jumlahppn) }}
+                    </td>
+                    <td width="8%" style="text-align:right;">{{ format_rupiah($row->jumlahbeli * $row->jumlahdiskon)
+                        }}</td>
                     <td width="8%" style="text-align:right;">0</td>
                     <td width="8%" style="text-align:right;">{{ format_rupiah($row->subtotalbeli) }}</td>
                 </tr>
 
                 @php
                 $totalhargasatuan += $row->hargasatuan;
-                $totalhargadpp += $row->totaldpp;
-                $totaljumlahppn += $row->totalppn;
-                $totaljumlahdiskon += $row->totalpotongan;
+                $totalhargadpp += $row->jumlahbeli * $row->hargadpp;
+                $totaljumlahppn += $row->jumlahbeli * $row->jumlahppn;
+                $totaljumlahdiskon += $row->jumlahbeli * $row->jumlahdiskon;
                 $totalsubtotalbeli += $row->subtotalbeli;
                 $idpembelian_old = $row->idpembelian;
-                $totalpotongan_old = $row->totalpotongan;
+                $totalpotongan_old = $row->jumlahbeli * $row->jumlahdiskon;
 
                 $subtotalhargasatuan += $row->hargasatuan;
-                $subtotalhargadpp += $row->totaldpp;
-                $subtotaljumlahppn += $row->totalppn;
-                $subtotaljumlahdiskon += $row->totalpotongan;
+                $subtotalhargadpp += $row->jumlahbeli * $row->hargadpp;
+                $subtotaljumlahppn += $row->jumlahbeli * $row->jumlahppn;
+                $subtotaljumlahdiskon += $row->jumlahbeli * $row->jumlahdiskon;
                 $subtotalsubtotalbeli += $row->subtotalbeli;
 
                 @endphp
