@@ -42,19 +42,25 @@
                                 <input type="hidden" name="idsatuan" id="idsatuan">
                                 <div class="row">
                                     <div class="col-md-12 required">
-                                        <div class="form-group">
-                                            <label for="namasatuan">Nama Satuan Barang</label>
-                                            <input type="text" name="namasatuan" id="namasatuan" class="form-control"
-                                                placeholder="Nama satuan barang" autofocus>
+                                        <div class="form-group row">
+                                            <label for="namasatuan" class="col-md-3 col-form-label">Nama Satuan
+                                                Barang</label>
+                                            <div class="col-md-3">
+                                                <input type="text" name="namasatuan" id="namasatuan"
+                                                    class="form-control" placeholder="Nama satuan barang" autofocus>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-12 required" style="display: none;" id="divStatusAktif">
-                                        <div class="form-group">
-                                            <label for="statusaktif">Status</label>
-                                            <select name="statusaktif" id="statusaktif" class="form-control select2">
-                                                <option value="Aktif">Aktif</option>
-                                                <option value="Tidak Aktif">Tidak Aktif</option>
-                                            </select>
+                                        <div class="form-group row">
+                                            <label for="statusaktif" class="col-md-3 col-form-label">Status</label>
+                                            <div class="col-md-9">
+                                                <select name="statusaktif" id="statusaktif"
+                                                    class="form-control select2">
+                                                    <option value="Aktif">Aktif</option>
+                                                    <option value="Tidak Aktif">Tidak Aktif</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

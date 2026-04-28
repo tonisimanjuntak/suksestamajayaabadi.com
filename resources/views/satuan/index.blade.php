@@ -120,14 +120,14 @@
                     searchable: false
                 },
                 {
-                    data: 'idkategori',
-                    name: 'idkategori',
+                    data: 'idsatuan',
+                    name: 'idsatuan',
                     className: 'dt-body-center',
                     orderable: true,
                 },
                 {
-                    data: 'namakategori',
-                    name: 'namakategori',
+                    data: 'namasatuan',
+                    name: 'namasatuan',
                     orderable: true,
                 },
                 {

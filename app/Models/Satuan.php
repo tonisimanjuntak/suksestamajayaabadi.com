@@ -81,8 +81,8 @@ class Satuan extends Model
         }
     }
 
-    public function createID($namakategori)
+    public function createID()
     {
-        return DB::select("SELECT create_idsatuan('$namakategori') AS id")[0]->id;
+        return DB::select("SELECT create_idsatuan() AS id")[0]->id;
     }
 }

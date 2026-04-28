@@ -148,7 +148,7 @@ class SatuanController extends Controller
         $updated_date = date('Y-m-d H:i:s');
 
         if (empty($idsatuan)) {
-            $idsatuan = $this->model->createID($namasatuan);
+            $idsatuan = $this->model->createID();
             $data = array(
                 'idsatuan' => $idsatuan,
                 'namasatuan' => $namasatuan,
