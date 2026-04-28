@@ -24,5 +24,6 @@
 
 17. LABA RUGI PER FAKTUR
 
+(DONE) TOTAL DPP DAN TOTAL PPN DI LAPORAN PEMBELIAN
 
 2. 10. 12 itu 1 2 menu (1 penjualan 1 pembelian) tetapi yang point 12 hanya penjualan saja

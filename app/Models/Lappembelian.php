@@ -23,6 +23,6 @@ class Lappembelian extends Model
             $where .= " and idpembelian = '$idpembelian' ";
         }
 
-        return DB::select("select * from v_pembeliandetail_laporan" . $where . " order by tglfaktur");
+        return DB::select("select * from v_pembeliandetail_laporan" . $where . " order by tglfaktur, idpembelian, namabarang");
     }
 }

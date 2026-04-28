@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <querybuilder version="8.3">
 <source>
-<database charset="utf8mb4" collation="utf8mb4_0900_ai_ci">pointofsales</database>
+<database charset="utf8mb4" collation="utf8mb4_general_ci">suksestamajayaabadi</database>
 </source>
 <canvas>
 <table tablename="pembeliandetail" alias="" left="10" top="21" width="150" height="248" />
@@ -399,7 +399,7 @@
 </column>
 <column id="25">
 <table tablename="pembelian"></table>
-<field>totaldiskon</field>
+<field>totaldpp</field>
 <alias></alias>
 <show>true</show>
 <sortorder></sortorder>
@@ -414,7 +414,7 @@
 </column>
 <column id="26">
 <table tablename="pembelian"></table>
-<field>totalbersih</field>
+<field>totaldiskon</field>
 <alias></alias>
 <show>true</show>
 <sortorder></sortorder>
@@ -429,7 +429,7 @@
 </column>
 <column id="27">
 <table tablename="pembelian"></table>
-<field>ppnpersen</field>
+<field>totalbersih</field>
 <alias></alias>
 <show>true</show>
 <sortorder></sortorder>
@@ -444,7 +444,7 @@
 </column>
 <column id="28">
 <table tablename="pembelian"></table>
-<field>totalppn</field>
+<field>ppnpersen</field>
 <alias></alias>
 <show>true</show>
 <sortorder></sortorder>
@@ -459,7 +459,7 @@
 </column>
 <column id="29">
 <table tablename="pembelian"></table>
-<field>biayapengiriman</field>
+<field>totalppn</field>
 <alias></alias>
 <show>true</show>
 <sortorder></sortorder>
@@ -474,7 +474,7 @@
 </column>
 <column id="30">
 <table tablename="pembelian"></table>
-<field>totalpotongan</field>
+<field>biayapengiriman</field>
 <alias></alias>
 <show>true</show>
 <sortorder></sortorder>
@@ -489,7 +489,7 @@
 </column>
 <column id="31">
 <table tablename="pembelian"></table>
-<field>totalfaktur</field>
+<field>totalpotongan</field>
 <alias></alias>
 <show>true</show>
 <sortorder></sortorder>
@@ -504,7 +504,7 @@
 </column>
 <column id="32">
 <table tablename="pembelian"></table>
-<field>idpengguna</field>
+<field>totalfaktur</field>
 <alias></alias>
 <show>true</show>
 <sortorder></sortorder>
@@ -519,7 +519,7 @@
 </column>
 <column id="33">
 <table tablename="pembelian"></table>
-<field>carabayar</field>
+<field>idpengguna</field>
 <alias></alias>
 <show>true</show>
 <sortorder></sortorder>
@@ -534,7 +534,7 @@
 </column>
 <column id="34">
 <table tablename="pembelian"></table>
-<field>idbank</field>
+<field>carabayar</field>
 <alias></alias>
 <show>true</show>
 <sortorder></sortorder>
@@ -548,8 +548,8 @@
 <or4></or4>
 </column>
 <column id="35">
-<table tablename="bank"></table>
-<field>namabank</field>
+<table tablename="pembelian"></table>
+<field>idbank</field>
 <alias></alias>
 <show>true</show>
 <sortorder></sortorder>
@@ -564,7 +564,7 @@
 </column>
 <column id="36">
 <table tablename="bank"></table>
-<field>cabang</field>
+<field>namabank</field>
 <alias></alias>
 <show>true</show>
 <sortorder></sortorder>
@@ -579,7 +579,7 @@
 </column>
 <column id="37">
 <table tablename="bank"></table>
-<field>norekening</field>
+<field>cabang</field>
 <alias></alias>
 <show>true</show>
 <sortorder></sortorder>
@@ -594,7 +594,7 @@
 </column>
 <column id="38">
 <table tablename="bank"></table>
-<field>atasnama</field>
+<field>norekening</field>
 <alias></alias>
 <show>true</show>
 <sortorder></sortorder>
@@ -608,8 +608,8 @@
 <or4></or4>
 </column>
 <column id="39">
-<table tablename="supplier"></table>
-<field>namasupplier</field>
+<table tablename="bank"></table>
+<field>atasnama</field>
 <alias></alias>
 <show>true</show>
 <sortorder></sortorder>
@@ -624,7 +624,7 @@
 </column>
 <column id="40">
 <table tablename="supplier"></table>
-<field>alamatsupplier</field>
+<field>namasupplier</field>
 <alias></alias>
 <show>true</show>
 <sortorder></sortorder>
@@ -638,6 +638,21 @@
 <or4></or4>
 </column>
 <column id="41">
+<table tablename="supplier"></table>
+<field>alamatsupplier</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="42">
 <table tablename="pengguna"></table>
 <field>namapengguna</field>
 <alias></alias>
