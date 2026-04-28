@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Uploads;
 use App\Models\Barang;
 use App\Models\Kategoribarang;
+use App\Models\Satuan;
 use App\Models\Akun4;
 use App\Models\App;
 
@@ -77,7 +78,7 @@ class BarangController extends Controller
             $orderDirection = $request->input('order.0.dir'); // Arah sorting (asc/desc)
 
             // Daftar kolom yang bisa di-sort
-            $columns = [null, 'kdbarang', 'namabarang', null, null, null, null, null];
+            $columns = [null, 'kdbarang', 'namabarang', null, null, null, null, null, null];
 
             // Pastikan index kolom valid
             if (isset($columns[$orderColumn])) {
@@ -133,6 +134,7 @@ class BarangController extends Controller
                 'no' => $no++,
                 'kdbarang' => $row->kdbarang,
                 'namabarang' => '<strong>' . $row->namabarang . '</strong><br><small>' . $row->namakategori . ' - ' . $row->jenisbarang . '</small>',
+                'namasatuan' => $row->namasatuan,
                 'bonussales' => $bonussales . '<br>' . $bonustagihan,
                 'hargabeli' => format_rupiah($row->hargabeli),
                 'hargajualdiskon' => format_rupiah($row->hargajualdiskon),
@@ -169,6 +171,7 @@ class BarangController extends Controller
         $idbarang = $request->get('idbarang');
         $kdbarang = $request->get('kdbarang');
         $namabarang = $request->get('namabarang');
+        $idsatuan = $request->get('idsatuan');
         $idkategori = $request->get('idkategori');
         $kdakun = $request->get('kdakun');
         $idjenisbarang = $request->get('idjenisbarang');
@@ -214,6 +217,7 @@ class BarangController extends Controller
                 'idbarang' => $idbarang,
                 'kdbarang' => $kdbarang,
                 'namabarang' => $namabarang,
+                'idsatuan' => $idsatuan,
                 'idkategori' => $idkategori,
                 'kdakun' => $kdakun,
                 'hargabeli' => $hargabeli,
@@ -237,6 +241,7 @@ class BarangController extends Controller
                 'idbarang' => $idbarang,
                 'kdbarang' => $kdbarang,
                 'namabarang' => $namabarang,
+                'idsatuan' => $idsatuan,
                 'kdakun' => $kdakun,
                 'hargabeli' => $hargabeli,
                 'hargajualasli' => $hargajualdiskon,
@@ -287,6 +292,26 @@ class BarangController extends Controller
         $idbarang = $request->input('idbarang');
         $rsBarang = Barang::find($idbarang);
         return response()->json($rsBarang);
+    }
+
+    public function searchSatuanBarang(Request $request)
+    {
+        $search = $request->input('q'); // Ambil parameter pencarian
+
+        // Query pencarian
+        $results = Satuan::where('namasatuan', 'LIKE', "%{$search}%")
+            ->limit(50)
+            ->get();
+
+        // Format data untuk Select2
+        $formattedResults = $results->map(function ($item) {
+            return [
+                'id' => $item->idsatuan,
+                'text' => $item->namasatuan,
+            ];
+        });
+
+        return response()->json(['results' => $formattedResults]);
     }
 
     public function searchKategoriBarang(Request $request)

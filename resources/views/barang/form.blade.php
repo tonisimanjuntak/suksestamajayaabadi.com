@@ -53,7 +53,15 @@
                                                 placeholder="Nama barang" autofocus="">
                                         </div>
                                     </div>
-                                    <div class="col-md-4 required">
+                                    <div class="col-md-3 required">
+                                        <div class="form-group">
+                                            <label for="idsatuan">Satuan</label>
+                                            <select name="idsatuan" id="idsatuan" class="form-control">
+                                                <option value="">Pilih satuan barang...</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 required">
                                         <div class="form-group">
                                             <label for="idkategori">Kategori Barang</label>
                                             <select name="idkategori" id="idkategori" class="form-control">
@@ -61,7 +69,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-4 required">
+                                    <div class="col-md-3 required">
                                         <div class="form-group">
                                             <label for="kdakun">Akun Barang</label>
                                             <select name="kdakun" id="kdakun" class="form-control">
@@ -70,7 +78,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-4 required">
+                                    <div class="col-md-3 required">
                                         <div class="form-group">
                                             <label for="idjenisbarang">Jenis Barang</label>
                                             <select name="idjenisbarang" id="idjenisbarang"
@@ -242,6 +250,11 @@
                      $('#lblidbarang').html('ID: ' + response['kdbarang']);
                     $('#kdbarang').val(response['kdbarang']);
                     $('#namabarang').val(response['namabarang']);
+                    if (response['idsatuan'] != null) {
+                        addSelectOption("idsatuan", response['idsatuan'], response['namasatuan']);
+                        $('#idsatuan').val(response['idsatuan']);                        
+                    }
+
                     addSelectOption("idkategori", response['idkategori'], response['namakategori']);
                     $('#idkategori').val(response['idkategori']);
                     addSelectOption("kdakun", response['kdakun'], response['namaakun']);
@@ -307,6 +320,13 @@
                             }
                         }
                     },
+                    idsatuan: {
+                        validators: {
+                            notEmpty: {
+                                message: 'satuan barang tidak boleh kosong'
+                            }
+                        }
+                    },
                     idkategori: {
                         validators: {
                             notEmpty: {
@@ -340,6 +360,27 @@
             minimumInputLength: 0,
             ajax: {
                 url: "{{ route('barang.searchKategoriBarang') }}", // URL untuk pencarian
+                dataType: 'json',
+                delay: 250, // Delay saat mengetik (ms)
+                data: function(params) {
+                    return {
+                        q: params.term, // Parameter pencarian
+                    };
+                },
+                processResults: function(data) {
+                    return {
+                        results: data.results, // Format data untuk Select2
+                    };
+                },
+                cache: true
+            }
+        });
+
+        $('#idsatuan').select2({
+            placeholder: 'Pilih satuan barang...',
+            minimumInputLength: 0,
+            ajax: {
+                url: "{{ route('barang.searchSatuanBarang') }}", // URL untuk pencarian
                 dataType: 'json',
                 delay: 250, // Delay saat mengetik (ms)
                 data: function(params) {

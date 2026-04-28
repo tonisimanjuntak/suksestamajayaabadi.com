@@ -71,15 +71,16 @@
                                     <table class="table table-bordered" id="tableList">
                                         <thead class="">
                                             <tr>
-                                                <th style="width: 5%; text-align: center;">No</th>
-                                                <th style="width: 15%; text-align: center;">Kode Barang</th>
+                                                <th style="text-align: center;">No</th>
+                                                <th style="text-align: center;">Kode Barang</th>
                                                 <th style="text-align: center;">Nama Barang</th>
-                                                <th style="width: 10%; text-align: center;">Bonus</th>
-                                                <th style="width: 10%; text-align: center;">Harga Beli</th>
-                                                <th style="width: 10%; text-align: center;">Harga Jual</th>
-                                                <th style="width: 10%; text-align: center;">Stok<br>Minimum</th>
-                                                <th style="width: 10%; text-align: center;">Status</th>
-                                                <th style="width: 10%; text-align: center;">Aksi</th>
+                                                <th style="text-align: center;">Satuan</th>
+                                                <th style="text-align: center;">Bonus</th>
+                                                <th style="text-align: center;">Harga Beli</th>
+                                                <th style="text-align: center;">Harga Jual</th>
+                                                <th style="text-align: center;">Stok<br>Minimum</th>
+                                                <th style="text-align: center;">Status</th>
+                                                <th style="text-align: center;">Aksi</th>
                                             </tr>
                                         </thead>
                                     </table>
@@ -135,6 +136,12 @@
                     orderable: true,
                 },
                 {
+                    data: 'namasatuan',
+                    name: 'namasatuan',
+                    className: 'dt-body-center',
+                    orderable: false,
+                },
+                {
                     data: 'bonussales',
                     name: 'bonussales',
                     className: 'dt-body-center',
@@ -144,20 +151,20 @@
                     data: 'hargabeli',
                     name: 'hargabeli',
                     className: 'dt-body-center',
-                    orderable: true,
+                    orderable: false,
                     visible: false,
                 },
                 {
                     data: 'hargajualdiskon',
                     name: 'hargajualdiskon',
                     className: 'dt-body-center',
-                    orderable: true,
+                    orderable: false,
                 },
                 {
                     data: 'stokminimum',
                     name: 'stokminimum',
                     className: 'dt-body-center',
-                    orderable: true,
+                    orderable: false,
                 },
                 {
                     data: 'statusaktif',

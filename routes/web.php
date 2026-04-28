@@ -420,7 +420,7 @@ Route::middleware(['check.menu.access'])->group(function () {
             Route::get('satuan/hapus/{id}', 'hapus');
             Route::post('satuan/simpanData', 'simpanData');
             Route::get('satuan/listdata', 'listdata')->name('satuan.listdata');
-            Route::get('satuan/searchKategori', 'searchKategori')->name('satuan.searchKategori');            
+            Route::get('satuan/searchSatuan', 'searchSatuan')->name('satuan.searchSatuan');            
         });
 
         Route::controller(JenisbarangController::class)->group(function () {
@@ -435,6 +435,7 @@ Route::middleware(['check.menu.access'])->group(function () {
             Route::get('barang/hapus/{id}', 'hapus');
             Route::post('barang/simpanData', 'simpanData');
             Route::get('barang/listdata', 'listdata')->name('barang.listdata');
+            Route::get('barang/searchSatuanBarang', 'searchSatuanBarang')->name('barang.searchSatuanBarang');
             Route::get('barang/searchKategoriBarang', 'searchKategoriBarang')->name('barang.searchKategoriBarang');
             Route::get('barang/searchAkunBarang', 'searchAkunBarang')->name('barang.searchAkunBarang');
             Route::get('barang/searchBarang', 'searchBarang')->name('barang.searchBarang');            

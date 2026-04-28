@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <querybuilder version="8.3">
 <source>
-<database charset="utf8mb4" collation="utf8mb4_0900_ai_ci">pointofsales</database>
+<database charset="utf8mb4" collation="utf8mb4_general_ci">suksestamajayaabadi</database>
 </source>
 <canvas>
 <table tablename="barang" alias="" left="10" top="21" width="150" height="278" />
 <table tablename="kategoribarang" alias="" left="367" top="20" width="150" height="113" />
 <table tablename="akun" alias="" left="508" top="133" width="150" height="113" />
-<table tablename="jenisbarang" alias="" left="264" top="148" width="150" height="113" />
+<table tablename="jenisbarang" alias="" left="309" top="192" width="150" height="113" />
+<table tablename="satuan" alias="" left="401" top="317" width="150" height="113" />
 <join type = "Inner Join">
 <from tablename = "barang" alias = "">idkategori</from>
 <to tablename = "kategoribarang" alias = "">idkategori</to>
@@ -19,6 +20,10 @@
 <join type = "Left Join">
 <from tablename = "barang" alias = "">idjenisbarang</from>
 <to tablename = "jenisbarang" alias = "">idjenisbarang</to>
+</join>
+<join type = "Left Join">
+<from tablename = "barang" alias = "">idsatuan</from>
+<to tablename = "satuan" alias = "">idsatuan</to>
 </join>
 </canvas>
 <grid>
@@ -370,6 +375,21 @@
 <column id="24">
 <table tablename="jenisbarang"></table>
 <field>jenisbarang</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="25">
+<table tablename="satuan"></table>
+<field>namasatuan</field>
 <alias></alias>
 <show>true</show>
 <sortorder></sortorder>
