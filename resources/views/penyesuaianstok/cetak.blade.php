@@ -24,6 +24,19 @@
             display: block;
         }
 
+        .keterangan .keterangan-judul {
+            font-size: 14px;
+            font-weight: bold;
+            text-align: left;
+            display: block;
+        }
+
+        .keterangan .keterangan-isi {
+            font-size: 12px;
+            text-align: left;
+            display: block;
+        }
+
         .content {
             margin-top: 100px;
         }
@@ -56,22 +69,32 @@
             <tr>
                 <th class="" style="width: 10%; text-align: center;" rowspan="3"><img
                         src="{{ public_path('images/'. session('usaha_logo')) }}" alt="" style="width: 50px;"></th>
-                <th style="width: 90%; font-size: 15px; text-align: left; padding-right: 50px;" colspan="6">{{ session('usaha_nama') }}</th>
+                <th style="width: 90%; font-size: 15px; text-align: left; padding-right: 50px;" colspan="6">{{
+                    session('usaha_nama') }}</th>
             </tr>
             <tr>
                 <th style="font-size: 10px; text-align: left;" colspan="6">{{ session('usaha_alamat') }}</th>
             </tr>
             <tr>
-                <th class="" style="font-size: 10px; text-align: left;" colspan="6">No Telepon. {{ session('usaha_telepon') }}
+                <th class="" style="font-size: 10px; text-align: left;" colspan="6">No Telepon. {{
+                    session('usaha_telepon') }}
                 </th>
             </tr>
         </thead>
     </table>
 
     <div class="judullaporan">
-        <div class="nama-laporan">FORM STOK OPNAME</div>
-        <div class="periode-laporan">TANGGAL {{ tgldatetime(date('Y-m-d H:i:s')) }}</div>
+        <div class="nama-laporan">Penyesuaian Stok</div>
+        <div class="periode-laporan">TANGGAL: {{ tgldatetime($rsSO->tglpenyesuaianstok) }}</div>
     </div>
+
+    @if (!empty($rsSO->keterangan))
+
+    <div class="keterangan">
+        <div class="keterangan-isi">{{ $rsSO->keterangan }}</div>
+    </div>
+
+    @endif
 
     <div class="content">
         <table border="1" cellpadding="10" width="100%">
@@ -89,35 +112,35 @@
                 $no = 1;
                 @endphp
 
-                @if (count($rsBarang) > 0)
+                @if (count($rsSoDetail) > 0)
                 @php
-                    $idkategori_old = '';
+                $idkategori_old = '';
                 @endphp
 
-                @foreach ($rsBarang as $p)
+                @foreach ($rsSoDetail as $p)
 
-                
+
                 @if ($idkategori_old != $p->idkategori)
 
                 <tr style="font-size: 10px; font-weight: bold;">
                     <td style="width: 100%; text-align: left;" colspan="5">{{ $p->namakategori }}</td>
-                </tr>                    
-                
+                </tr>
+
                 @endif
-                    
-                
+
+
                 <tr style="font-size: 9px;">
                     <td style="width: 10%; text-align: center;">{{ $no++ }}</td>
                     <td style="width: 15%; text-align: center;">{{ $p->idbarang }}</td>
                     <td style="width: 45%; text-align: left;">
                         {{ $p->namabarang }}
                     </td>
-                    <td style="width: 15%; text-align: center;">{{ $p->stok }}</td>
-                    <td style="width: 15%; text-align: right;"></td>
+                    <td style="width: 15%; text-align: center;">{{ $p->stocksystem }}</td>
+                    <td style="width: 15%; text-align: right;">{{ $p->penyesuaianstok}}</td>
                 </tr>
 
-                @php   
-                    $idkategori_old = $p->idkategori; 
+                @php
+                $idkategori_old = $p->idkategori;
                 @endphp
                 @endforeach
 

@@ -7,12 +7,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Stockopname</h1>
+                    <h1 class="m-0">Penyesuaian Stok</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="{{ url('/') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Stockopname</li>
+                        <li class="breadcrumb-item active">Penyesuaian Stok</li>
                     </ol>
                 </div>
             </div>
@@ -29,15 +29,12 @@
                         <div class="card-header">
                             <div class="">
                                 <h3 class="card-title font-weight-bold"><i class="far fa-list-alt mr-1"></i>List Data
-                                    Stockopname</h3>
-                                    <a href="{{ url('stockopname/tambah') }}" class="btn btn-sm btn-primary float-right ml-1"
-                                        @if (!str_contains(strtolower(session('hakaksi_aktif')), 'tambah') )
-                                        style="display: none;"
-                                    @endif
-                                    ><i
-                                            class="fa fa-plus-circle mr-1"></i> Tambah Data</a>
-                                    <a href="{{ url('stockopname/cetakform') }}" class="btn btn-sm btn-warning float-right" target="_blank"><i
-                                        class="fa fa-print mr-1"></i> Cetak Form</a>
+                                    Penyesuaian Stok</h3>
+                                <a href="{{ url('penyesuaianstok/tambah') }}"
+                                    class="btn btn-sm btn-primary float-right ml-1" <?php if
+                                    (!str_contains(strtolower(session('hakaksi_aktif')), 'tambah' )) {
+                                    echo 'style="display: none;"' ; } ?> ><i class="fa fa-plus-circle mr-1"></i> Tambah
+                                    Data</a>
                             </div>
                         </div>
                         <div class="card-body">
@@ -46,23 +43,26 @@
                                 <div class="col-md-6">
                                     <div class="row">
                                         <div class="col-12">
-                                            <label for="">Tanggal Stock Opname</label>
+                                            <label for="">Tanggal Penyesuaian Stok</label>
                                         </div>
                                         <div class="col-md-8">
                                             <div class="form-group row">
                                                 <div class="col-md-5">
-                                                    <input type="date" name="tglawal" id="tglawal" class="form-control" value="{{ date('Y-m-d', strtotime('-7 days')) }}">
+                                                    <input type="date" name="tglawal" id="tglawal" class="form-control"
+                                                        value="{{ date('Y-m-d', strtotime('-7 days')) }}">
                                                 </div>
                                                 <label for="" class="col-md-2 col-form-label text-center">S/D</label>
                                                 <div class="col-md-5">
-                                                    <input type="date" name="tglakhir" id="tglakhir" class="form-control" value="{{ date('Y-m-d') }}">
+                                                    <input type="date" name="tglakhir" id="tglakhir"
+                                                        class="form-control" value="{{ date('Y-m-d') }}">
 
                                                 </div>
 
                                             </div>
                                         </div>
                                         <div class="col-md-4">
-                                            <button type="button" class="btn btn-success" id="btnCari"><i class="fa fa-search"></i> Cari</button>
+                                            <button type="button" class="btn btn-success" id="btnCari"><i
+                                                    class="fa fa-search"></i> Cari</button>
                                         </div>
                                     </div>
                                 </div>
@@ -73,7 +73,7 @@
                                         <thead class="">
                                             <tr>
                                                 <th style="width: 5%; text-align: center;">No</th>
-                                                <th style="width: 15%; text-align: center;">ID Stock Opname</th>
+                                                <th style="width: 15%; text-align: center;">ID Penyesuaian</th>
                                                 <th style="width: 15%; text-align: center;">Tanggal</th>
                                                 <th style="text-align: left;">Keterangan</th>
                                                 <th style="width: 15%; text-align: center;">Nama Petugas</th>
@@ -107,7 +107,7 @@
             processing: true,
             serverSide: true,
             ajax: {
-                url: "{{ route('stockopname.listdata') }}",
+                url: "{{ route('penyesuaianstok.listdata') }}",
                 type: 'GET',
                 data: function(d) {
                     d.tglawal = $('#tglawal').val();
@@ -127,14 +127,14 @@
                     searchable: false
                 },
                 {
-                    data: 'idstockopname',
-                    name: 'idstockopname',
+                    data: 'idpenyesuaianstok',
+                    name: 'idpenyesuaianstok',
                     className: 'dt-body-center',
                     orderable: true,
                 },
                 {
-                    data: 'tglstockopname',
-                    name: 'tglstockopname',
+                    data: 'tglpenyesuaianstok',
+                    name: 'tglpenyesuaianstok',
                     className: 'dt-body-center',
                     orderable: true,
                 },

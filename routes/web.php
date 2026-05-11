@@ -56,8 +56,10 @@ use App\Http\Controllers\SaldoawalController;
 use App\Http\Controllers\SaldopiutangController;
 use App\Http\Controllers\SalesController;
 use App\Http\Controllers\StockopnameController;
+use App\Http\Controllers\PenyesuaianstokController;
 use App\Http\Controllers\SuratjalanController;
 use App\Http\Controllers\WilayahController;
+use App\Http\Controllers\AjaxController;
 use App\Models\Kategoribarang;
 
 /*
@@ -88,6 +90,11 @@ Route::controller(LoginController::class)->group(function () {
     Route::get('logout', 'logout')->name('logout');
     Route::get('login/loadMenus', 'loadMenus');    
 });
+
+Route::controller(AjaxController::class)->group(function () {
+    Route::get('ajax/getBarangId', 'getBarangId');
+});
+
 
 
 //chek hak akse menus di proses di middleware
@@ -371,6 +378,17 @@ Route::middleware(['check.menu.access'])->group(function () {
             Route::get('stockopname/listdata', 'listdata')->name('stockopname.listdata');
             Route::get('stockopname/cetakform', 'cetakform');
             Route::get('stockopname/cetakSO/{idstockopname}', 'cetakSO');            
+        });
+
+        Route::controller(PenyesuaianstokController::class)->group(function () {
+            Route::get('penyesuaianstok', 'index');
+            Route::get('penyesuaianstok/tambah', 'tambah');
+            Route::get('penyesuaianstok/edit/{PenggunaID}', 'edit');
+            Route::get('penyesuaianstok/getDataID', 'getDataID');
+            Route::get('penyesuaianstok/hapus/{id}', 'hapus');
+            Route::post('penyesuaianstok/simpanData', 'simpanData');
+            Route::get('penyesuaianstok/listdata', 'listdata')->name('penyesuaianstok.listdata');
+            Route::get('penyesuaianstok/cetak/{idpenyesuaianstok}', 'cetak');            
         });
 
         Route::controller(SaldoawalController::class)->group(function () {

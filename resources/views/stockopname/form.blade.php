@@ -49,7 +49,8 @@
                                                 <div class="col-md-12">
                                                     <div class="form-group">
                                                         <label for="keterangan">Keterangan</label>
-                                                        <textarea name="keterangan" id="keterangan" rows="3" class="form-control"
+                                                        <textarea name="keterangan" id="keterangan" rows="3"
+                                                            class="form-control"
                                                             placeholder="Keterangan Stok Opname"></textarea>
                                                     </div>
                                                 </div>
@@ -72,30 +73,45 @@
                                                         <thead>
                                                             <tr>
                                                                 <th style="width: 5%; text-align: center;">No</th>
-                                                                <th style="width: 35%; text-align: center;">Nama Barang</th>
-                                                                <th style="width: 10%; text-align: center;">Stock System</th>
-                                                                <th style="width: 10%; text-align: center;">Stock Real</th>
+                                                                <th style="width: 35%; text-align: center;">Nama Barang
+                                                                </th>
+                                                                <th style="width: 10%; text-align: center;">Stock System
+                                                                </th>
+                                                                <th style="width: 10%; text-align: center;">Stock Real
+                                                                </th>
                                                                 <th style="width: 10%; text-align: center;">Selisih</th>
-                                                                <th style="width: 30%; text-align: center;">Keterangan</th>
+                                                                <th style="width: 30%; text-align: center;">Keterangan
+                                                                </th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
                                                             @if ($rsBarang->count() >0 )
 
                                                             @foreach ($rsBarang as $row)
-                                                                
+
                                                             <tr>
-                                                                <td style="text-align: center;">{{ $loop->index + 1}}</th>
-                                                                <td style="text-align: left;">{{ $row->namabarang }}</th>
+                                                                <td style="text-align: center;">{{ $loop->index + 1}}
+                                                                    </th>
+                                                                <td style="text-align: left;">{{ $row->namabarang }}
+                                                                    </th>
                                                                 <td style="text-align: center;">{{ $row->stok }}</th>
-                                                                <td style="text-align: center;"><input type="number" class="form-control stokInput" name="barang[]" data-idbarang="{{ $row->idbarang }}" data-stok="{{ $row->stok }}" value="{{ $row->stok }}"></th>
-                                                                <td style="text-align: center;" class="selisih">{{ 0 }}</th>
-                                                                <td style="text-align: center;"><textarea id="{{ 'ket'.$row->idbarang }}" class="form-control" placeholder="Keterangan detail" rows="2"></textarea></th>
+                                                                <td style="text-align: center;"><input type="number"
+                                                                        class="form-control stokInput" name="barang[]"
+                                                                        data-idbarang="{{ $row->idbarang }}"
+                                                                        data-stok="{{ $row->stok }}"
+                                                                        value="{{ $row->stok }}"></th>
+                                                                <td style="text-align: center;" class="selisih">{{ 0 }}
+                                                                    </th>
+                                                                <td style="text-align: center;"><textarea
+                                                                        id="{{ 'ket'.$row->idbarang }}"
+                                                                        class="form-control"
+                                                                        placeholder="Keterangan detail"
+                                                                        rows="2"></textarea></th>
                                                             </tr>
 
                                                             @endforeach
-                                                                
-                                                            
+
+
 
                                                             @endif
                                                         </tbody>
@@ -177,6 +193,9 @@
             'keterangan' : keterangan,
             'detailStockOpname' : detailStockOpname,
         }
+
+        // console.log(formData);
+        // return;
 
         $.ajax({
                 type: 'POST',
