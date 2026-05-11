@@ -20,7 +20,9 @@ INSERT INTO menus (idmenus, menus, parent, urlmenus, iconmenus, urut, levels, st
 ('M022', 'Barang', 'M003', 'barang', 'far fa-circle', 150, 1, 'Aktif', 'Lihat, Tambah, Edit, Hapus'),
 ('MB01', 'Kartu Stok Barang', 'M003', 'kartustokbarang', 'far fa-circle', 155, 1, 'Aktif', 'Lihat'),
 ('M023', 'Stock Opname', 'M003', 'stockopname', 'far fa-circle', 160, 1, 'Aktif', 'Lihat, Tambah, Edit, Hapus'),
+('MB02', 'Penyesuaian Stok', 'M003', 'penyesuaianstok', 'far fa-circle', 161, 1, 'Aktif', 'Lihat, Tambah, Edit, Hapus'),
 ('M024', 'Laporan Persediaan', 'M003', 'lappersediaan', 'far fa-circle', 170, 1, 'Aktif', 'Lihat'),
+
 ('M004', 'Sales', NULL, NULL, 'fas fa-universal-access', 180, 0, 'Aktif', ''),
 ('M025', 'Data Sales', 'M004', 'sales', 'far fa-circle', 190, 1, 'Aktif', 'Lihat, Tambah, Edit, Hapus'),
 ('M026', 'Penagihan Piutang', 'M004', 'penagihan', 'far fa-circle', 200, 1, 'Aktif', 'Lihat, Tambah, Edit, Hapus'),
@@ -64,4 +66,7 @@ INSERT INTO menus (idmenus, menus, parent, urlmenus, iconmenus, urut, levels, st
 ('M059', 'Laporan Jurnal', 'M009', 'lapjurnal', 'far fa-circle', 580, 1, 'Aktif', 'Lihat'),
 ('M060', 'Laporan Neraca Saldo', 'M009', 'lapneracasaldo', 'far fa-circle', 590, 1, 'Aktif', 'Lihat'),
 ('M061', 'Laporan Laba Rugi', 'M009', 'laplabarugi', 'far fa-circle', 600, 1, 'Aktif', 'Lihat'),
+
+('RI01', 'Riwayat Update', NULL, 'riwayatupdate', 'fa fa-calendar', 609, 0, 'Aktif', ''),
+
 ('M010', 'Logout', NULL, 'logout', 'fas fa-sign-out-alt text-warning', 610, 0, 'Aktif', '');

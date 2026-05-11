@@ -9,12 +9,12 @@ use Illuminate\Database\QueryException;
 use App\Models\App;
 use App\Models\Barang;
 
-class Stockopname extends Model
+class Penyesuaianstok extends Model
 {
     use HasFactory;
 
-    protected $table = 'v_stockopname';
-    protected $primaryKey = 'idstockopname';
+    protected $table = 'v_penyesuaianstok';
+    protected $primaryKey = 'idpenyesuaianstok';
     protected $keyType = 'char';
 
     public $timestamps = false; // Menonaktifkan timestamps
@@ -32,31 +32,31 @@ class Stockopname extends Model
 
     public function allView()
     {
-        return DB::table('v_stockopname')
-            ->orderBy('idstockopname', 'desc')
+        return DB::table('v_penyesuaianstok')
+            ->orderBy('idpenyesuaianstok', 'desc')
             ->get();
     }
 
-    public function simpanData($data, $dataDetail, $idstockopname)
+    public function simpanData($data, $dataDetail, $idpenyesuaianstok)
     {
         try {
             DB::beginTransaction();
-            DB::table('stockopname')->insert($data);
-            DB::table('stockopnamedetail')->insert($dataDetail);
+            DB::table('penyesuaianstok')->insert($data);
+            DB::table('penyesuaianstokdetail')->insert($dataDetail);
 
 
             foreach ($dataDetail as $detail) {
 
                 $stokawal = $detail['stocksystem'];
-                $stokmasuk = ($detail['stockopname'] > $detail['stocksystem']) ? $detail['stockopname'] - $detail['stocksystem'] : 0;
-                $stokkeluar = ($detail['stockopname'] < $detail['stocksystem']) ? $detail['stocksystem'] - $detail['stockopname'] : 0;
-                $stokakhir = $detail['stockopname'];
+                $stokmasuk = ($detail['penyesuaianstok'] > $detail['stocksystem']) ? $detail['penyesuaianstok'] - $detail['stocksystem'] : 0;
+                $stokkeluar = ($detail['penyesuaianstok'] < $detail['stocksystem']) ? $detail['stocksystem'] - $detail['penyesuaianstok'] : 0;
+                $stokakhir = $detail['penyesuaianstok'];
 
                 //insert tabel riwayat stok
                 $riwayatstok = array(
                     'tglriwayat' => date('Y-m-d H:i:s'),
-                    'idtransaksi' => $idstockopname,
-                    'tgltransaksi' => $data['tglstockopname'],
+                    'idtransaksi' => $idpenyesuaianstok,
+                    'tgltransaksi' => $data['tglpenyesuaianstok'],
                     'idbarang' => $detail['idbarang'],
                     'stokawal' => $stokawal,
                     'stokmasuk' => $stokmasuk,
@@ -64,7 +64,7 @@ class Stockopname extends Model
                     'stokakhir' => $stokakhir,
                     'hargasebelumdiskon' => null,
                     'hargasetelahdiskon' => null,
-                    'deskripsi' => 'Stock Opname',
+                    'deskripsi' => 'Penyesuaian Stok',
                     'idpengguna' => session()->get('idpengguna'),
                     'namapengguna' => session()->get('namapengguna'),
                     'jenistransaksi' => 'Stock Opname',
@@ -80,8 +80,8 @@ class Stockopname extends Model
                     ->update($dataStokBarang);
             }
 
-            $this->App->riwayatAktifitas($data, 'stockopname', 'simpanData');
-            // $this->App->riwayatAktifitas($dataDetail, 'stockopnamedetail', 'simpanData');
+            $this->App->riwayatAktifitas($data, 'penyesuaianstok', 'simpanData');
+            // $this->App->riwayatAktifitas($dataDetail, 'penyesuaianstokdetail', 'simpanData');
 
             DB::commit();
 
@@ -98,13 +98,13 @@ class Stockopname extends Model
 
     public function createID()
     {
-        return DB::select('SELECT create_idstockopname() AS id')[0]->id;
+        return DB::select('SELECT create_idpenyesuaianstok() AS id')[0]->id;
     }
 
-    public function getDetail($idstockopname)
+    public function getDetail($idpenyesuaianstok)
     {
-        return DB::table('v_stockopnamedetail')
-            ->where('idstockopname', $idstockopname)
+        return DB::table('v_penyesuaianstokdetail')
+            ->where('idpenyesuaianstok', $idpenyesuaianstok)
             ->get();
     }
 }
