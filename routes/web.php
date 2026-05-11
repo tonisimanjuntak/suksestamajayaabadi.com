@@ -8,6 +8,7 @@ use App\Http\Controllers\BankController;
 use App\Http\Controllers\PengaturanController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\RiwayatupdateController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\KonsumenController;
 use App\Http\Controllers\KategoribarangController;
@@ -83,6 +84,9 @@ Route::controller(HomeController::class)->group(function () {
     Route::get('home/cetakriwayataktifitas/{tglawal}/{tglakhir}/{idpengguna}', 'cetakriwayataktifitas');            
 });
 
+Route::controller(RiwayatupdateController::class)->group(function () {
+    Route::get('riwayatupdate', 'index')->name('riwayatupdate');
+});
 
 Route::controller(LoginController::class)->group(function () {
     Route::get('login', 'showLoginForm')->name('login');

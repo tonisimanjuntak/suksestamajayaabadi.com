@@ -66,4 +66,7 @@ INSERT INTO menus (idmenus, menus, parent, urlmenus, iconmenus, urut, levels, st
 ('M059', 'Laporan Jurnal', 'M009', 'lapjurnal', 'far fa-circle', 580, 1, 'Aktif', 'Lihat'),
 ('M060', 'Laporan Neraca Saldo', 'M009', 'lapneracasaldo', 'far fa-circle', 590, 1, 'Aktif', 'Lihat'),
 ('M061', 'Laporan Laba Rugi', 'M009', 'laplabarugi', 'far fa-circle', 600, 1, 'Aktif', 'Lihat'),
+
+('RI01', 'Riwayat Update', NULL, 'riwayatupdate', 'fa fa-calendar', 609, 0, 'Aktif', ''),
+
 ('M010', 'Logout', NULL, 'logout', 'fas fa-sign-out-alt text-warning', 610, 0, 'Aktif', '');

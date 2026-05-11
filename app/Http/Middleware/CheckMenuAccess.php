@@ -21,7 +21,7 @@ class CheckMenuAccess
         $currentAction = strtolower($request->segment(2)); // tambah, edit, hapus, dll
 
         // Daftar route yang dikecualikan dari pengecekan
-        $except = ['login', 'logout', 'home', '', 'api', 'storage', 'download', 'upload'];
+        $except = ['login', 'logout', 'home', '', 'api', 'storage', 'download', 'upload', 'riwayatupdate'];
 
         if (in_array($currentController, $except)) {
             return $next($request);

@@ -1,0 +1,76 @@
+[2025-01-03] [customize] Format invoice (SJA/TAHUN(4DIGIT)BULAN(2DIGIT)/NO URUT (6 DIGIT))
+[2025-01-03] [bugfix] Penjualan (sub total sewaktu tambah data masih menotalkan bukan mengurang dari diskon)
+[2025-01-03] [bugfix] Pembelian (sub total sewaktu tambah data masih menotalkan bukan mengurang dari diskon) bagian bawah tidak muncul (buang biay pengiriman)
+[2025-01-03] [feature] Ekspedisi (field samakan dengan konsumen, kecuali daerah dibuang)
+[2025-01-03] [customize] Buku Utang (cara bayar tambah giro, sewaktu pilih giro maka muncul field No Bilyet Giro)
+[2025-01-03] [customize] Buku Piutang (cara bayar tambah giro, sewaktu pilih giro maka muncul field No Bilyet Giro)
+[2025-01-03] [customize] Cetakan Invoice (tambah jenis piutang (tekstualnya jenis) sebelum jatuh tempo, no invoice di tengah2)
+[2025-01-03] [customize] Buku Piutang (fieldnya (total/gelondongan) no, no piutang, no invoice, tanggal penjualan/pembelian, tanggal jatuh tempo, piutang/utang, setor, sisa piutang/utang)
+[2025-01-03] [customize] Buku Piutang minta break down cicilan (tinggal tambah tanggal jatuh tempo) spasi tabel di kecilin
+[2025-01-03] [customize] Buku Hutang (saldo buku utang, intinya nama supplier dan sisa hutang/piutang)
+[2025-01-03] [customize] Buku Piutang (saldo buku upiutang (intinya nama konsumen dan sisa hutang/piutang))
+[2025-01-03] [customize] Konsumen (tambah field limit kredit (default 50jt) yang bisa edit hanya administrator limit dan jatuh tempo)
+[2025-01-03] [customize] Surat Jalan Penjualan (tambahkan ekspedisi, jenis ekspedisi (darat, laut, udara), identitas ekspedisi (no plat sejenisnya), biaya pengiriman), rincian surat jalan (3 kolom, qty, satuan, keterangan)
+[2025-01-03] [customize] Penerimaan Pembelian (tambahkan ekspedisi, jenis ekspedisi (darat, laut, udara), identitas ekspedisi (no plat sejenisnya), biaya pengiriman, khusus pembelian, biaya pengiriman default nya hutang ekspedisi, (biaya pengiriman jangan dijurnal dulu)), rincian manggil detail setiap pesanan, nama barang, jumlah dan jumlah yang diterima dan selisih
+[2025-01-03] [customize] Buku Utang Ekspedisi (gak bisa cicil)
+[2025-01-03] [customize] Jenis Piutang (jatuhtempobonus ditambahkan (berlakunya utuk bonus penagihan))
+[2025-01-03] [customize] Barang (di table barang tambah field hpp, (isinya perhitungan by system bukan diinput))
+
+[2025-04-15] [customize] SALES (LEBIH 1 WILAYAH)
+[2025-04-15] [customize] PEMBELIAN (TAMBAH TANGGAL TERIMA BARANG)
+[2025-04-15] [customize] RETUR PEMBELIAN (HARUS ADA STATUS (PROSES (MERAH), SELESAI (HIJAU))), KALAU SELESAI MENGURANGI BUKU HUTANG
+[2025-04-15] [customize] LAPORAN BUKU UTANG (ADA SORTIR SEMUA SUPPLIER,  ID HUTANG GANTI JADI NO FAKTUR ATAU INVOICE PEMBELIAN)
+[2025-04-15] [customize] Laporan RETUR PEMBELIAN (RETUR HARUS SEMUA SUPPLIER), TAMBAH KOLOM INVOICE, ITEM, KUANTITI HARGA DISKON
+[2025-04-15] [future] BUKU BESAR
+[2025-04-15] [customize] SURAT JALAN JALAN (BISA LEBIH 1 INVOICE)
+[2025-04-15] [customize] BUKU UTANG (TAMBAH PILIH GIRO (TAMBAH DI MASTER BANK))
+[2025-04-15] [customize] Pembelian (DISCOUNT PEMBELIAN BISA PAKAI PERSEN (TIGA TINGKAT 50% 20% 5%) ATAU HARGA DISCOUNT ITU BUKAN HARGA AKHIR TETAPI PENGURANG (ada Harga diskon dan Harga setelah diskon))
+[2025-04-15] [customize] DETAIL PEMBELIAN & DETAIL PENJUALAN (QTY, HARGA BELI, JENIS DISKON (DENGAN PERSEN / DENGAN NOMINAL), DISKON LV1, DISKON LV2, DISKON LV3, TOTAL DISKON, HARGA SETELAH DISKON, SUB TOTAL (DPP), PPN (11%), HARGA SETELAH PPN)
+[2025-04-15] [customize] NAMA BANK DI TRANSAKSI TAMBAH KAN NOMOR REKENING DAN ATAS NAMA
+[2025-04-15] [customize] PENJUALAN (DISCOUNT PENJUALAN BISA PAKAI PERSEN (TIGA TINGKAT) ATAU HARGA DISCOUNT ITU BUKAN HARGA AKHIR TETAPI PENGURANG, TAMBAH BONUS, MENGURANGI ITEM TETAPI TIDAK MENAMBAH HARGA, BERLAKU KEBALIKAN, PENJUALAN ADA BIAYA BIAYA PENGIRIMAN
+[2025-04-15] [customize] LAPORAN PEMBELIAN (MUNCUL DPP PPN SUB TOTAL, ITEM, KUANTITI HARGA DISKON)
+[2025-04-15] [customize] PEMBELIAN DAN PENJUALAN DEFAULTNYA UTANG DAN PIUTANG
+[2025-04-15] [customize] BUKU PIUTANG ADA JENIS PIUTANG (LOW MIDLE FAST) DAN JUMLAH HARI NYA.
+[2025-04-15] [customize] UTANG DAN PIUTANG ADA STATUS (LUNAS, BELUM LUNAS)
+[2025-04-15] [customize] DI PENJUALAN NAMA KONSUMEN DITAMBAH WILAYAH KONSUMEN NYA
+[2025-04-15] [customize] LAPORAN PEMBELIAN DAN PENJUALAN BUKU UTANG DAN PIUTANG TAMBAH SORTIR NAMA SUPPLIER / KONSUMEN, WILAYAH, SALES, NO FAKTUR/ NOMOR INVOICE
+[2025-04-15] [customize] DI MASTER SUPPLIER DAN SALES TAMBAHKAN NPWP (16 DIGIT)
+[2025-04-15] [customize] DI LAPORAN BUKU UTANG DAN PIUTANG TAMBAHKAN SISA UTANG/PIUTANG DAN STATUS LUNAS DI NOMOR FAKTUR
+[2025-04-15] [feature] SALDO AWAL
+[2025-04-15] [customize] invoice landscape
+[2025-04-15] [customize] suratjalan landscape
+
+[2025-05-20] [customize] semua email tidak wajib di menu pengguna, sales, konsumen
+[2025-05-20] [customize] Konsumen (tambah NPWP, email tidak wajib, limit (50 juta), bisa edit dengan tingkatan administrator, tandem dengan akun level 4 (piutang)
+[2025-05-20] [customize] Sales (email tidak wajib, tambah target penjualan)
+[2025-05-20] [customize] Supplier (tandem dengan akun level 4 (utang))
+[2025-05-20] [customize] Ekspedisi (tandem dengan akun level 4 (utang))
+[2025-05-20] [customize] Pembelian (tanggal Bilyet Giro)
+[2025-05-20] [feature] Pembelian (tambah menu penerimaan barang)
+[2025-05-20] [customize] Retur Pembelian (munculkan nama supplier)
+[2025-05-20] [customize] Laporan Pembelian (munculkan sub total, discount, potongan, dpp, ppn, total pembelian)
+[2025-05-20] [customize] Penjualan (kode atau invoice penjualan, urut belakang jadi 6 digit, tetapi sewaktu pindah bulan, 6 digit ini lanjut, hanya tahun dan bulan berubah, penjualan masih bisa dilakukan apabila konsumen masih memiliki limit dan belum memasuki jatuh tempo dari semua invoice yang telah dibuat
+[2025-05-20] [feature] Buku Utang Ekspedisi
+[2025-05-20] [customize] Laporan Buku Hutang ekspedisi sisa hutang pindahin ke Bawah.
+[2025-05-20] [customize] Barang (dasar penentuan bonus), munculkan bonus penjualan, setiap penjualan mendapatkan bonus sebesar 0,5 persen, kecuali seng, (bisa menggunakan persen atau nominal, defaultnya 0,5, sedangkan seng tidak mendapatkan bonus penjualan), munculkan jenis bonus penjualan sesuai target (Middle= 0,25 & Fast = 0,5, mungkin baiknya buatkan pilihan bonusnya = 0 sebagai pilihan jika terdapat barang yang tidak ada bonusnya), munculkan bonus penagihan (bisa menggunakan persen atau nominal, defaultnya persen (nominal untuk seng)
+[2025-05-20] [customize] Bonus Sales (per sales), berupa cetakan bonus penjualan & penagihan
+[2025-05-20] [customize] Bonus Sales (bonus penjualan) dengan aturan, setiap penjualan mendapatkan 0,5% untuk setiap penjualan kecuali seng walau tidak mencapai target sales
+[2025-05-20] [customize] Bonus Sales (bonus penjualan berdasarkan target), mendapatkan tambahan bonus penjualan apabila >= target penjualan, dengan perhitungan menyesuaikan total jenis bonus penjualan (Middle atau Fast yang sudah di setting di master barang)
+[2025-05-20] [customize] Bonus Sales (bonus penagihan) mendapatkan tambahan bonus penagihan apabila penagihan masih belum jatuh tempo (aturan hitung dari master barang)
+
+[2025-06-03] [customize] Barang (default bonus penjualan 0.5%)
+[2025-06-03] [customize] Pembelian (pas tambah barang Harga dpp langsung dikali jumlah qty)
+[2025-06-03] [customize] Penerimaan PO (hilangin cara bayar GIRO)
+[2025-06-03] [customize] Sales (bonus sales (semua barang 0,25 kecuali seng 100 rupiah)), nominal di penjualan, target penjualan maupun penagihan adalah harga dpp nya bukan harga setelah pajak
+[2025-06-03] [customize] Buku Utang Ekspedisi (jumlah pembayaran (di ganti DPP), PPN 1,1% (otomatis), jumlah pembayaran (otomatis), pph 23 2% dari DPP (otomatis))
+
+[2025-06-08] [customize] Laporan Penagihan (bed debt, isi nya sisa utang)
+[2025-06-08] [customize] Surat Jalan (rincian barang bisa panggil dari invoice atau tambah rincian)
+
+[2025-07-11] [customize] Barang (tambah field kode barang, stok minimal, fast 0,25, middle = 0,5)
+
+[2026-04-28] [customize] Kartu Stok (tambahkan Nama konsumen/supplier dan no pembelian/penjualan)
+[2026-04-30] [customize] Laporan Pembelian (munculkan DPP dan PPN sebelum jumlah)
+[2026-05-04] [customize] Laporan Penjualan (munculkan DPP dan PPN sebelum jumlah)
+[2026-05-11] [feature] Penyesuaian Stok (Untuk penyesuaian stok per barang, jadi tidak perlu masuk ke stokopname)
+
