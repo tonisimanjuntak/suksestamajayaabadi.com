@@ -26,12 +26,20 @@ class LappenagihansalesController extends Controller
     public function cetak($jenisCetakan, Request $request)
     {
         $idsales = $request->input('idsales');
+        $statuslunas = $request->input('statuslunas');
+        $tglawal = $request->input('tglawal');
+        $tglakhir = $request->input('tglakhir');
+
+        
 
         /*
             composer require tecnickcom/tcpdf
         */
-
-        $data['rsPenagihan'] = $this->model->getPenagihan($idsales);
+        $data['idsales'] = $idsales;
+        $data['statuslunas'] = $statuslunas;
+        $data['tglawal'] = $tglawal;
+        $data['tglakhir'] = $tglakhir;
+        $data['rsPenagihan'] = $this->model->getPenagihan($idsales, $statuslunas, $tglawal, $tglakhir);
         $view = view('lappenagihansales.cetak', $data)->render();
 
 

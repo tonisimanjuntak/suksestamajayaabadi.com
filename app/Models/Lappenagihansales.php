@@ -11,15 +11,21 @@ class Lappenagihansales extends Model
     use HasFactory;
 
 
-    public function getPenagihan($idsales)
+    public function getPenagihan($idsales, $statuslunas, $tglawal, $tglakhir)
     {
-        $tahun = date('Y');
-
-        return DB::table("v_piutang_penagihan_laporan")
+        $query = DB::table("v_piutang_penagihan_laporan")
             ->where("idsales", $idsales)
-            ->whereRaw("year(tglinvoice) = $tahun ")
-            ->orderBy('namakonsumen', 'desc')
-            ->get();
+            ->whereRaw("tglinvoice BETWEEN '$tglawal' AND '$tglakhir'")
+            ->orderBy('namakonsumen', 'desc');
+
+        if (!empty($statuslunas) && $statuslunas != null) {
+            if ($statuslunas == 'Lunas') {
+                $query->whereRaw("tgllunas IS NOT NULL");
+            }else{
+                $query->whereRaw("tgllunas IS NULL");
+            }
+        }
+        return $query->get();
     }
 
     
