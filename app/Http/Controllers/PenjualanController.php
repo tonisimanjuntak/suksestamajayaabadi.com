@@ -464,7 +464,11 @@ class PenjualanController extends Controller
 
         $tgljatuhtempo = '-';
         if ($rsPenjualan->carabayar == "Piutang") {
-            $tgljatuhtempo = tglindonesia(App::createTglJatuhTempo($rsPenjualan->idjenispiutang, $rsPenjualan->tglinvoice));
+            $rsPiutang = Piutang::where('idpenjualan', $idpenjualan)->first();
+            // dd($rsPiutang);
+            $tgljatuhtempo = $rsPiutang->tgljatuhtempo;
+
+            // $tgljatuhtempo = tglindonesia(App::createTglJatuhTempo($rsPenjualan->idjenispiutang, $rsPenjualan->tglinvoice));
         }
 
         $rowKonsumen = Konsumen::find($rsPenjualan->idkonsumen);

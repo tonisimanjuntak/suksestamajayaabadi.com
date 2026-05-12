@@ -74,3 +74,5 @@
 [2026-05-04] [customize] Laporan Penjualan (munculkan DPP dan PPN sebelum jumlah)
 [2026-05-11] [feature] Penyesuaian Stok (Untuk penyesuaian stok per barang, jadi tidak perlu masuk ke stokopname)
 
+[2026-05-12] [bugfix] Cetak Invoice (Perbaiki Tanggal jatuh tempo nya salah menjadi 1970-01-01)
+
