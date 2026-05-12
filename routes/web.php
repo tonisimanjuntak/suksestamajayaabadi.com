@@ -336,7 +336,8 @@ Route::middleware(['check.menu.access'])->group(function () {
             Route::get('piutang/hapusList/{id}', 'hapusList');
             Route::post('piutang/simpanData', 'simpanData');
             Route::post('piutang/simpanTambahPiutang', 'simpanTambahPiutang');
-            Route::get('piutang/listdata', 'listdata')->name('piutang.listdata');            
+            Route::get('piutang/listdata', 'listdata')->name('piutang.listdata');          
+            Route::get('piutang/cetakBukuPiutang/{id}', 'cetakBukuPiutang');
         });
 
         Route::controller(SuratjalanController::class)->group(function () {            

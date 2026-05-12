@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Piutang;
 use App\Models\Penjualan;
+use App\Models\Konsumen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\App;
+use TCPDF;
 
 class PiutangController extends Controller
 {
@@ -337,8 +339,13 @@ class PiutangController extends Controller
 
         $rsPiutang = Piutang::find($idpiutang);
         $idpenjualan = $rsPiutang->idpenjualan;
-        $nokwitansi = Penjualan::createKwitansi($idpenjualan);
-        $rsPenjualan = Penjualan::find($idpenjualan);
+        
+        //create kwitansi
+        if (!empty($idpenjualan) && $idpenjualan != null) {
+            $nokwitansi = Penjualan::createKwitansi($idpenjualan);
+        }else{
+            $nokwitansi = null;
+        }
 
         if (($rsPiutang->totaldebet - $rsPiutang->totalkredit) < $kredit) {
             return redirect('/piutang/detail/' . Crypt::encrypt($idpiutang))->with('fail', 'Jumlah yang dibayar tidak boleh melebihi sisa piutang!');
@@ -359,7 +366,7 @@ class PiutangController extends Controller
             'jenis' => 'Pembayaran Piutang',
             'nokwitansi' => $nokwitansi,
         );
-        $simpan = $this->model->simpanData($data, $idpiutang, $rsPiutang, $rsPenjualan);
+        $simpan = $this->model->simpanData($data, $idpiutang, $rsPiutang, $nokwitansi);
 
         if ($simpan['status'] == 'success') {
             return redirect('/piutang/detail/' . Crypt::encrypt($idpiutang))->with('success', $simpan['message']);
@@ -426,6 +433,51 @@ class PiutangController extends Controller
         } else {
             return redirect('/piutang')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
         }
+    }
+
+    public function cetakBukuPiutang($idpiutang)
+    {
+        /*
+            composer require tecnickcom/tcpdf
+        */
+        try {
+            $idpiutang = Crypt::decrypt($idpiutang);
+            $rsPiutang = Piutang::findOrFail($idpiutang);
+        } catch (ModelNotFoundException $e) {
+            echo "Data tidak ditemukan!";
+        }
+        $idkonsumen = $rsPiutang->idkonsumen;
+        $rsKonsumen = Konsumen::find($idkonsumen);
+
+        $data['rsDetail'] = $this->model->getDetail($idpiutang);
+        $data['rsPiutang'] = $rsPiutang;
+        $data['rsKonsumen'] = $rsKonsumen;
+        $view = view('piutang.cetakBukuPiutang', $data);
+
+
+        $pdf = new TCPDF();
+
+        // Set properti dokumen
+        $pdf->SetCreator(PDF_CREATOR);
+        $pdf->SetAuthor('TZ Developer');
+        $pdf->SetTitle('Buku Piutang');
+        $pdf->SetSubject('Buku Piutang');
+        $pdf->SetKeywords('TCPDF, PDF, laporan, bukupiutang');
+        $pdf->SetFont('times', '', 10);
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+
+        // Set margin halaman
+        $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+        $pdf->SetTopMargin(5);
+        // Tambahkan halaman
+        $pdf->AddPage('P');
+
+        // Tulis konten HTML ke dalam PDF
+        $pdf->writeHTML($view, true, false, true, false, '');
+
+        // Output PDF
+        $pdf->Output('buku_piutang.pdf', 'I');
     }
 
     public function getDataID(Request $request)

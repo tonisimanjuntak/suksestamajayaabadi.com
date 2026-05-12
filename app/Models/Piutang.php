@@ -91,36 +91,40 @@ class Piutang extends Model
         }
     }
 
-    public function simpanData($dataDetail, $idpiutang, $rsPiutang, $rsPenjualan)
+    public function simpanData($dataDetail, $idpiutang, $rsPiutang, $nokwitansi)
     {
         try {
             DB::beginTransaction();
             DB::table('piutangdetail')->insert($dataDetail);
-
-
-
-            $jumlahsudahbayar = DB::table('penjualankwitansi')
-                ->where('idpenjualan', $rsPenjualan->idpenjualan)
-                ->sum('jumlahbayar');
-
-            //create kwitansi
-            $dataKwitansi = array(
-                'nokwitansi' => $dataDetail['nokwitansi'],
-                'tglkwitansi' => $dataDetail['tglpiutang'],
-                'idpenjualan' => $rsPenjualan->idpenjualan,
-                'totalplusppn' => $rsPenjualan->totalinvoice,
-                'jumlahsudahbayar' => $jumlahsudahbayar,
-                'jumlahbayar' => $dataDetail['kredit'],
-                'inserted_date' => $dataDetail['inserted_date'],
-                'updated_date' => $dataDetail['updated_date'],
-                'idpengguna' => $dataDetail['idpengguna'],
-                'carabayar' => $dataDetail['carabayar'],
-                'idbank' => $dataDetail['idbank'],
-            );
-            DB::table('penjualankwitansi')->insert($dataKwitansi);
-
-
             $this->App->riwayatAktifitas($dataDetail, 'piutangdetail', 'simpanData');
+
+            $idpenjualan = $rsPiutang->idpenjualan;
+            if (!empty($idpenjualan) && $idpenjualan != null) {
+                $rsPenjualan = Penjualan::find($idpenjualan);            
+                $jumlahsudahbayar = DB::table('penjualankwitansi')
+                    ->where('idpenjualan', $rsPenjualan->idpenjualan)
+                    ->sum('jumlahbayar');
+    
+                //create kwitansi
+                $dataKwitansi = array(
+                    'nokwitansi' => $dataDetail['nokwitansi'],
+                    'tglkwitansi' => $dataDetail['tglpiutang'],
+                    'idpenjualan' => $rsPenjualan->idpenjualan,
+                    'totalplusppn' => $rsPenjualan->totalinvoice,
+                    'jumlahsudahbayar' => $jumlahsudahbayar,
+                    'jumlahbayar' => $dataDetail['kredit'],
+                    'inserted_date' => $dataDetail['inserted_date'],
+                    'updated_date' => $dataDetail['updated_date'],
+                    'idpengguna' => $dataDetail['idpengguna'],
+                    'carabayar' => $dataDetail['carabayar'],
+                    'idbank' => $dataDetail['idbank'],
+                );
+                DB::table('penjualankwitansi')->insert($dataKwitansi);
+            }
+
+
+
+            
 
             $totalkredit = DB::table('piutangdetail')
                 ->where('idpiutang', $idpiutang)
