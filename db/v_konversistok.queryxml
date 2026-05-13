@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<querybuilder version="8.3">
+<source>
+<database charset="latin1" collation="latin1_swedish_ci">sukd9756_suksestamajayaabadi</database>
+</source>
+<canvas>
+<table tablename="konversistok" alias="" left="10" top="21" width="150" height="308" />
+<table tablename="barang" alias="" left="745" top="13" width="150" height="233" />
+<table tablename="satuan" alias="" left="465" top="102" width="150" height="113" />
+<table tablename="barang" alias="barang_1" left="620" top="235" width="150" height="113" />
+<table tablename="satuan" alias="satuan_1" left="406" top="273" width="150" height="113" />
+<table tablename="pengguna" alias="" left="222" top="301" width="150" height="113" />
+<join type = "Inner Join">
+<from tablename = "konversistok" alias = "">idbarangasal</from>
+<to tablename = "barang" alias = "">idbarang</to>
+</join>
+<join type = "Inner Join">
+<from tablename = "konversistok" alias = "">idsatuanasal</from>
+<to tablename = "satuan" alias = "">idsatuan</to>
+</join>
+<join type = "Inner Join">
+<from tablename = "konversistok" alias = "">idbarangtujuan</from>
+<to tablename = "barang" alias = "barang_1">idbarang</to>
+</join>
+<join type = "Inner Join">
+<from tablename = "konversistok" alias = "">idsatuantujuan</from>
+<to tablename = "satuan" alias = "satuan_1">idsatuan</to>
+</join>
+<join type = "Inner Join">
+<from tablename = "konversistok" alias = "">idpengguna</from>
+<to tablename = "pengguna" alias = "">idpengguna</to>
+</join>
+</canvas>
+<grid>
+<column id="1">
+<table tablename="konversistok"></table>
+<field>idkonversi</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="2">
+<table tablename="konversistok"></table>
+<field>tglkonversi</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="3">
+<table tablename="konversistok"></table>
+<field>keterangan</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="4">
+<table tablename="konversistok"></table>
+<field>idbarangasal</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="5">
+<table tablename="barang"></table>
+<field>kdbarang</field>
+<alias>kdbarangasal</alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="6">
+<table tablename="barang"></table>
+<field>namabarang</field>
+<alias>namabarangasal</alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="7">
+<table tablename="konversistok"></table>
+<field>jlhbarangasal</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="8">
+<table tablename="konversistok"></table>
+<field>idsatuanasal</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="9">
+<table tablename="satuan"></table>
+<field>namasatuan</field>
+<alias>namasatuanasal</alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="10">
+<table tablename="konversistok"></table>
+<field>idbarangtujuan</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="11">
+<table tablename="barang">barang_1</table>
+<field>kdbarang</field>
+<alias>kdbarangtujuan</alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="12">
+<table tablename="barang">barang_1</table>
+<field>namabarang</field>
+<alias>namabarangtujuan</alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="13">
+<table tablename="konversistok"></table>
+<field>jlhbarangtujuan</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="14">
+<table tablename="konversistok"></table>
+<field>idsatuantujuan</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="15">
+<table tablename="satuan">satuan_1</table>
+<field>namasatuan</field>
+<alias>namasatuantujuan</alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="16">
+<table tablename="konversistok"></table>
+<field>inserted_date</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="17">
+<table tablename="konversistok"></table>
+<field>updated_date</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="18">
+<table tablename="konversistok"></table>
+<field>idpengguna</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="19">
+<table tablename="pengguna"></table>
+<field>namapengguna</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+</grid>
+</querybuilder>

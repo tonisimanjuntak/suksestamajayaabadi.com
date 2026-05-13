@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Penyesuaianstok;
+use App\Models\Konversistok;
 use Illuminate\Http\Request;
 use App\Models\Barang;
 use Illuminate\Support\Facades\Crypt;
@@ -11,47 +11,49 @@ use App\Models\App;
 use Illuminate\Support\Facades\DB;
 use TCPDF;
 
-class PenyesuaianstokController extends Controller
+class KonversistokController extends Controller
 {
     var $model;
 
     public function __construct()
     {
-        $this->model = new Penyesuaianstok;
+        $this->model = new Konversistok;
         $this->isLogin();
     }
 
     public function index()
     {
-        $penyesuaianstok = $this->model->allView();
-        $data['penyesuaianstok'] = $penyesuaianstok;
-        $data['menu'] = 'penyesuaianstok';
-        return view('penyesuaianstok.index', $data);
+        $konversistok = $this->model->allView();
+        $data['konversistok'] = $konversistok;
+        $data['menu'] = 'konversistok';
+        return view('konversistok.index', $data);
     }
 
     public function tambah()
     {
-        $data['menu'] = 'penyesuaianstok';
-        $data['idpenyesuaianstok'] = "";
-        return view('penyesuaianstok.form', $data);
+        $data['menu'] = 'konversistok';
+        $data['idkonversi'] = "";
+        return view('konversistok.form', $data);
     }
 
     public function listdata(Request $request)
     {
         // Query dasar
-        $query = Penyesuaianstok::select(['idpenyesuaianstok', 'tglpenyesuaianstok', 'keterangan', 'namapengguna']);
+        $query = Konversistok::select('*');
 
         $tglawal = $request->input('tglawal');
         $tglakhir = $request->input('tglakhir');
 
-        $query->whereBetween(DB::raw("DATE(tglpenyesuaianstok)"), [$tglawal, $tglakhir]);
+        $query->whereBetween(DB::raw("DATE(tglkonversi)"), [$tglawal, $tglakhir]);
 
         // Cek apakah ada pencarian
         if ($request->has('search') && !empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where(function ($groupwhere) use ($search) {
-                $groupwhere->where('idpenyesuaianstok', 'LIKE', "%{$search}%")
-                    ->orWhere('keterangan', 'LIKE', "%{$search}%");
+                $groupwhere->where('idkonversi', 'LIKE', "%{$search}%")
+                    ->orWhere('keterangan', 'LIKE', "%{$search}%")
+                    ->orWhere('namabarangasal', 'LIKE', "%{$search}%")
+                    ->orWhere('namabarangtujuan', 'LIKE', "%{$search}%");
             });
         }
 
@@ -61,23 +63,23 @@ class PenyesuaianstokController extends Controller
             $orderDirection = $request->input('order.0.dir'); // Arah sorting (asc/desc)
 
             // Daftar kolom yang bisa di-sort
-            $columns = [null, 'idpenyesuaianstok', 'tglpenyesuaianstok', 'keterangan', 'namapengguna', null];
+            $columns = [null, 'idkonversi', 'tglkonversi', 'keterangan', 'namabarangasal', 'namabarangtujuan', null];
 
             // Pastikan index kolom valid
             if (isset($columns[$orderColumn])) {
                 $query->orderBy($columns[$orderColumn], $orderDirection);
             } else {
-                $query->orderBy('tglpenyesuaianstok', 'Desc');
-                $query->orderBy('idpenyesuaianstok', 'Desc');
+                $query->orderBy('tglkonversi', 'Desc');
+                $query->orderBy('idkonversi', 'Desc');
             }
         } else {
-            $query->orderBy('tglpenyesuaianstok', 'Desc');
-            $query->orderBy('idpenyesuaianstok', 'Desc');
+            $query->orderBy('tglkonversi', 'Desc');
+            $query->orderBy('idkonversi', 'Desc');
         }
 
 
         // Hitung total data tanpa filter
-        $totalData = Penyesuaianstok::count();
+        $totalData = Konversistok::count();
 
         // Hitung total data setelah filter (jika ada pencarian)
         $totalFiltered = $query->count();
@@ -98,11 +100,12 @@ class PenyesuaianstokController extends Controller
 
             $data[] = [
                 'no' => $no++,
-                'idpenyesuaianstok' => $row->idpenyesuaianstok,
-                'tglpenyesuaianstok' => $row->tglpenyesuaianstok,
-                'keterangan' => $row->keterangan,
-                'namapengguna' => $row->namapengguna,
-                'action' => '<a href="' . url('penyesuaianstok/cetak/' . Crypt::encrypt($row->idpenyesuaianstok)) . '" class="btn btn-primary btn-sm" target="_blank"><i class="fa fa-print"></i></a>',
+                'idkonversi' => $row->idkonversi,
+                'tglkonversi' => $row->tglkonversi,
+                'keterangan' => $row->keterangan . '<br>Operator: ' . $row->namapengguna,
+                'namabarangasal' => '<strong>(' . $row->jlhbarangasal.' '.$row->namasatuanasal . ')</strong> '. $row->namabarangasal,
+                'namabarangtujuan' => '<strong>(' . $row->jlhbarangtujuan.' '.$row->namasatuantujuan . ')</strong> ' .$row->namabarangtujuan,
+                'action' => '<a href="' . url('konversistok/hapus/' . Crypt::encrypt($row->idkonversi)) . '" class="btn btn-danger btn-sm" id="btnHapus"><i class="fa fa-trash"></i></a>',
             ];
         }
 
@@ -118,47 +121,42 @@ class PenyesuaianstokController extends Controller
 
     public function simpanData(Request $request)
     {
-        $idpenyesuaianstok = $request->get('idpenyesuaianstok');
-        $tglpenyesuaianstok = date('Y-m-d H:i:s');
+        $idkonversi = $request->get('idkonversi');
+        $tglkonversi = date('Y-m-d H:i:s');
         $keterangan = $request->get('keterangan');
-        $detailPenyesuaianStok = $request->get('detailPenyesuaianStok');
+        $idbarangasal   = $request->get('idbarangasal');
+        $idsatuanasal   = $request->get('idsatuanasal');
+        $jumlahbarangasal   = $request->get('jumlahbarangasal');
+        $idbarangtujuan   = $request->get('idbarangtujuan');
+        $idsatuantujuan   = $request->get('idsatuantujuan');
+        $jumlahbarangtujuan   = $request->get('jumlahbarangtujuan');
         $inserted_date = date('Y-m-d H:i:s');
         $updated_date = date('Y-m-d H:i:s');
 
-
-        if (App::isPosting($tglpenyesuaianstok)) {
-            $bulan = bulan(date('m', strtotime($tglpenyesuaianstok)));
-            $tahun = date('Y', strtotime($tglpenyesuaianstok));
+        if (App::isPosting($tglkonversi)) {
+            $bulan = bulan(date('m', strtotime($tglkonversi)));
+            $tahun = date('Y', strtotime($tglkonversi));
             return response()->json(array("msg" => "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!"));
         }
 
-
-        $idpenyesuaianstok = $this->model->createID();
-
-        $totalsebelumdiskon = 0;
-        $totalsetelahdiskon = 0;
-
-        $dataDetail = array();
-        for ($i = 0; $i < count($detailPenyesuaianStok); $i++) {
-            $dataDetail[] = array(
-                'idpenyesuaianstok' => $idpenyesuaianstok,
-                'idbarang' => $detailPenyesuaianStok[$i][1],
-                'stocksystem' => $detailPenyesuaianStok[$i][3],
-                'penyesuaianstok' => $detailPenyesuaianStok[$i][4],
-                'keterangandetail' => $detailPenyesuaianStok[$i][6],
-            );
-        }
+        $idkonversi = $this->model->createID();
 
         $data = array(
-            'idpenyesuaianstok' => $idpenyesuaianstok,
-            'tglpenyesuaianstok' => $tglpenyesuaianstok,
+            'idkonversi' => $idkonversi,
+            'tglkonversi' => $tglkonversi,
             'keterangan' => $keterangan,
+            'idbarangasal' => $idbarangasal,
+            'idsatuanasal' => $idsatuanasal,
+            'jlhbarangasal' => $jumlahbarangasal,
+            'idbarangtujuan' => $idbarangtujuan,
+            'idsatuantujuan' => $idsatuantujuan,
+            'jlhbarangtujuan' => $jumlahbarangtujuan,
             'inserted_date' => $inserted_date,
             'updated_date' => $updated_date,
             'idpengguna' => session('idpengguna'),
         );
 
-        $simpan = $this->model->simpanData($data, $dataDetail, $idpenyesuaianstok);
+        $simpan = $this->model->simpanData($data);
         if ($simpan['status'] == 'success') {
             return response()->json(array('success' => true));
         } else {
@@ -168,49 +166,28 @@ class PenyesuaianstokController extends Controller
 
     public function getDataID(Request $request)
     {
-        $idpenyesuaianstok = $request->input('idpenyesuaianstok');
-        $rsPenyesuaianStok = Penyesuaianstok::find($idpenyesuaianstok);
-
-        $rsDetail = $this->model->getDetail($idpenyesuaianstok);
-        return response()->json(array('$rsPenyesuaianStok' => $rsPenyesuaianStok, 'rsDetail' => $rsDetail));
+        $idkonversi = $request->input('idkonversi');
+        $rsKonversi = Konversistok::find($idkonversi);
+        return response()->json(array('$rsKonversi' => $rsKonversiStok));
     }
 
-    public function cetak($idpenyesuaianstok)
+
+
+    public function hapus($idkonversi)
     {
-        /*
-            composer require tecnickcom/tcpdf
-        */
-        $idpenyesuaianstok = Crypt::decrypt($idpenyesuaianstok);
-        $rsSO = Penyesuaianstok::find($idpenyesuaianstok);
-        $rsSoDetail = $this->model->getDetail($idpenyesuaianstok);
+        $idkonversi = Crypt::decrypt($idkonversi);
+        try {
+            $rsKonversi = Konversistok::findOrFail($idkonversi);
+        } catch (ModelNotFoundException $e) {
+            return redirect('/konversistok')->with('other', 'Data tidak ditemukan!');
+        }
 
-        $data['rsSO'] = $rsSO;
-        $data['rsSoDetail'] = $rsSoDetail;
-        $view = view('penyesuaianstok.cetak', $data);
-
-        // Buat instance TCPDF
-        $pdf = new TCPDF();
-
-        // Set properti dokumen
-        $pdf->SetCreator(PDF_CREATOR);
-        $pdf->SetAuthor('TZ Developer');
-        $pdf->SetTitle('Laporan Form Penyesuaian Stok');
-        $pdf->SetSubject('Laporan Form Penyesuaian Stok');
-        $pdf->SetKeywords('TCPDF, PDF, laporan, persediaan');
-        $pdf->SetFont('times', '', 10);
-        $pdf->setPrintHeader(false);
-        $pdf->setPrintFooter(false);
-
-        // Set margin halaman
-        $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-        $pdf->SetTopMargin(5);
-        // Tambahkan halaman
-        $pdf->AddPage('P');
-
-        // Tulis konten HTML ke dalam PDF
-        $pdf->writeHTML($view, true, false, true, false, '');
-
-        // Output PDF
-        $pdf->Output('form_penyesuaian_stok.pdf', 'I');
+        $hapus = $this->model->hapusData($idkonversi, $rsKonversi);
+        if ($hapus['status'] == 'success') {
+            return redirect('/konversistok')->with('success', $hapus['message']);
+        } else {
+            return redirect('/konversistok')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+        }
     }
+    
 }

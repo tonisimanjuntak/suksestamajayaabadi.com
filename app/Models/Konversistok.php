@@ -9,12 +9,12 @@ use Illuminate\Database\QueryException;
 use App\Models\App;
 use App\Models\Barang;
 
-class Penyesuaianstok extends Model
+class Konversistok extends Model
 {
     use HasFactory;
 
-    protected $table = 'v_penyesuaianstok';
-    protected $primaryKey = 'idpenyesuaianstok';
+    protected $table = 'v_konversistok';
+    protected $primaryKey = 'idkonversi';
     protected $keyType = 'char';
 
     public $timestamps = false; // Menonaktifkan timestamps
@@ -32,57 +32,90 @@ class Penyesuaianstok extends Model
 
     public function allView()
     {
-        return DB::table('v_penyesuaianstok')
-            ->orderBy('idpenyesuaianstok', 'desc')
+        return DB::table('v_konversistok')
+            ->orderBy('idkonversi', 'desc')
             ->get();
     }
 
-    public function simpanData($data, $dataDetail, $idpenyesuaianstok)
+    public function simpanData($data)
     {
         try {
             DB::beginTransaction();
-            DB::table('penyesuaianstok')->insert($data);
-            DB::table('penyesuaianstokdetail')->insert($dataDetail);
+            DB::table('konversistok')->insert($data);
+
+            /**
+             * UPDATE BARANG ASAL
+            **/
+            $stokawal = Barang::getRiwayatStokAkhir($data['idbarangasal']);
+            $stokmasuk = 0;
+            $stokkeluar = $data['jlhbarangasal'];
+            $stokakhir = $stokawal + $stokmasuk- $stokkeluar;
+
+            //insert tabel riwayat stok
+            $riwayatstok = array(
+                'tglriwayat' => date('Y-m-d H:i:s'),
+                'idtransaksi' => $data['idkonversi'],
+                'tgltransaksi' => $data['tglkonversi'],
+                'idbarang' => $data['idbarangasal'],
+                'stokawal' => $stokawal,
+                'stokmasuk' => $stokmasuk,
+                'stokkeluar' => $stokkeluar,
+                'stokakhir' => $stokakhir,
+                'hargasebelumdiskon' => null,
+                'hargasetelahdiskon' => null,
+                'deskripsi' => 'Konversi Stok Barang',
+                'idpengguna' => session()->get('idpengguna'),
+                'namapengguna' => session()->get('namapengguna'),
+                'jenistransaksi' => 'Konversi Stok',
+            );
+            DB::table('riwayatstok')->insert($riwayatstok);
+
+            //update stok di tabel
+            $dataStokBarang = array(
+                'stok' => $stokakhir
+            );
+            DB::table('barang')
+                ->where('idbarang', $data['idbarangasal'])
+                ->update($dataStokBarang);
 
 
-            foreach ($dataDetail as $detail) {
+            /**
+             * UPDATE BARANG TUJUAN
+            **/
+            $stokawal = Barang::getRiwayatStokAkhir($data['idbarangtujuan']);
+            $stokmasuk = $data['jlhbarangtujuan'];
+            $stokkeluar = 0;
+            $stokakhir = $stokawal + $stokmasuk- $stokkeluar;
 
-                $stokawal = $detail['stocksystem'];
-                $stokmasuk = ($detail['penyesuaianstok'] > $detail['stocksystem']) ? $detail['penyesuaianstok'] - $detail['stocksystem'] : 0;
-                $stokkeluar = ($detail['penyesuaianstok'] < $detail['stocksystem']) ? $detail['stocksystem'] - $detail['penyesuaianstok'] : 0;
-                $stokakhir = $detail['penyesuaianstok'];
+            //insert tabel riwayat stok
+            $riwayatstok = array(
+                'tglriwayat' => date('Y-m-d H:i:s'),
+                'idtransaksi' => $data['idkonversi'],
+                'tgltransaksi' => $data['tglkonversi'],
+                'idbarang' => $data['idbarangtujuan'],
+                'stokawal' => $stokawal,
+                'stokmasuk' => $stokmasuk,
+                'stokkeluar' => $stokkeluar,
+                'stokakhir' => $stokakhir,
+                'hargasebelumdiskon' => null,
+                'hargasetelahdiskon' => null,
+                'deskripsi' => 'Konversi Stok Barang',
+                'idpengguna' => session()->get('idpengguna'),
+                'namapengguna' => session()->get('namapengguna'),
+                'jenistransaksi' => 'Konversi Stok',
+            );
+            DB::table('riwayatstok')->insert($riwayatstok);
 
-                //insert tabel riwayat stok
-                $riwayatstok = array(
-                    'tglriwayat' => date('Y-m-d H:i:s'),
-                    'idtransaksi' => $idpenyesuaianstok,
-                    'tgltransaksi' => $data['tglpenyesuaianstok'],
-                    'idbarang' => $detail['idbarang'],
-                    'stokawal' => $stokawal,
-                    'stokmasuk' => $stokmasuk,
-                    'stokkeluar' => $stokkeluar,
-                    'stokakhir' => $stokakhir,
-                    'hargasebelumdiskon' => null,
-                    'hargasetelahdiskon' => null,
-                    'deskripsi' => 'Penyesuaian Stok',
-                    'idpengguna' => session()->get('idpengguna'),
-                    'namapengguna' => session()->get('namapengguna'),
-                    'jenistransaksi' => 'Stock Opname',
-                );
-                DB::table('riwayatstok')->insert($riwayatstok);
+            //update stok di tabel
+            $dataStokBarang = array(
+                'stok' => $stokakhir
+            );
+            DB::table('barang')
+                ->where('idbarang', $data['idbarangtujuan'])
+                ->update($dataStokBarang);
+                    
 
-                //update stok di tabel
-                $dataStokBarang = array(
-                    'stok' => $stokakhir
-                );
-                DB::table('barang')
-                    ->where('idbarang', $detail['idbarang'])
-                    ->update($dataStokBarang);
-            }
-
-            $this->App->riwayatAktifitas($data, 'penyesuaianstok', 'simpanData');
-            // $this->App->riwayatAktifitas($dataDetail, 'penyesuaianstokdetail', 'simpanData');
-
+            $this->App->riwayatAktifitas($data, 'konversistok', 'simpanData');
             DB::commit();
 
             return ['status' => 'success', 'message' => 'Data berhasil disimpan'];
@@ -95,16 +128,101 @@ class Penyesuaianstok extends Model
         }
     }
 
+    public function hapusData($idkonversi, $rsKonversi)
+    {
+        try {
+
+            DB::table('konversistok')
+                ->where('idkonversi', $idkonversi)
+                ->delete();
+
+            /**
+             * UPDATE BARANG ASAL
+             * Kembalikan stok asal barang ke stok awal
+            **/
+            $stokawal = Barang::getRiwayatStokAkhir($rsKonversi->idbarangasal);
+            $stokmasuk = $rsKonversi->jlhbarangasal;
+            $stokkeluar = 0;
+            $stokakhir = $stokawal + $stokmasuk- $stokkeluar;
+
+            //insert tabel riwayat stok
+            $riwayatstok = array(
+                'tglriwayat' => date('Y-m-d H:i:s'),
+                'idtransaksi' => $rsKonversi->idkonversi,
+                'tgltransaksi' => $rsKonversi->tglkonversi,
+                'idbarang' => $rsKonversi->idbarangasal,
+                'stokawal' => $stokawal,
+                'stokmasuk' => $stokmasuk,
+                'stokkeluar' => $stokkeluar,
+                'stokakhir' => $stokakhir,
+                'hargasebelumdiskon' => null,
+                'hargasetelahdiskon' => null,
+                'deskripsi' => 'Hapus Konversi Stok Barang',
+                'idpengguna' => session()->get('idpengguna'),
+                'namapengguna' => session()->get('namapengguna'),
+                'jenistransaksi' => 'Konversi Stok',
+            );
+            DB::table('riwayatstok')->insert($riwayatstok);
+
+            //update stok di tabel
+            $dataStokBarang = array(
+                'stok' => $stokakhir
+            );
+            DB::table('barang')
+                ->where('idbarang', $rsKonversi->idbarangasal)
+                ->update($dataStokBarang);
+
+            
+            /**
+             * UPDATE BARANG TUJUAN
+             * Kembalikan stok tujuan barang ke stok awal
+            **/
+            $stokawal = Barang::getRiwayatStokAkhir($rsKonversi->idbarangtujuan);
+            $stokmasuk = 0;
+            $stokkeluar = $rsKonversi->jlhbarangtujuan;
+            $stokakhir = $stokawal + $stokmasuk- $stokkeluar;
+
+            //insert tabel riwayat stok
+            $riwayatstok = array(
+                'tglriwayat' => date('Y-m-d H:i:s'),
+                'idtransaksi' => $rsKonversi->idkonversi,
+                'tgltransaksi' => $rsKonversi->tglkonversi,
+                'idbarang' => $rsKonversi->idbarangtujuan,
+                'stokawal' => $stokawal,
+                'stokmasuk' => $stokmasuk,
+                'stokkeluar' => $stokkeluar,
+                'stokakhir' => $stokakhir,
+                'hargasebelumdiskon' => null,
+                'hargasetelahdiskon' => null,
+                'deskripsi' => 'Hapus Konversi Stok Barang',
+                'idpengguna' => session()->get('idpengguna'),
+                'namapengguna' => session()->get('namapengguna'),
+                'jenistransaksi' => 'Konversi Stok',
+            );
+            DB::table('riwayatstok')->insert($riwayatstok);
+
+            //update stok di tabel
+            $dataStokBarang = array(
+                'stok' => $stokakhir
+            );
+            DB::table('barang')
+                ->where('idbarang', $rsKonversi->idbarangtujuan)
+                ->update($dataStokBarang);
+
+            $this->App->riwayatAktifitas($rsKonversi, 'konversistok', 'hapusData');
+
+            return ['status' => 'success', 'message' => "Data berhasil dihapus"];
+        } catch (QueryException $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        } catch (\Exception $e) {
+            return ['status' => 'error', 'message' => 'Terjadi kesalahan: ' . $e->getMessage()];
+        }
+    }
+
 
     public function createID()
     {
-        return DB::select('SELECT create_idpenyesuaianstok() AS id')[0]->id;
+        return DB::select('SELECT create_idkonversi() AS id')[0]->id;
     }
 
-    public function getDetail($idpenyesuaianstok)
-    {
-        return DB::table('v_penyesuaianstokdetail')
-            ->where('idpenyesuaianstok', $idpenyesuaianstok)
-            ->get();
-    }
 }

@@ -19,7 +19,7 @@ INSERT INTO menus (idmenus, menus, parent, urlmenus, iconmenus, urut, levels, st
 ('M062', 'Satuan', 'M003', 'satuan', 'far fa-circle', 145, 1, 'Aktif', 'Lihat, Tambah, Edit, Hapus'),
 ('M022', 'Barang', 'M003', 'barang', 'far fa-circle', 150, 1, 'Aktif', 'Lihat, Tambah, Edit, Hapus'),
 ('MB01', 'Kartu Stok Barang', 'M003', 'kartustokbarang', 'far fa-circle', 155, 1, 'Aktif', 'Lihat'),
-('MB03', 'Konversi Barang', 'M003', 'konversibarang', 'far fa-circle', 156, 1, 'Aktif', 'Lihat, Tambah, Edit, Hapus'),
+('MB03', 'Konversi Barang', 'M003', 'konversistok', 'far fa-circle', 156, 1, 'Aktif', 'Lihat, Tambah, Edit, Hapus'),
 ('M023', 'Stock Opname', 'M003', 'stockopname', 'far fa-circle', 160, 1, 'Aktif', 'Lihat, Tambah, Edit, Hapus'),
 ('MB02', 'Penyesuaian Stok', 'M003', 'penyesuaianstok', 'far fa-circle', 161, 1, 'Aktif', 'Lihat, Tambah, Edit, Hapus'),
 ('M024', 'Laporan Persediaan', 'M003', 'lappersediaan', 'far fa-circle', 170, 1, 'Aktif', 'Lihat'),
@@ -71,3 +71,8 @@ INSERT INTO menus (idmenus, menus, parent, urlmenus, iconmenus, urut, levels, st
 ('RI01', 'Riwayat Update', NULL, 'riwayatupdate', 'fa fa-calendar', 609, 0, 'Aktif', ''),
 
 ('M010', 'Logout', NULL, 'logout', 'fas fa-sign-out-alt text-warning', 610, 0, 'Aktif', '');
+
+
+/**
+	UPDATE menus SET urlmenus = 'konversistok' WHERE idmenus = 'MB03'
+**/

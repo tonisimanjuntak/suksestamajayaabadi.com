@@ -58,6 +58,7 @@ use App\Http\Controllers\SaldopiutangController;
 use App\Http\Controllers\SalesController;
 use App\Http\Controllers\StockopnameController;
 use App\Http\Controllers\PenyesuaianstokController;
+use App\Http\Controllers\KonversistokController;
 use App\Http\Controllers\SuratjalanController;
 use App\Http\Controllers\WilayahController;
 use App\Http\Controllers\AjaxController;
@@ -394,6 +395,18 @@ Route::middleware(['check.menu.access'])->group(function () {
             Route::post('penyesuaianstok/simpanData', 'simpanData');
             Route::get('penyesuaianstok/listdata', 'listdata')->name('penyesuaianstok.listdata');
             Route::get('penyesuaianstok/cetak/{idpenyesuaianstok}', 'cetak');            
+        });
+
+
+        Route::controller(KonversistokController::class)->group(function () {
+            Route::get('konversistok', 'index');
+            Route::get('konversistok/tambah', 'tambah');
+            Route::get('konversistok/edit/{PenggunaID}', 'edit');
+            Route::get('konversistok/getDataID', 'getDataID');
+            Route::get('konversistok/hapus/{id}', 'hapus');
+            Route::post('konversistok/simpanData', 'simpanData');
+            Route::get('konversistok/listdata', 'listdata')->name('konversistok.listdata');
+            Route::get('konversistok/cetak/{idkonversi}', 'cetak');            
         });
 
         Route::controller(SaldoawalController::class)->group(function () {

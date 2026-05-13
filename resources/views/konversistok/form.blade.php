@@ -9,12 +9,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Penyesuaian Stok</h1>
+                    <h1 class="m-0">Konversi Stok</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="{{ url('/') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item"><a href="{{ url('penyesuaianstok') }}">Penyesuaian Stok</a></li>
+                        <li class="breadcrumb-item"><a href="{{ url('konversistok') }}">Konversi Stok</a></li>
                         <li class="breadcrumb-item label-judul active">Tambah</li>
                     </ol>
                 </div>
@@ -32,14 +32,14 @@
                         <div class="card-header">
                             <div class="d-flex justify-content-between">
                                 <h4 class="card-title font-weight-bold"><i class="fab fa-wpforms mr-1"></i><span
-                                        class="label-judul"></span> Data Penyesuaian Stok</h4>
+                                        class="label-judul"></span> Data Konversi Stok</h4>
                             </div>
                         </div>
                         <div class="card-body">
 
 
                             <meta name="csrf-token" content="{{ csrf_token() }}">
-                            <input type="hidden" name="idpenyesuaianstok" id="idpenyesuaianstok">
+                            <input type="hidden" name="idkonversi" id="idkonversi">
                             <div class="row">
                                 <div class="col-12">
                                     <div class="card">
@@ -50,8 +50,7 @@
                                                     <div class="form-group">
                                                         <label for="keterangan">Keterangan</label>
                                                         <textarea name="keterangan" id="keterangan" rows="3"
-                                                            class="form-control"
-                                                            placeholder="Keterangan Penyesuaian Stok"
+                                                            class="form-control" placeholder="Keterangan konversi stok"
                                                             autofocus></textarea>
                                                     </div>
                                                 </div>
@@ -61,100 +60,93 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-12">
+                                <div class="col-md-6">
                                     <div class="card">
                                         <div class="card-body">
                                             <div class="row">
                                                 <div class="col-12">
-                                                    <h3 class="text-muted">Detail Barang</h3>
+                                                    <h3 class="text-muted">Barang Asal</h3>
                                                 </div>
-                                                <div class="col-md-6">
+                                                <div class="col-md-9">
                                                     <div class="form-group">
                                                         <label for="">Nama Barang</label>
-                                                        <select name="idbarang" id="idbarang"
+                                                        <select name="idbarangasal" id="idbarangasal"
                                                             class="form-control searchBarang">
                                                         </select>
-                                                        <input type="hidden" name="namabarang" id="namabarang">
+                                                        <input type="hidden" name="namabarangasal" id="namabarangasal">
+                                                        <input type="hidden" name="idsatuanasal" id="idsatuanasal">
+                                                        <input type="hidden" name="jumlahstokasal" id="jumlahstokasal">
                                                     </div>
                                                 </div>
-                                                <div class="col-md-2">
+                                                <div class="col-md-3">
                                                     <div class="form-group">
-                                                        <label for="">Stok System</label>
-                                                        <input type="number" name="stoksystem" id="stoksystem"
-                                                            class="form-control" value="0" readonly>
+                                                        <label for="">Jumlah Konversi</label>
+                                                        <input type="number" name="jumlahbarangasal"
+                                                            id="jumlahbarangasal" class="form-control" min="0"
+                                                            value="0">
                                                     </div>
                                                 </div>
-                                                <div class="col-md-2">
-                                                    <div class="form-group">
-                                                        <label for="">Stok Real</label>
-                                                        <input type="number" name="stokreal" id="stokreal"
-                                                            class="form-control" min="0" value="0">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <div class="form-group">
-                                                        <label for="">Selisih</label>
-                                                        <input type="number" name="selisih" id="selisih"
-                                                            class="form-control" value="0" readonly>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-10">
-                                                    <div class="form-group">
-                                                        <label for="">Keterangan Barang</label>
-                                                        <textarea name="keterangandetail" id="keterangandetail" rows="2"
-                                                            class="form-control"
-                                                            placeholder="Keterangan detail barang"></textarea>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <div class="form-group">
-                                                        <button type="button" class="btn btn-primary mt-5"
-                                                            id="tambahbarang"><i
-                                                                class="fas fa-plus mr-1"></i>Tambah</button>
-                                                    </div>
-                                                </div>
+                                                <div class="col-12">
+                                                    <div class="table-responsive">
+                                                        <table class="table">
+                                                            <tbody id="tbodyBarangAsal">
 
-                                                <div class="col-12 mt-3">
-                                                    <table class="table">
-                                                        <thead>
-                                                            <tr>
-                                                                <th style="width: 5%; text-align: center;">No</th>
-                                                                <th style="width: 10%; text-align: center;">Id Barang
-                                                                </th>
-                                                                <th style="width: 35%; text-align: center;">Nama Barang
-                                                                </th>
-                                                                <th style="width: 10%; text-align: center;">Stock System
-                                                                </th>
-                                                                <th style="width: 10%; text-align: center;">Stock Real
-                                                                </th>
-                                                                <th style="width: 10%; text-align: center;">Selisih</th>
-                                                                <th style="width: 20%; text-align: center;">Keterangan
-                                                                </th>
-                                                                <th style="width: 5%; text-align: center;">#</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody id="detailbarang">
-                                                        </tbody>
-                                                    </table>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
                                                 </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <h3 class="text-muted">Barang Tujuan</h3>
+                                                </div>
+                                                <div class="col-md-9">
+                                                    <div class="form-group">
+                                                        <label for="">Nama Barang</label>
+                                                        <select name="idbarangtujuan" id="idbarangtujuan"
+                                                            class="form-control searchBarang">
+                                                        </select>
+                                                        <input type="hidden" name="namabarangtujuan"
+                                                            id="namabarangtujuan">
+                                                        <input type="hidden" name="idsatuantujuan" id="idsatuantujuan">
+                                                        <input type="hidden" name="jumlahstoktujuan"
+                                                            id="jumlahstoktujuan">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="">Jumlah Hasil</label>
+                                                        <input type="number" name="jumlahbarangtujuan"
+                                                            id="jumlahbarangtujuan" class="form-control" min="0"
+                                                            value="0">
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="table-responsive">
+                                                        <table class="table">
+                                                            <tbody id="tbodyBarangTujuan">
 
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-
-
-
-
-
                             </div>
-
                         </div>
                         <div class="card-footer">
                             <button type="button" class="btn btn-primary float-right" id="simpan"><i
                                     class="fa fa-save mr-1"></i>Simpan</button>
-                            <a href="{{ url('penyesuaianstok') }}" class="btn btn-default float-right mr-1"><i
+                            <a href="{{ url('konversistok') }}" class="btn btn-default float-right mr-1"><i
                                     class="fa fa-chevron-left mr-1"></i>Kembali</a>
                         </div>
                     </div>
@@ -173,32 +165,69 @@
 @section('scripts')
 
 <script type="text/javascript">
-    var idpenyesuaianstok = "<?php echo $idpenyesuaianstok; ?>";
+    var idkonversi = "<?php echo $idkonversi; ?>";
 
     $(document).ready(function() {
         $("form").attr('autocomplete', 'off');
     });
 
-    $(document).on('change', '#idbarang', function(e) {
-        var idbarang = $(this).val();
-        $('#namabarang').val("");
-        $('#stoksystem').val("0");
-        $('#stokreal').val("0");
-        $('#selisih').val("0");
-        $('#keterangandetail').val("");
+    $(document).on('change', '#idbarangasal', function(e) {
+        var idbarangasal = $(this).val();        
 
         $.ajax({
             url: "{{ url('ajax/getBarangId') }}",
             type: 'GET',
             dataType: 'json',
-            data: {'idbarang': idbarang},
+            data: {'idbarang': idbarangasal},
         })
         .done(function(response) {
             console.log(response);
             if (response) {
-                $('#namabarang').val(response.namabarang);
-                $('#stoksystem').val(response.stok);
-                $('#stokreal').val("");                
+                var addText = `<tr>
+                                    <td style="text-alignment: left;">Kode
+                                        Barang</td>
+                                    <td style="text-alignment: left;">:</td>
+                                    <td style="text-alignment: left;">
+                                         ` + response.kdbarang + `
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-alignment: left;">Nama
+                                        Barang</td>
+                                    <td style="text-alignment: left;">:</td>
+                                    <td style="text-alignment: left;">
+                                         ` + response.namabarang + `
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-alignment: left;">Satuan
+                                    </td>
+                                    <td style="text-alignment: left;">:</td>
+                                    <td style="text-alignment: left;">
+                                         ` + response.namasatuan + `
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-alignment: left;">
+                                        Kategori</td>
+                                    <td style="text-alignment: left;">:</td>
+                                    <td style="text-alignment: left;">
+                                        ` + response.namakategori + `
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-alignment: left;">
+                                        Stok</td>
+                                    <td style="text-alignment: left;">:</td>
+                                    <td style="text-alignment: left;">
+                                        ` + response.stok + `
+                                    </td>
+                                </tr>`;
+
+                $('#tbodyBarangAsal').html(addText);
+                $('#idsatuanasal').val(response.idsatuan);
+                $('#namabarangasal').val(response.namabarang);
+                $('#jumlahstokasal').val(response.stok);
             }
         })
         .fail(function() {
@@ -206,94 +235,88 @@
         });
     });
 
-    $(document).on('change', '#stokreal', function() {
-        stoksystem = $('#stoksystem').val();
-        stokreal = $(this).val();
-        selisih = parseInt(stokreal) - parseInt(stoksystem);
-        $('#selisih').val(selisih);
-    })
 
-    $(document).on('click', '#tambahbarang', function() {
-        var idbarang = $('#idbarang').val();
-        var namabarang = $('#namabarang').val();
-        var stoksystem = $('#stoksystem').val();
-        var stokreal = $('#stokreal').val();
-        var selisih = $('#selisih').val();
-        var keterangandetail = $('#keterangandetail').val();
+    $(document).on('change', '#idbarangtujuan', function(e) {
+        var idbarangtujuan = $(this).val();        
 
-        if (idbarang == "" || idbarang == null) {
-            swal("Informasi", "Nama barang tidak boleh kosong!", "info");
-            return;
-        }
+        $.ajax({
+            url: "{{ url('ajax/getBarangId') }}",
+            type: 'GET',
+            dataType: 'json',
+            data: {'idbarang': idbarangtujuan},
+        })
+        .done(function(response) {
+            console.log(response);
+            if (response) {
+                var addText = `<tr>
+                                    <td style="text-alignment: left;">Kode
+                                        Barang</td>
+                                    <td style="text-alignment: left;">:</td>
+                                    <td style="text-alignment: left;">
+                                         ` + response.kdbarang + `
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-alignment: left;">Nama
+                                        Barang</td>
+                                    <td style="text-alignment: left;">:</td>
+                                    <td style="text-alignment: left;">
+                                         ` + response.namabarang + `
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-alignment: left;">Satuan
+                                    </td>
+                                    <td style="text-alignment: left;">:</td>
+                                    <td style="text-alignment: left;">
+                                         ` + response.namasatuan + `
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-alignment: left;">
+                                        Kategori</td>
+                                    <td style="text-alignment: left;">:</td>
+                                    <td style="text-alignment: left;">
+                                        ` + response.namakategori + `
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-alignment: left;">
+                                        Stok</td>
+                                    <td style="text-alignment: left;">:</td>
+                                    <td style="text-alignment: left;">
+                                        ` + response.stok + `
+                                    </td>
+                                </tr>`;
 
-        if (stokreal == "") {
-            swal("Informasi", "Stok real tidak boleh kosong!", "info");
-            return;
-        }
-
-        var tableData = [];
-        $("#detailbarang tr").each(function() {
-            var rowData = [];
-            $(this).find("td").not(":last").each(function() {
-                rowData.push($(this).text());
-            });
-            tableData.push(rowData);
-        });
-
-        for (var i = 0; i < tableData.length; i++) {
-            if (idbarang == tableData[i][1]) {
-                swal("Informasi", "Barang ini sudah ada!", "info");
-                return;
+                $('#tbodyBarangTujuan').html(addText);
+                $('#idsatuantujuan').val(response.idsatuan);
+                $('#namabarangtujuan').val(response.namabarang);
+                $('#jumlahstoktujuan').val(response.stok);
             }
-        }
-
-        var nomorut = $('#detailbarang tr').length + 1;
-
-        //add ke table
-        var html = `<tr>
-                        <td style="text-align: center;">${nomorut}</td>
-                        <td style="text-align: center;">${idbarang}</td>
-                        <td style="text-align: left;">${namabarang}</td>
-                        <td style="text-align: center;">${stoksystem}</td>
-                        <td style="text-align: center;">${stokreal}</td>
-                        <td style="text-align: center;">${selisih}</td>
-                        <td style="text-align: left;">${keterangandetail}</td>
-                        <td style="text-align: center;"><button class="btn btn-sm btn-danger deleteRow"><i class="fa fa-trash"></i></button></td>
-                    </tr>`;
-
-        $('#detailbarang').append(html);
-        $('#stoksystem').val("0");
-        $('#stokreal').val("0");
-        $('#selisih').val("0");
-        $('#keterangandetail').val("");
-        $('#idbarang').focus();
+        })
+        .fail(function() {
+            console.log('error');
+        });
     });
 
-    $("#detailbarang").on("click", ".deleteRow", function() {
-        $(this).closest("tr").remove();
-    });
+    
 
     function simpanData() {
-        const idpenyesuaianstok = $('#idpenyesuaianstok').val();
+        $('#simpan').attr('disabled', true);
+
+        const idkonversi = $('#idkonversi').val();
         const keterangan = $('#keterangan').val();
-
-        const inputs = document.querySelectorAll('input[name="barang[]"]');
-        let detailPenyesuaianStok = [];
-
-        //ambil detail barang dari row table
-        $("#detailbarang tr").each(function() {
-            var rowData = [];
-            $(this).find("td").not(":last").each(function() {
-                rowData.push($(this).text());
-            });
-            detailPenyesuaianStok.push(rowData);
-        });
-
-        if (detailPenyesuaianStok.length == 0) {
-            swal("Informasi", "Detail barang penyesuaian stok tidak ada!", "info");
-            $('#simpan').attr('disabled', false);
-            return;
-        }
+        const idsatuanasal = $('#idsatuanasal').val();
+        const idsatuantujuan = $('#idsatuantujuan').val();
+        const idbarangasal = $('#idbarangasal').val();
+        const idbarangtujuan = $('#idbarangtujuan').val();
+        const jumlahbarangasal = $('#jumlahbarangasal').val();
+        const jumlahbarangtujuan = $('#jumlahbarangtujuan').val();
+        const namabarangasal = $('#namabarangasal').val();
+        const namabarangtujuan = $('#namabarangtujuan').val();
+        const jumlahstokasal = $('#jumlahstokasal').val();
+        const jumlahstoktujuan = $('#jumlahstoktujuan').val();
 
         if (keterangan=="") {
             swal("Informasi", "Keterangan penyesuaian stok tidak boleh kosong!", "info");
@@ -301,16 +324,76 @@
             return;
         }
 
-        var formData = {
-            'idpenyesuaianstok' : idpenyesuaianstok,
-            'keterangan' : keterangan,
-            'detailPenyesuaianStok' : detailPenyesuaianStok,
+        if (idbarangasal=="" || idbarangasal == null) {
+            swal("Informasi", "Nama barang asal tidak boleh kosong!", "info");
+            $('#simpan').attr('disabled', false);
+            return;
         }
 
+        if (idbarangtujuan=="" || idbarangtujuan == null) {
+            swal("Informasi", "Nama barang tujuan tidak boleh kosong!", "info");
+            $('#simpan').attr('disabled', false);
+            return;
+        }
+
+        if (idsatuanasal=="" || idsatuanasal == null) {
+            swal("Informasi", "Nama Satuan Barang asal belum ada!, silahkan input terlebih dahulu di master barang!", "info");
+            $('#simpan').attr('disabled', false);
+            return;
+        }
+
+        if (idsatuantujuan=="" || idsatuantujuan == null) {
+            swal("Informasi", "Nama Satuan Barang tujuan belum ada!, silahkan input terlebih dahulu di master barang!", "info");
+            $('#simpan').attr('disabled', false);
+            return;
+        }
+
+        if (jumlahbarangasal=="" || parseInt(jumlahbarangasal) == 0) {
+            swal("Informasi", "Jumlah barang asal tidak boleh kosong!", "info");
+            $('#simpan').attr('disabled', false);
+            return;
+        }
+
+        if (jumlahbarangtujuan=="" || parseInt(jumlahbarangtujuan) == 0) {
+            swal("Informasi", "Jumlah barang tujuan tidak boleh kosong!", "info");
+            $('#simpan').attr('disabled', false);
+            return;
+        }
+
+        if (idbarangasal == idbarangtujuan) {
+            swal("Informasi", "Barang asal dan barang tujuan tidak boleh sama!", "info");
+            $('#simpan').attr('disabled', false);
+            return;            
+        }
+
+        if (idsatuanasal == idsatuantujuan) {
+            swal("Informasi", "Satuan asal dan satuan tujuan tidak boleh sama!", "info");
+            $('#simpan').attr('disabled', false);
+            return;            
+        }
+
+        if ( parseInt(jumlahbarangasal) > parseInt(jumlahstokasal) ) {
+            swal("Informasi", "Jumlah barang asal tidak boleh melebihi stok barang asal!", "info");
+            $('#simpan').attr('disabled', false);
+            return;            
+        }
+
+        
+
+        var formData = {
+            'idkonversi' : idkonversi,
+            'keterangan' : keterangan,
+            'idsatuanasal' : idsatuanasal,
+            'idsatuantujuan' : idsatuantujuan,
+            'idbarangasal' : idbarangasal,
+            'idbarangtujuan' : idbarangtujuan,
+            'jumlahbarangasal' : jumlahbarangasal,
+            'jumlahbarangtujuan' : jumlahbarangtujuan
+        }
 
         $.ajax({
                 type: 'POST',
-                url: "{{ url('penyesuaianstok/simpanData') }}",
+                url: "{{ url('konversistok/simpanData') }}",
                 data: JSON.stringify(formData),
                 dataType: 'json',
                 contentType: 'application/json; charset=utf-8',
@@ -325,14 +408,17 @@
                 if (result.success) {
                     swal("Berhasil", "Berhasil simpan data!", "success")
                         .then(function() {
-                            window.location.href = "{{ url('penyesuaianstok') }}";
+                            window.location.href = "{{ url('konversistok') }}";
                         });
                 } else {
                     swal("Informasi", result.msg, "info");
+                    $('#simpan').attr('disabled', false);
                 }
             })
             .fail(function() {
-                console.log("Gagal script simpanData!");
+                $('#simpan').attr('disabled', false);
+                console.log("Gagal script simpanData1!");
+                swal("Error", "Terjadi kesalahan script!!", "error");
             });
             
     }
@@ -340,6 +426,8 @@
     $('#simpan').click(function (e) { 
         e.preventDefault();
         $(this).attr('disabled', true);
+
+        
 
         swal({
                 title: "Simpan?",

@@ -7,12 +7,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Penyesuaian Stok</h1>
+                    <h1 class="m-0">Konversi Stok</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="{{ url('/') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Penyesuaian Stok</li>
+                        <li class="breadcrumb-item active">Konversi Stok</li>
                     </ol>
                 </div>
             </div>
@@ -29,8 +29,8 @@
                         <div class="card-header">
                             <div class="">
                                 <h3 class="card-title font-weight-bold"><i class="far fa-list-alt mr-1"></i>List Data
-                                    Penyesuaian Stok</h3>
-                                <a href="{{ url('penyesuaianstok/tambah') }}"
+                                    Konversi Stok</h3>
+                                <a href="{{ url('konversistok/tambah') }}"
                                     class="btn btn-sm btn-primary float-right ml-1" <?php if
                                     (!str_contains(strtolower(session('hakaksi_aktif')), 'tambah' )) {
                                     echo 'style="display: none;"' ; } ?> ><i class="fa fa-plus-circle mr-1"></i> Tambah
@@ -43,13 +43,13 @@
                                 <div class="col-md-6">
                                     <div class="row">
                                         <div class="col-12">
-                                            <label for="">Tanggal Penyesuaian Stok</label>
+                                            <label for="">Tanggal Konversi Stok</label>
                                         </div>
                                         <div class="col-md-8">
                                             <div class="form-group row">
                                                 <div class="col-md-5">
                                                     <input type="date" name="tglawal" id="tglawal" class="form-control"
-                                                        value="{{ date('Y-m-d', strtotime('-7 days')) }}">
+                                                        value="{{ date('Y-01-01') }}">
                                                 </div>
                                                 <label for="" class="col-md-2 col-form-label text-center">S/D</label>
                                                 <div class="col-md-5">
@@ -73,10 +73,11 @@
                                         <thead class="">
                                             <tr>
                                                 <th style="width: 5%; text-align: center;">No</th>
-                                                <th style="width: 15%; text-align: center;">ID Penyesuaian</th>
-                                                <th style="width: 15%; text-align: center;">Tanggal</th>
+                                                <th style="text-align: center;">ID Konversi</th>
+                                                <th style="text-align: center;">Tanggal</th>
                                                 <th style="text-align: left;">Keterangan</th>
-                                                <th style="width: 15%; text-align: center;">Nama Petugas</th>
+                                                <th style="text-align: center;">Barang Asal</th>
+                                                <th style="text-align: center;">Tujuan</th>
                                                 <th style="width: 10%; text-align: center;">Aksi</th>
                                             </tr>
                                         </thead>
@@ -107,7 +108,7 @@
             processing: true,
             serverSide: true,
             ajax: {
-                url: "{{ route('penyesuaianstok.listdata') }}",
+                url: "{{ route('konversistok.listdata') }}",
                 type: 'GET',
                 data: function(d) {
                     d.tglawal = $('#tglawal').val();
@@ -127,14 +128,14 @@
                     searchable: false
                 },
                 {
-                    data: 'idpenyesuaianstok',
-                    name: 'idpenyesuaianstok',
+                    data: 'idkonversi',
+                    name: 'idkonversi',
                     className: 'dt-body-center',
                     orderable: true,
                 },
                 {
-                    data: 'tglpenyesuaianstok',
-                    name: 'tglpenyesuaianstok',
+                    data: 'tglkonversi',
+                    name: 'tglkonversi',
                     className: 'dt-body-center',
                     orderable: true,
                 },
@@ -145,8 +146,14 @@
                     orderable: false,
                 },
                 {
-                    data: 'namapengguna',
-                    name: 'namapengguna',
+                    data: 'namabarangasal',
+                    name: 'namabarangasal',
+                    className: 'dt-body-center',
+                    orderable: false,
+                },
+                {
+                    data: 'namabarangtujuan',
+                    name: 'namabarangtujuan',
                     className: 'dt-body-center',
                     orderable: false,
                 },
