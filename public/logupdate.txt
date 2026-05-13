@@ -80,3 +80,5 @@
 [2026-05-12] [bugfix] Cetak Invoice (Perbaiki Tanggal jatuh tempo nya salah menjadi 1970-01-01)
 [2026-05-12] [customize] Laporan Penagihan (Request Kristin, sisa umur ganti jadi umur, ada pilihan yang piutang yang tidak lunas saja, ada range tanggal periode)
 [2026-05-12] [feature] Buku Piutang (tambah cetakan buku piutang di list Buku Piutang)
+
+[2026-05-13] [feature] Konversi Stok Barang (tambah menu konversi stok dari satuan besar ke satuan kecil)
