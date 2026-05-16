@@ -92,7 +92,7 @@
                     <th width="10%" style="text-align:center;">SALES</th>
                     <th width="10%" style="text-align:center;">KASIR</th>
                     <th width="10%" style="text-align:center;">KONSUMEN</th>
-                    <th width="10%" style="text-align:center;">UMUR</th>
+                    <th width="10%" style="text-align:center;">UMUR<br>(HARI)</th>
                     <th width="10%" style="text-align:center;">DPP</th>
                     <th width="10%" style="text-align:center;">PPN</th>
                     <th width="10%" style="text-align:center;">JUMLAH</th>
