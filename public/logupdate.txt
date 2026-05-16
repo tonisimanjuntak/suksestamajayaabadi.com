@@ -83,4 +83,4 @@
 
 [2026-05-13] [feature] Konversi Stok Barang (tambah menu konversi stok dari satuan besar ke satuan kecil)
 
-[2026-05-13] [customize] Lap Penjualan (Tolong bagian umurnya diubah ke angka aja ya. Jgn pakai 1 bln 1 hari gitu. Misal jadi 31 hari, 32 hari)
+[2026-05-16] [customize] Lap Penjualan (Tolong bagian umurnya diubah ke angka aja ya. Jgn pakai 1 bln 1 hari gitu. Misal jadi 31 hari, 32 hari)
