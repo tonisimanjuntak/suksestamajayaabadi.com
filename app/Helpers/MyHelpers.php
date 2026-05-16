@@ -387,7 +387,7 @@ function hitungUmurPiutang($tglPiutang, $tglHitung = null)
     }
     
     // Tanggal hitung (default hari ini)
-    if ($tglHitung === null) {
+    if (empty($tglHitung)) {
         $tglHitung = Carbon::now();
     } elseif (!$tglHitung instanceof Carbon) {
         $tglHitung = Carbon::parse($tglHitung);
@@ -395,38 +395,9 @@ function hitungUmurPiutang($tglPiutang, $tglHitung = null)
     
     // Validasi tanggal piutang tidak boleh lebih besar dari tanggal hitung
     if ($tglPiutang->gt($tglHitung)) {
-        return [
-            'tahun' => 0,
-            'bulan' => 0,
-            'hari' => 0,
-            'string' => '0 Hari',
-            'detail' => 'Tanggal piutang lebih besar dari tanggal hitung'
-        ];
+        return 0;
     }
     
-    // Hitung selisih
-    $diff = $tglPiutang->diff($tglHitung);
-    
-    $tahun = $diff->y;
-    $bulan = $diff->m;
-    $hari = $diff->d;
-    
-    $parts = [];        
-    if ($tahun > 0) {
-        $parts[] = $tahun . ' ' . ($tahun == 1 ? 'Tahun' : 'Tahun');
-    }
-    
-    if ($bulan > 0) {
-        $parts[] = $bulan . ' ' . ($bulan == 1 ? 'Bulan' : 'Bulan');
-    }
-    
-    if ($hari > 0) {
-        $parts[] = $hari . ' ' . ($hari == 1 ? 'Hari' : 'Hari');
-    }
-    
-    if (empty($parts)) {
-        return '0 Hari';
-    }
-    
-    return implode(' ', $parts);
+    // Hitung selisih dalam hari
+    return $tglHitung->diffInDays($tglPiutang);
 }

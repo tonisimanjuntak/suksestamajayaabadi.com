@@ -51,6 +51,8 @@ class LappenjualanController extends Controller
 
         if ($orderBy == 'bysales') {
             $data['rsPenjualan'] = $this->model->getPenjualanBySales($tglawal, $tglakhir, $idkonsumen, $idpengguna, $carabayar, $idsales, $idwilayah, $idpenjualan);
+            // dd($data['rsPenjualan']);
+
             $data['tglawal'] = $tglawal;
             $data['tglakhir'] = $tglakhir;
             $data['idkonsumen'] = $idkonsumen;

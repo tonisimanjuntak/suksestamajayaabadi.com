@@ -167,6 +167,8 @@
                         @if ($row->carabayar == 'Piutang')
                         @if (!empty($row->tgllunas))
                         {{ hitungUmurPiutang($row->tglpiutang, $row->tgllunas) }}
+                        {{-- {{ hitungUmurPiutang($row->tglpiutang, '2026-05-16') }} --}}
+
                         @else
                         {{ hitungUmurPiutang($row->tglpiutang) }}
                         @endif
