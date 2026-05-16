@@ -52,7 +52,8 @@
                                                                 class="form-control" value="{{ date('Y-m-d') }}">
                                                         </div>
                                                     </div>
-                                                    <div class="form-group row">
+                                                    {{-- di hide dulu karena tidak ada status lunas --}}
+                                                    <div class="form-group row" style="display: none;">
                                                         <label for="idsales" class="col-md-3 col-form-label">Status
                                                             Lunas</label>
                                                         <div class="col-md-9">
@@ -60,7 +61,8 @@
                                                                 class="form-control select2">
                                                                 <option value="">Semua...</option>
                                                                 <option value="Lunas">Lunas</option>
-                                                                <option value="Belum Lunas" checked>Belum Lunas</option>
+                                                                <option value="Belum Lunas" selected>Belum Lunas
+                                                                </option>
                                                             </select>
                                                         </div>
                                                     </div>

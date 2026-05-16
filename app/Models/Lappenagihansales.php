@@ -13,7 +13,7 @@ class Lappenagihansales extends Model
 
     public function getPenagihan($idsales, $statuslunas, $tglawal, $tglakhir)
     {
-        $query = DB::table("v_piutang_penagihan_laporan")
+        $query = DB::table("v_piutang_penagihan_belumlunas")
             ->where("idsales", $idsales)
             ->whereRaw("tglinvoice BETWEEN '$tglawal' AND '$tglakhir'")
             ->orderBy('namakonsumen', 'desc');
