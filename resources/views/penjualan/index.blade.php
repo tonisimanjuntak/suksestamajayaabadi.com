@@ -100,6 +100,7 @@
                                                 <th style="text-align: center;">Tanggal/<br>No Invoice</th>
                                                 <th style="text-align: left;">Nama Konsumen</th>
                                                 <th style="text-align: left;">Keterangan</th>
+                                                <th style="text-align: center;">Sales</th>
                                                 <th style="text-align: center;">DPP</th>
                                                 <th style="text-align: center;">PPN</th>
                                                 <th style="text-align: right;">Total</th>
@@ -177,6 +178,12 @@
                     data: 'keterangan',
                     name: 'keterangan',
                     className: 'dt-body-left',
+                    orderable: false,
+                },
+                {
+                    data: 'namasales',
+                    name: 'namasales',
+                    className: 'dt-body-center',
                     orderable: false,
                 },
                 {

@@ -159,6 +159,7 @@ class PenjualanController extends Controller
                 'tglinvoice' => $row->tglinvoice . '<br>' . $row->noinvoice,
                 'namakonsumen' => $row->namakonsumen . '<br>(' . $row->namawilayah . ')',
                 'keterangan' => (!empty($row->keterangan) ? $row->keterangan . '<br>' : '')  .'ID TR: '.$row->idpenjualan.'<br>Cara Bayar: '.$row->carabayar.'<br>Operator: '.$row->namapengguna,
+                'namasales' => $row->namasales,
                 'totaldpp' => format_rupiah($row->totaldpp),
                 'totalppn' => format_rupiah($row->totalppn),
                 'totalinvoice' => format_rupiah($row->totalinvoice),
