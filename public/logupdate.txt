@@ -90,3 +90,4 @@
 
 [2026-05-19] [customize] Laporan Persediaan  - Bisa setting lihat per tanggal berapa
 [2026-05-19] [customize] Master Barang - bisa lgsg lihat kartu stok
+[2026-05-19] [customize] Riwayat Aktifitas - muncul kan riwayat pembelian dan penjualan

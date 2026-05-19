@@ -27,14 +27,15 @@
 
                     <div class="card">
                         <div class="card-header">
-                            <div class="d-flex justify-content-between">
-                                <h3 class="card-title font-weight-bold"><i class="far fa-list-alt mr-1"></i>List Data
-                                    Penjualan</h3>
-                                <a href="{{ url('penjualan/tambah') }}" class="btn btn-sm btn-primary" <?php if
-                                    (!str_contains(strtolower(session('hakaksi_aktif')), 'tambah' ) ) {
-                                    echo 'style="display: none;"' ; } ?>
-                                    ><i class="fa fa-plus-circle mr-1"></i> Tambah Data</a>
-                            </div>
+                            <h3 class="card-title font-weight-bold"><i class="far fa-list-alt mr-1"></i>List Data
+                                Penjualan</h3>
+                            <a href="{{ url('penjualan/tambah') }}" class="btn btn-sm btn-primary float-right" <?php if
+                                (!str_contains(strtolower(session('hakaksi_aktif')), 'tambah' ) ) {
+                                echo 'style="display: none;"' ; } ?>
+                                ><i class="fa fa-plus-circle mr-1"></i> Tambah Data</a>
+                            <button class="btn btn-info btn-sm float-right mr-1 lihat-riwayat"
+                                data-riwayat-table="penjualan"><i class="fa fa-history mr-1"></i> Lihat
+                                Riwayat</button>
                         </div>
                         <div class="card-body">
                             <div class="row">
