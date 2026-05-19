@@ -94,11 +94,13 @@
                     <th width="5%" style="text-align:center;">:</th>
                     <th width="80%" style="text-align:left;">{{ $rowBarang->namabarang }}</th>
                 </tr>
+                @if ($tglawal)
                 <tr style="font-size:10px; font-weight:bold;">
                     <th width="15%" style="text-align:left;">PERIODE</th>
                     <th width="5%" style="text-align:center;">:</th>
                     <th width="80%" style="text-align:left;">{{ $tglawal . ' S/D ' . $tglakhir }}</th>
                 </tr>
+                @endif
             </thead>
         </table>
     </div>

@@ -604,6 +604,7 @@ Route::middleware(['check.menu.access'])->group(function () {
             Route::get('kartustokbarang', 'index');
             Route::get('kartustokbarang/getDataID', 'getDataID');
             Route::get('kartustokbarang/cetak/{jenisCetakan}/{idkategori}/{tglwal}/{tglakhir}', 'cetak');
+            Route::get('kartustokbarang/cetak2/{idkategori}', 'cetak2');
             Route::get('kartustokbarang/listdata', 'listdata')->name('kartustokbarang.listdata');
         });
 

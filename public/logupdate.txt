@@ -88,4 +88,5 @@
 
 [2026-05-18] [customize] Penjualan (Daftar Penjualan tampilkan PPN)
 
-[2026-05-19] [customize] LAPORAN PERSEDIAAN  - MUNCUL FILTER SAMPAI TANGGAL BRP
+[2026-05-19] [customize] Laporan Persediaan  - Bisa setting lihat per tanggal berapa
+[2026-05-19] [customize] Master Barang - bisa lgsg lihat kartu stok

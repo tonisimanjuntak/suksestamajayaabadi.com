@@ -38,4 +38,15 @@ class Kartustokbarang extends Model
                     
         return $query->get();
     }
+
+    public function getKartuStokLimit100($idbarang)
+    {
+
+        $query = DB::table('v_riwayatstok')
+                    ->where('idbarang', $idbarang)
+                    ->limit(100)
+                    ->orderBy('idriwayat', 'desc');
+                    
+        return $query->get();
+    }
 }

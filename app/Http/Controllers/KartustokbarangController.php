@@ -95,6 +95,7 @@ class KartustokbarangController extends Controller
             composer require tecnickcom/tcpdf
         */
 
+        
         $rsKartuStok = $this->Kartustokbarang->getKartuStok($idbarang, $tglawal, $tglakhir);
         // dd($rsKartuStok);
 
@@ -139,4 +140,46 @@ class KartustokbarangController extends Controller
             $pdf->Output('kartu_stok.pdf', 'I');
         }
     }
+
+    public function cetak2($idbarang)
+    {
+        /*
+            composer require tecnickcom/tcpdf
+        */
+
+        $rsKartuStok = $this->Kartustokbarang->getKartuStokLimit100($idbarang);            
+        
+        $data['tglawal'] = '';
+        $data['tglakhir'] = '';
+        $data['rowBarang'] = Barang::find($idbarang);
+        $data['rsKartuStok'] = $rsKartuStok;
+        $view = view('kartustokbarang.cetak', $data);
+
+        // Buat instance TCPDF
+        $pdf = new TCPDF();
+
+        // Set properti dokumen
+        $pdf->SetCreator(PDF_CREATOR);
+        $pdf->SetAuthor('Your Name');
+        $pdf->SetTitle('Kartu Stok Barang');
+        $pdf->SetSubject('Kartu Stok Barang');
+        $pdf->SetKeywords('TCPDF, PDF, laporan, kartustokbarang');
+        $pdf->SetFont('times', '', 10);
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+
+        // Set margin halaman
+        $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+        $pdf->SetTopMargin(5);
+        // Tambahkan halaman
+        $pdf->AddPage('L');
+
+        // Tulis konten HTML ke dalam PDF
+        $pdf->writeHTML($view, true, false, true, false, '');
+
+        // Output PDF
+        $pdf->Output('kartu_stok.pdf', 'I');
+        
+    }
+
 }
