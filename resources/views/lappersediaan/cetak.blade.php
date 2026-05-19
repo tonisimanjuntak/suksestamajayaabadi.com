@@ -72,6 +72,7 @@
 
     <div class="judullaporan">
         <div class="nama-laporan">LAPORAN PERSEDIAAN BARANG</div>
+        <div class="periode-laporan">PERIODE {{ Str::upper(tglindonesia($tglriwayat)) }}</div>
     </div>
 
     <div class="content">
@@ -101,7 +102,7 @@
                         {{ $p->namabarang }}
                     </td>
                     <td style="width: 20%; text-align: center;">{{ $p->namakategori }}</td>
-                    <td style="width: 15%; text-align: right;">{{ format_rupiah($p->hargajualasli) }}</td>
+                    <td style="width: 15%; text-align: right;">{{ format_rupiah($p->hargajualdiskon) }}</td>
                     <td style="width: 10%; text-align: center;">{{ $p->stok }}</td>
                 </tr>
                 @endforeach

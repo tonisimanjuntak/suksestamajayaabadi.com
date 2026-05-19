@@ -595,7 +595,7 @@ Route::middleware(['check.menu.access'])->group(function () {
         Route::controller(LappersediaanController::class)->group(function () {
             Route::get('lappersediaan', 'index');
             Route::get('lappersediaan/getDataID', 'getDataID');
-            Route::get('lappersediaan/cetak/{jenisCetakan}/{idkategori}', 'cetak');
+            Route::get('lappersediaan/cetak/{jenisCetakan}/{tglriwayat}/{idkategori}', 'cetak');
             Route::get('lappersediaan/listdata', 'listdata')->name('lappersediaan.listdata');
         });
 
