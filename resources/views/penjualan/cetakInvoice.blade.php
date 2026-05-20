@@ -244,7 +244,8 @@
         @foreach ($rsDetail as $row)
         <tr class="fs-9">
             <td class="add-border-left add-border-right" width="4%" align="center">{{ $no++ }}</td>
-            <td class="add-border-left add-border-right" width="53%" align="left">{{ $row->namabarang }}</td>
+            <td class="add-border-left add-border-right" width="53%" align="left"><strong>{{$row->namasatuan}}</strong>
+                {{ $row->namabarang }}</td>
             <td class="add-border-left add-border-right" width="7%" align="center">{{ $row->jumlahjual }}</td>
             <td class="add-border-left add-border-right" width="12%" align="right">
                 @php

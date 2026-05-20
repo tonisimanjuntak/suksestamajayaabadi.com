@@ -138,7 +138,8 @@
 
                         <tr style="font-size: 12px;">
                             <td style="text-align: center;">{{ $no++ }}</td>
-                            <td style="text-align: left;">{{ $row->namabarang }}</td>
+                            <td style="text-align: left;"><strong>{{$row->namasatuan}}</strong> {{ $row->namabarang }}
+                            </td>
                             <td style="text-align: center;">{{ $row->jumlahjual }}</td>
                             <td style="text-align: right;">{{ format_rupiah($row->hargasatuan) }}</td>
                             </td>
