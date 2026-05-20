@@ -32,6 +32,7 @@ class KartustokbarangController extends Controller
         $query = Kartustokbarang::select('*');
 
         $query->where('idbarang', $request->input('idbarang'));
+        $query->whereRaw("(stokmasuk <> stokkeluar)");
         //where tglriwayat >= $tglawal and tglriwayat <= $tglakhir
         $query->whereRaw("CAST(tglriwayat AS DATE) BETWEEN ? AND ?", [$request->input('tglawal'), $request->input('tglakhir')]);
 

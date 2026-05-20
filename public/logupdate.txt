@@ -93,3 +93,4 @@
 [2026-05-19] [customize] Riwayat Aktifitas - muncul kan riwayat pembelian dan penjualan
 
 [2026-05-20] [customize] Cetak Invoice - Munculkan nama satuan barang
+[2026-05-20] [customize] Kartu Stok Barang - kalau mau cek history barang, gak perlu munculkan yg gk ada masuk dan keluar

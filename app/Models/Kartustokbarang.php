@@ -33,6 +33,7 @@ class Kartustokbarang extends Model
 
         $query = DB::table('v_riwayatstok')
                     ->where('idbarang', $idbarang)
+                    ->whereRaw("(stokmasuk <> stokkeluar)")
                     ->whereRaw("CAST(tglriwayat AS DATE) BETWEEN ? AND ?", [$tglawal, $tglakhir])
                     ->orderBy('idriwayat', 'asc');
                     
