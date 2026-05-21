@@ -42,7 +42,6 @@ class Kartustokbarang extends Model
 
     public function getKartuStokLimit100($idbarang)
     {
-
         $query = DB::table('v_riwayatstok')
                     ->where('idbarang', $idbarang)
                     ->limit(100)

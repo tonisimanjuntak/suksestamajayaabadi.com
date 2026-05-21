@@ -94,3 +94,5 @@
 
 [2026-05-20] [customize] Cetak Invoice - Munculkan nama satuan barang
 [2026-05-20] [customize] Kartu Stok Barang - kalau mau cek history barang, gak perlu munculkan yg gk ada masuk dan keluar
+
+[2026-05-21] [customize] Surat Penagihan Sales - Untuk penagihan sales nanti diubah seperti Excel yg saya foto ya. Untuk kolom no 1,2,3 dihapus aja.  Dibuat nama toko nya berurutan dan no invoice nya juga berurutan seperti diexcel. Tambahin jarak untuk setiap toko seperti di Excel.
