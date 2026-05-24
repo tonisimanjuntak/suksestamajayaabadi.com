@@ -1,0 +1,7 @@
+piutang yang dieksport muncul atas nama id sales kantor
+di penagihan piutang munculkan keterangan khusus yang AUTOTF
+1. cristin cetakan penagihan piutang
+2. hpp dan rumus tanam di pembelian
+3. pelunasa massal dan ada diskon
+4. Sewaktu return penjualan maka di anggap sebagai pembayaran piutang dengan keterangan "return ..." terlepas sudah lunas atau belum lunas
+5. 
