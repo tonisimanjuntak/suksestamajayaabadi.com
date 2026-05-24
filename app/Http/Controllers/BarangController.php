@@ -147,6 +147,7 @@ class BarangController extends Controller
                                     </button>
                                     <div class="dropdown-menu">
                                         <a href="' . url('barang/hapus/' . Crypt::encrypt($row->idbarang)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
+                                        <a href="' . url('kartustokbarang/cetak2/' . $row->idbarang) . '" class="dropdown-item" target="_blank">Lihat Kartu Stok</a>
                                     </div>
                                 </div>
                                 <a href="' . url('barang/edit/' . Crypt::encrypt($row->idbarang)) . '" class="btn btn-warning">Edit</a>                                

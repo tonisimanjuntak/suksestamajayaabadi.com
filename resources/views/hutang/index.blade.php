@@ -27,16 +27,17 @@
 
                     <div class="card">
                         <div class="card-header">
-                            <div class="d-flex justify-content-between">
-                                <h3 class="card-title font-weight-bold"><i class="far fa-list-alt mr-1"></i>List Data
-                                    Buku Utang</h3>
-                                <a href="{{ url('hutang/tambah') }}" class="btn btn-sm btn-primary"
-                                    @if (!str_contains(strtolower(session('hakaksi_aktif')), 'tambah') )
-                                        style="display: none;"
-                                    @endif
-                                ><i
-                                        class="fa fa-plus-circle mr-1"></i> Tambah Data</a>
-                            </div>
+                            <h3 class="card-title font-weight-bold"><i class="far fa-list-alt mr-1"></i>List Data
+                                Buku Utang</h3>
+                            <a href="{{ url('hutang/tambah') }}" class="btn btn-sm btn-primary float-right" <?php if
+                                (!str_contains(strtolower(session('hakaksi_aktif')), 'tambah' ) ) {
+                                echo 'style="display: none;"' ; } ?>
+                                ><i class="fa fa-plus-circle mr-1"></i> Tambah Data</a>
+
+
+                            <button class="btn btn-info btn-sm float-right mr-1 lihat-riwayat"
+                                data-riwayat-table="hutangdetail"><i class="fa fa-history mr-1"></i> Lihat
+                                Riwayat</button>
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -49,11 +50,13 @@
                                         <div class="col-md-12">
                                             <div class="form-group row">
                                                 <div class="col-md-5">
-                                                    <input type="date" name="tglawal" id="tglawal" class="form-control" value="{{ date('Y-01-01') }}">
+                                                    <input type="date" name="tglawal" id="tglawal" class="form-control"
+                                                        value="{{ date('Y-01-01') }}">
                                                 </div>
                                                 <label for="" class="col-md-2 col-form-label text-center">S/D</label>
                                                 <div class="col-md-5">
-                                                    <input type="date" name="tglakhir" id="tglakhir" class="form-control" value="{{ date('Y-m-d') }}">
+                                                    <input type="date" name="tglakhir" id="tglakhir"
+                                                        class="form-control" value="{{ date('Y-m-d') }}">
 
                                                 </div>
 
@@ -81,10 +84,12 @@
                                             <label for="">Supplier</label>
                                         </div>
                                         <div class="col-9">
-                                            <select name="idsupplier" id="idsupplier" class="form-control searchSupplier"></select>
+                                            <select name="idsupplier" id="idsupplier"
+                                                class="form-control searchSupplier"></select>
                                         </div>
                                         <div class="col-md-3">
-                                            <button type="button" class="btn btn-success" id="btnCari"><i class="fa fa-search"></i> Cari</button>
+                                            <button type="button" class="btn btn-success" id="btnCari"><i
+                                                    class="fa fa-search"></i> Cari</button>
                                         </div>
                                     </div>
                                 </div>

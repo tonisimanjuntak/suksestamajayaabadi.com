@@ -29,24 +29,24 @@ class LappersediaanController extends Controller
     public function listdata(Request $request)
     {
         // Query dasar
-        $query = Barang::select(['idbarang', 'namabarang', 'namakategori', 'hargabeli', 'hargajualdiskon', 'stok']);
+        
 
-        $query->where('statusaktif', 'Aktif');
+        $where = " Where b.statusaktif = 'Aktif'";
+
+        
         $idkategori = $request->input('idkategori');
-
         if ($idkategori != '' && $idkategori != null) {
-            $query->where('idkategori', $idkategori);
+            $where = $where . " AND b.idkategori = '$idkategori'";
         }
 
         // Cek apakah ada pencarian
         if ($request->has('search') && !empty($request->input('search.value'))) {
             $search = $request->input('search.value');
-            $query->where('idbarang', 'LIKE', "%{$search}%")
-                ->orWhere('namabarang', 'LIKE', "%{$search}%")
-                ->orWhere('namakategori', 'LIKE', "%{$search}%");
+            $where = $where . " AND (b.idbarang LIKE '%{$search}%' OR b.namabarang LIKE '%{$search}%' OR k.namakategori LIKE '%{$search}%')";
         }
 
         // Sorting berdasarkan kolom yang diklik
+        $orderby = "";
         if ($request->has('order')) {
             $orderColumn = $request->input('order.0.column'); // Index kolom yang di-sort
             $orderDirection = $request->input('order.0.dir'); // Arah sorting (asc/desc)
@@ -56,29 +56,30 @@ class LappersediaanController extends Controller
 
             // Pastikan index kolom valid
             if (isset($columns[$orderColumn])) {
-                $query->orderBy($columns[$orderColumn], $orderDirection);
+                // $query->orderBy($columns[$orderColumn], $orderDirection);
+                $orderby = " Order by " . $columns[$orderColumn] . " " . $orderDirection;
             } else {
-                $query->orderBy('namabarang', 'Asc');
+                $orderby = " Order by namabarang ASC";
             }
         } else {
-            $query->orderBy('namabarang', 'Asc');
+            $orderby = " Order by namabarang ASC";
         }
 
-
-        // Hitung total data tanpa filter
-        $totalData = Barang::count();
-
-        // Hitung total data setelah filter (jika ada pencarian)
-        $totalFiltered = $query->count();
 
         // Ambil parameter 'length' dan 'start' dari DataTables
         $limit = $request->input('length', 10);
         $start = $request->input('start', 0);
 
-        // Ambil data dengan limit dan offset
-        $rsData = $query->offset($start)
-            ->limit($limit)
-            ->get();
+        // Buat query untuk mengambil data
+        $rsData = $this->model->getPersediaanByTanggal($request->input('tglriwayat'), $where, $orderby, $limit, $start);
+
+        // Hitung total data tanpa filter
+        // $totalData = count($rsData);
+        $totalData = $this->model->getTotalBarangAktif();
+
+        // Hitung total data setelah filter (jika ada pencarian)
+        // $totalFiltered = count($rsData);   
+        $totalFiltered = $this->model->getTotalFiltered($request->input('tglriwayat'), $where);     
 
         // Format data untuk DataTables
         $data = [];
@@ -107,22 +108,32 @@ class LappersediaanController extends Controller
         ]);
     }
 
-    public function getDataID(Request $request)
-    {
-        $idbarang = $request->input('idbarang');
-        $rsbarang = Barang::find($idbarang);
-        return response()->json($rsbarang);
-    }
-
-    public function cetak($jenisCetakan, $idkategori)
+    public function cetak($jenisCetakan, $tglriwayat, $idkategori)
     {
         /*
             composer require tecnickcom/tcpdf
         */
 
-        $rsBarang = $this->model->getPersediaan($idkategori);
+        $where = "WHERE b.statusaktif = 'Aktif'";
+    
+        // Tambahkan filter kategori jika ada
+        if (!empty($idkategori) && $idkategori != "-") {
+            // Pastikan nilai $idkategori aman (misal integer atau string pendek)
+            $where .= " AND b.idkategori = '" . addslashes($idkategori) . "'";
+        }
+        
+        $orderby = "ORDER BY b.namabarang ASC";
+        
+        // Untuk cetakan, kita tidak pakai limit dan start
+        $limit = null;
+        $start = null;
+
+        // Ambil data semua barang (tanpa paginasi)
+        $rsBarang = $this->model->getPersediaanByTanggal($tglriwayat, $where, $orderby, $limit, $start);
+
 
         $data['rsBarang'] = $rsBarang;
+        $data['tglriwayat'] = $tglriwayat;
         $view = view('lappersediaan.cetak', $data);
 
         if ($jenisCetakan == 'excel') {

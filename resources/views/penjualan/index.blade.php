@@ -27,16 +27,15 @@
 
                     <div class="card">
                         <div class="card-header">
-                            <div class="d-flex justify-content-between">
-                                <h3 class="card-title font-weight-bold"><i class="far fa-list-alt mr-1"></i>List Data
-                                    Penjualan</h3>
-                                <a href="{{ url('penjualan/tambah') }}" class="btn btn-sm btn-primary" 
-                                    @if (!str_contains(strtolower(session('hakaksi_aktif')), 'tambah') )
-                                        style="display: none;"
-                                    @endif
-                                ><i
-                                        class="fa fa-plus-circle mr-1"></i> Tambah Data</a>
-                            </div>
+                            <h3 class="card-title font-weight-bold"><i class="far fa-list-alt mr-1"></i>List Data
+                                Penjualan</h3>
+                            <a href="{{ url('penjualan/tambah') }}" class="btn btn-sm btn-primary float-right" <?php if
+                                (!str_contains(strtolower(session('hakaksi_aktif')), 'tambah' ) ) {
+                                echo 'style="display: none;"' ; } ?>
+                                ><i class="fa fa-plus-circle mr-1"></i> Tambah Data</a>
+                            <button class="btn btn-info btn-sm float-right mr-1 lihat-riwayat"
+                                data-riwayat-table="penjualan"><i class="fa fa-history mr-1"></i> Lihat
+                                Riwayat</button>
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -49,11 +48,13 @@
                                         <div class="col-md-12">
                                             <div class="form-group row">
                                                 <div class="col-md-5">
-                                                    <input type="date" name="tglawal" id="tglawal" class="form-control" value="{{ date('Y-01-01') }}">
+                                                    <input type="date" name="tglawal" id="tglawal" class="form-control"
+                                                        value="{{ date('Y-01-01') }}">
                                                 </div>
                                                 <label for="" class="col-md-2 col-form-label text-center">S/D</label>
                                                 <div class="col-md-5">
-                                                    <input type="date" name="tglakhir" id="tglakhir" class="form-control" value="{{ date('Y-m-d') }}">
+                                                    <input type="date" name="tglakhir" id="tglakhir"
+                                                        class="form-control" value="{{ date('Y-m-d') }}">
                                                 </div>
                                             </div>
                                         </div>
@@ -81,11 +82,13 @@
                                             <label for="">Nama Konsumen</label>
                                         </div>
                                         <div class="col-8">
-                                            <select name="idkonsumen" id="idkonsumen" class="form-control searchKonsumen"></select>
+                                            <select name="idkonsumen" id="idkonsumen"
+                                                class="form-control searchKonsumen"></select>
                                         </div>
 
                                         <div class="col-md-4">
-                                            <button type="button" class="btn btn-success" id="btnCari"><i class="fa fa-search"></i> Cari</button>
+                                            <button type="button" class="btn btn-success" id="btnCari"><i
+                                                    class="fa fa-search"></i> Cari</button>
                                         </div>
                                     </div>
                                 </div>
@@ -94,13 +97,14 @@
                                         <thead class="">
                                             <tr>
                                                 <th style="width: 5%; text-align: center;">No</th>
-                                                <th style="width: 15%; text-align: center;">ID Penjualan</th>
-                                                <th style="width: 15%; text-align: center;">Tanggal/<br>No Invoice</th>
+                                                <th style="text-align: center;">ID Penjualan</th>
+                                                <th style="text-align: center;">Tanggal/<br>No Invoice</th>
                                                 <th style="text-align: left;">Nama Konsumen</th>
                                                 <th style="text-align: left;">Keterangan</th>
-                                                <th style="width: 10%; text-align: center;">Cara Bayar</th>
-                                                <th style="width: 10%; text-align: right;">Total Penjualan</th>
-                                                <th style="width: 15%; text-align: center;">Nama Sales</th>
+                                                <th style="text-align: center;">Sales</th>
+                                                <th style="text-align: center;">DPP</th>
+                                                <th style="text-align: center;">PPN</th>
+                                                <th style="text-align: right;">Total</th>
                                                 <th style="width: 10%; text-align: center;">Aksi</th>
                                             </tr>
                                         </thead>
@@ -178,21 +182,27 @@
                     orderable: false,
                 },
                 {
-                    data: 'carabayar',
-                    name: 'carabayar',
+                    data: 'namasales',
+                    name: 'namasales',
                     className: 'dt-body-center',
+                    orderable: false,
+                },
+                {
+                    data: 'totaldpp',
+                    name: 'totaldpp',
+                    className: 'dt-body-right',
+                    orderable: false,
+                },
+                {
+                    data: 'totalppn',
+                    name: 'totalppn',
+                    className: 'dt-body-right',
                     orderable: false,
                 },
                 {
                     data: 'totalinvoice',
                     name: 'totalinvoice',
                     className: 'dt-body-right',
-                    orderable: false,
-                },
-                {
-                    data: 'namasales',
-                    name: 'namasales',
-                    className: 'dt-body-center',
                     orderable: false,
                 },
                 {

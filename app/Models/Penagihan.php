@@ -141,6 +141,8 @@ class Penagihan extends Model
     {
         return DB::table('v_penagihandetail')
             ->where('idpenagihan', $idpenagihan)
+            ->orderBy('namakonsumen', 'asc')
+            ->orderBy('noinvoice', 'asc')
             ->get();
     }
 

@@ -225,15 +225,18 @@
         <tr class="fs-9">
             <th class="add-border-top add-border-bottom add-border-left add-border-right" width="4%" align="center">NO
             </th>
-            <th class="add-border-top add-border-bottom add-border-left add-border-right" width="53%" align="center">
+            <th class="add-border-top add-border-bottom add-border-left add-border-right" width="49%" align="center">
                 Nama Barang</th>
             <th class="add-border-top add-border-bottom add-border-left add-border-right" width="7%" align="center">Qty
             </th>
-            <th class="add-border-top add-border-bottom add-border-left add-border-right" width="12%" align="center">
+            <th class="add-border-top add-border-bottom add-border-left add-border-right" width="7%" align="center">
+                Satuan
+            </th>
+            <th class="add-border-top add-border-bottom add-border-left add-border-right" width="11%" align="center">
                 Harga Satuan</th>
-            <th class="add-border-top add-border-bottom add-border-left add-border-right" width="12%" align="center">
+            <th class="add-border-top add-border-bottom add-border-left add-border-right" width="11%" align="center">
                 Discount</th>
-            <th class="add-border-top add-border-bottom add-border-left add-border-right" width="12%" align="center">
+            <th class="add-border-top add-border-bottom add-border-left add-border-right" width="11%" align="center">
                 Jumlah</th>
         </tr>
     </thead>
@@ -244,19 +247,20 @@
         @foreach ($rsDetail as $row)
         <tr class="fs-9">
             <td class="add-border-left add-border-right" width="4%" align="center">{{ $no++ }}</td>
-            <td class="add-border-left add-border-right" width="53%" align="left">{{ $row->namabarang }}</td>
+            <td class="add-border-left add-border-right" width="49%" align="left">{{ $row->namabarang }}</td>
             <td class="add-border-left add-border-right" width="7%" align="center">{{ $row->jumlahjual }}</td>
-            <td class="add-border-left add-border-right" width="12%" align="right">
+            <td class="add-border-left add-border-right" width="7%" align="center">{{ $row->namasatuan }}</td>
+            <td class="add-border-left add-border-right" width="11%" align="right">
                 @php
                 echo $row->hargasatuan > 0 ? format_rupiah($row->hargasatuan) : '-';
                 @endphp
             </td>
-            <td class="add-border-left add-border-right" width="12%" align="right">
+            <td class="add-border-left add-border-right" width="11%" align="right">
                 @php
                 echo $row->jumlahdiskon > 0 ? format_rupiah($row->jumlahdiskon) : '-';
                 @endphp
             </td>
-            <td class="add-border-left add-border-right" width="12%" align="right">{{ format_rupiah($row->subtotaljual)
+            <td class="add-border-left add-border-right" width="11%" align="right">{{ format_rupiah($row->subtotaljual)
                 }}</td>
         </tr>
         @endforeach
@@ -264,6 +268,7 @@
         @if ($no < 9) @for ($i=$no; $i <=9; $i++) <tr>
             <td class="add-border-left add-border-right" align="center">&nbsp;</td>
             <td class="add-border-left add-border-right" align="left"></td>
+            <td class="add-border-left add-border-right" align="center"></td>
             <td class="add-border-left add-border-right" align="center"></td>
             <td class="add-border-left add-border-right" align="right"></td>
             <td class="add-border-left add-border-right" align="right"></td>
@@ -274,7 +279,7 @@
 
 
             <tr class="fs-9">
-                <td class="add-border-top add-border-bottom add-border-left add-border-right" colspan="3" rowspan="3"
+                <td class="add-border-top add-border-bottom add-border-left add-border-right" colspan="4" rowspan="3"
                     align="left">
                     <span class="terbilang"><strong>TERBILANG: </strong> {{
                         terbilang($rowPenjualan->totalinvoice) }} rupiah</span>

@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <querybuilder version="8.3">
 <source>
-<database charset="utf8mb4" collation="utf8mb4_0900_ai_ci">pointofsales</database>
+<database charset="latin1" collation="latin1_swedish_ci">sukd9756_suksestamajayaabadi</database>
 </source>
 <canvas>
 <table tablename="penjualandetail" alias="" left="9" top="6" width="150" height="248" />
 <table tablename="penjualan" alias="" left="357" top="10" width="150" height="173" />
-<table tablename="barang" alias="" left="260" top="153" width="150" height="113" />
+<table tablename="barang" alias="" left="196" top="195" width="150" height="203" />
 <table tablename="kategoribarang" alias="" left="634" top="156" width="150" height="113" />
+<table tablename="satuan" alias="" left="700" top="298" width="150" height="113" />
 <join type = "Inner Join">
 <from tablename = "penjualandetail" alias = "">idpenjualan</from>
 <to tablename = "penjualan" alias = "">idpenjualan</to>
@@ -19,6 +20,10 @@
 <join type = "Inner Join">
 <from tablename = "barang" alias = "">idkategori</from>
 <to tablename = "kategoribarang" alias = "">idkategori</to>
+</join>
+<join type = "Inner Join">
+<from tablename = "barang" alias = "">idsatuan</from>
+<to tablename = "satuan" alias = "">idsatuan</to>
 </join>
 </canvas>
 <grid>
@@ -338,6 +343,36 @@
 <or4></or4>
 </column>
 <column id="22">
+<table tablename="barang"></table>
+<field>idsatuan</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="23">
+<table tablename="satuan"></table>
+<field>namasatuan</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="24">
 <table tablename="kategoribarang"></table>
 <field>namakategori</field>
 <alias></alias>
@@ -352,7 +387,7 @@
 <or3></or3>
 <or4></or4>
 </column>
-<column id="23">
+<column id="25">
 <table tablename="penjualandetail"></table>
 <field>jenisbonuspenjualan</field>
 <alias></alias>
@@ -367,7 +402,7 @@
 <or3></or3>
 <or4></or4>
 </column>
-<column id="24">
+<column id="26">
 <table tablename="penjualandetail"></table>
 <field>persenbonuspenjualan</field>
 <alias></alias>
@@ -382,7 +417,7 @@
 <or3></or3>
 <or4></or4>
 </column>
-<column id="25">
+<column id="27">
 <table tablename="penjualandetail"></table>
 <field>jumlahbonuspenjualan</field>
 <alias></alias>
@@ -397,7 +432,7 @@
 <or3></or3>
 <or4></or4>
 </column>
-<column id="26">
+<column id="28">
 <table tablename="penjualandetail"></table>
 <field>subtotalbonuspenjualan</field>
 <alias></alias>
@@ -412,7 +447,7 @@
 <or3></or3>
 <or4></or4>
 </column>
-<column id="27">
+<column id="29">
 <table tablename="penjualandetail"></table>
 <field>jenisbonustagihan</field>
 <alias></alias>
@@ -427,7 +462,7 @@
 <or3></or3>
 <or4></or4>
 </column>
-<column id="28">
+<column id="30">
 <table tablename="penjualandetail"></table>
 <field>persenbonustagihan</field>
 <alias></alias>
@@ -442,7 +477,7 @@
 <or3></or3>
 <or4></or4>
 </column>
-<column id="29">
+<column id="31">
 <table tablename="penjualandetail"></table>
 <field>jumlahbonustagihan</field>
 <alias></alias>
@@ -457,7 +492,7 @@
 <or3></or3>
 <or4></or4>
 </column>
-<column id="30">
+<column id="32">
 <table tablename="penjualandetail"></table>
 <field>subtotalbonustagihan</field>
 <alias></alias>

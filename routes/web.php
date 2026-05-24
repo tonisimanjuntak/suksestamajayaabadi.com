@@ -98,6 +98,7 @@ Route::controller(LoginController::class)->group(function () {
 
 Route::controller(AjaxController::class)->group(function () {
     Route::get('ajax/getBarangId', 'getBarangId');
+    Route::get('ajax/getRiwayatAkivitas', 'getRiwayatAkivitas');
 });
 
 
@@ -595,7 +596,7 @@ Route::middleware(['check.menu.access'])->group(function () {
         Route::controller(LappersediaanController::class)->group(function () {
             Route::get('lappersediaan', 'index');
             Route::get('lappersediaan/getDataID', 'getDataID');
-            Route::get('lappersediaan/cetak/{jenisCetakan}/{idkategori}', 'cetak');
+            Route::get('lappersediaan/cetak/{jenisCetakan}/{tglriwayat}/{idkategori}', 'cetak');
             Route::get('lappersediaan/listdata', 'listdata')->name('lappersediaan.listdata');
         });
 
@@ -604,6 +605,7 @@ Route::middleware(['check.menu.access'])->group(function () {
             Route::get('kartustokbarang', 'index');
             Route::get('kartustokbarang/getDataID', 'getDataID');
             Route::get('kartustokbarang/cetak/{jenisCetakan}/{idkategori}/{tglwal}/{tglakhir}', 'cetak');
+            Route::get('kartustokbarang/cetak2/{idkategori}', 'cetak2');
             Route::get('kartustokbarang/listdata', 'listdata')->name('kartustokbarang.listdata');
         });
 

@@ -35,24 +35,26 @@
                         <div class="card-body">
 
                             <div class="row">
-
-                                <div class="col-12">
-                                    <div class="form-group row">
-                                        <div class="col-md-2"></div>
-                                        <label for="" class="col-md-2">Kategori</label>
-                                        <div class="col-md-3">
-                                            <select name="idkategori" id="idkategori"
-                                                class="form-control searchKategori"></select>
-                                        </div>
-                                        <div class="col-md-5">
-                                            <button class="btn btn-sm btn-success" id="btnCetakExcel"><i
-                                                    class="fa fa-file-excel"></i> Cetak Excel</button>
-                                            <button class="btn btn-sm btn-danger" id="btnCetakPdf"><i
-                                                    class="fa fa-file-pdf"></i> Cetak PDF</button>
-                                        </div>
-
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="">Tanggal</label>
+                                        <input type="date" name="tgl" id="tgl" class="form-control"
+                                            value="{{ date('Y-m-d') }}">
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <label for="">Kategori</label>
+                                    <select name="idkategori" id="idkategori"
+                                        class="form-control searchKategori"></select>
+                                </div>
+                                <div class="col-md-3 pt-4">
+                                    <button class="btn btn-sm btn-success" id="btnCetakExcel"><i
+                                            class="fa fa-file-excel"></i> Cetak Excel</button>
+                                    <button class="btn btn-sm btn-danger" id="btnCetakPdf"><i
+                                            class="fa fa-file-pdf"></i> Cetak PDF</button>
+                                </div>
+
+
                                 <div class="col-12 mt-3">
                                     <table class="table table-bordered" id="tableList">
                                         <thead class="">
@@ -98,6 +100,7 @@
                 type: 'GET',
                 data: function(d) {
                     d.idkategori = $('#idkategori').val();
+                    d.tglriwayat = $('#tgl').val();
                 }
             },
             pageLength: 50, // Jumlah data per halaman
@@ -172,6 +175,10 @@
             table.ajax.reload();
         });
 
+        $('#tgl').on('change', function() {
+            table.ajax.reload();
+        });
+
     });
 
 
@@ -186,11 +193,17 @@
         function cetak(jenis)
         {
             var idkategori = $('#idkategori').val();
+            var tglriwayat = $('#tgl').val();
+
+            if (tglriwayat === '') {
+                swal("Informasi", "Tanggal riwayat belum dipilih!", "info");
+                return;
+            }
 
             if (idkategori == null) {
                 idkategori = "-";
             }            
-            window.open("{{ url('lappersediaan/cetak') }}" + "/" + jenis + "/" + idkategori);                
+            window.open("{{ url('lappersediaan/cetak') }}" + "/" + jenis + "/" + tglriwayat + "/" + idkategori);                
         }
 </script>
 

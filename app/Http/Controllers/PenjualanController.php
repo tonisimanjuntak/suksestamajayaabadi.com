@@ -86,7 +86,7 @@ class PenjualanController extends Controller
     public function listdata(Request $request)
     {
         // Query dasar
-        $query = Penjualan::select(['idpenjualan', 'tglinvoice', 'namakonsumen', 'keterangan', 'carabayar', 'totalinvoice', 'namasales', 'noinvoice', 'namawilayah']);
+        $query = Penjualan::select('*');
 
         $tglawal = $request->input('tglawal');
         $tglakhir = $request->input('tglakhir');
@@ -158,10 +158,11 @@ class PenjualanController extends Controller
                 'idpenjualan' => $row->idpenjualan,
                 'tglinvoice' => $row->tglinvoice . '<br>' . $row->noinvoice,
                 'namakonsumen' => $row->namakonsumen . '<br>(' . $row->namawilayah . ')',
-                'carabayar' => $row->carabayar,
-                'keterangan' => $row->keterangan,
+                'keterangan' => (!empty($row->keterangan) ? $row->keterangan . '<br>' : '')  .'ID TR: '.$row->idpenjualan.'<br>Cara Bayar: '.$row->carabayar.'<br>Operator: '.$row->namapengguna,
+                'namasales' => $row->namasales,
+                'totaldpp' => format_rupiah($row->totaldpp),
+                'totalppn' => format_rupiah($row->totalppn),
                 'totalinvoice' => format_rupiah($row->totalinvoice),
-                'namasales' => $row->namasales . '<br>ID: ' . $row->idpenjualan,
                 'action' => '<div class="btn-group btn-block">
                                 <div class="btn-group dropleft" role="group">
                                     <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

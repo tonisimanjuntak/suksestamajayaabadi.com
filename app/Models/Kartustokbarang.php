@@ -33,8 +33,19 @@ class Kartustokbarang extends Model
 
         $query = DB::table('v_riwayatstok')
                     ->where('idbarang', $idbarang)
+                    ->whereRaw("(stokmasuk <> stokkeluar)")
                     ->whereRaw("CAST(tglriwayat AS DATE) BETWEEN ? AND ?", [$tglawal, $tglakhir])
                     ->orderBy('idriwayat', 'asc');
+                    
+        return $query->get();
+    }
+
+    public function getKartuStokLimit100($idbarang)
+    {
+        $query = DB::table('v_riwayatstok')
+                    ->where('idbarang', $idbarang)
+                    ->limit(100)
+                    ->orderBy('idriwayat', 'desc');
                     
         return $query->get();
     }

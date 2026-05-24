@@ -44,6 +44,13 @@
             z-index: 9999;
             background: url("{{ asset('images/Loading.gif') }}") 100% 100% no-repeat;
         }
+
+        #tbodyRiwayatAktivitas td:nth-child(2) {
+            max-width: 350px;
+            white-space: normal;
+            word-break: break-word;
+            vertical-align: top;
+        }
     </style>
 </head>
 
@@ -71,6 +78,60 @@
     </div>
 
     <div class="loader"></div>
+
+
+    <div class="modal fade" id="modalRiwayatAktivitas" tabindex="-1" role="dialog"
+        aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-lg-80 modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Riwayat Aktivitas</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped" width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th width="10%" class="text-center">Waktu</th>
+                                                <th width="50%" class="text-center">Deskripsi</th>
+                                                <th width="20%" class="text-center">Aktivitas</th>
+                                                <th width="10%" class="text-center">Table</th>
+                                                <th width="10%" class="text-center">Pengguna</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tbodyRiwayatAktivitas">
+                                            <tr>
+                                                {{-- munculkan icon loading --}}
+                                                <td colspan="5">
+                                                    <div class="d-flex justify-content-center">
+                                                        <div class="spinner-border" role="status">
+                                                            <span class="sr-only text-danger">Loading...</span>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 
 
@@ -912,6 +973,52 @@
                 return "Baru saja";
             }
         }
+    </script>
+
+    <script>
+        $(document).on('click', '.lihat-riwayat', function(e) {
+            
+            var riwayattable = $(this).attr("data-riwayat-table");
+            console.log(riwayattable);
+            $('#modalRiwayatAktivitas').modal('show');
+
+            $.ajax({
+                url: "{{ url('ajax/getRiwayatAkivitas') }}",
+                type: 'GET',
+                dataType: 'json',
+                data: {'riwayattable': riwayattable},
+            })
+            .done(function(rsRiwayatTemp) {
+                // console.log(rsRiwayatTemp);
+                if (rsRiwayatTemp.length > 0) {
+                    $('#tbodyRiwayatAktivitas').html('');
+                    for (var i = 0; i < rsRiwayatTemp.length; i++) {
+
+
+                        $('#tbodyRiwayatAktivitas').append(
+                            '<tr>' +
+                            '<td class="text-center">' + sinces(rsRiwayatTemp[i].inserted_date) + '</td>' +
+                            '<td class="text-center text-wrap">' + rsRiwayatTemp[i].deskripsi + '</td>' +
+                            '<td class="text-center">' + rsRiwayatTemp[i].namafunction + '</td>' +
+                            '<td class="text-center">' + rsRiwayatTemp[i].namatabel + '</td>' +
+                            '<td class="text-center">' + rsRiwayatTemp[i].namapengguna + '</td>' +
+                            '</tr>'
+                        );
+                    }
+                }else{
+                    $('#tbodyRiwayatAktivitas').html(`
+                    <tr>
+                        <td colspan="5" class="text-center">Tidak ada riwayat aktivitas</td>
+                    </tr>
+                    `);
+                }
+            })
+            .fail(function() {
+                console.log('error getRiwayatTable');
+            });
+            
+        });
+
     </script>
 </body>
 
