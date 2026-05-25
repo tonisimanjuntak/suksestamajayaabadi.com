@@ -366,11 +366,15 @@
             return;            
         }
 
+        /*
+        ## REQUEST TGL 25-05-2026
+
         if (idsatuanasal == idsatuantujuan) {
             swal("Informasi", "Satuan asal dan satuan tujuan tidak boleh sama!", "info");
             $('#simpan').attr('disabled', false);
             return;            
         }
+        */
 
         if ( parseInt(jumlahbarangasal) > parseInt(jumlahstokasal) ) {
             swal("Informasi", "Jumlah barang asal tidak boleh melebihi stok barang asal!", "info");
