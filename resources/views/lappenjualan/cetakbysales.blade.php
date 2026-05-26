@@ -114,6 +114,8 @@
                 @else
                 @php
                 $total = 0;
+                $totaldpp = 0;
+                $totalppn = 0;
                 $subtotalsales = 0;
                 $subtotaldppsales = 0;
                 $subtotalppnsales = 0;
@@ -124,6 +126,8 @@
                 @php
 
                 $total += $row->totalinvoice; //total keseluruhan
+                $totaldpp += $row->totaldpp; //total keseluruhan
+                $totalppn += $row->totalppn; //total keseluruhan
 
                 if ($row->idsales != $idsales_old) {
 
@@ -206,8 +210,12 @@
                 if ($no != 1) {
                 echo '
                 <tr style="font-size: 10px;">
-                    <td width="90%" style="text-align:right; font-weight: bold;" colspan="8">
+                    <td width="70%" style="text-align:right; font-weight: bold;" colspan="6">
                         SUBTOTAL '. strtoupper($namasales_old) . '
+                    </td>
+                    <td width="10%" style="text-align:right; font-weight: bold;">'. format_rupiah($subtotaldppsales) .'
+                    </td>
+                    <td width="10%" style="text-align:right; font-weight: bold;">'. format_rupiah($subtotalppnsales) .'
                     </td>
                     <td width="10%" style="text-align:right; font-weight: bold;">'. format_rupiah($subtotalsales) .'
                     </td>
@@ -221,7 +229,11 @@
                     <td width="10%" style="text-align:right;"></td>
                 </tr>
                 <tr style="font-size: 10px; font-weight: bold;">
-                    <td width="90%" style="text-align:right;" colspan="8">TOTAL</td>
+                    <td width="70%" style="text-align:right;" colspan="6">TOTAL</td>
+                    <td width="10%" style="text-align:right;">
+                        {{ format_rupiah($totaldpp) }}</td>
+                    <td width="10%" style="text-align:right;">
+                        {{ format_rupiah($totalppn) }}</td>
                     <td width="10%" style="text-align:right;">
                         {{ format_rupiah($total) }}</td>
                 </tr>
