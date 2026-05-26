@@ -47,13 +47,17 @@ INSERT INTO menus (idmenus, menus, parent, urlmenus, iconmenus, urut, levels, st
 ('M042', 'Lap. Retur Pembelian', 'M038', 'lapreturpembelian', 'far fa-circle', 380, 2, 'Aktif', 'Lihat'),
 ('M007', 'Penjualan', NULL, NULL, 'fas fa-stamp', 390, 0, 'Aktif', ''),
 ('M043', 'Penjualan', 'M007', 'penjualan', 'far fa-circle', 400, 1, 'Aktif', 'Lihat, Tambah, Edit, Hapus'),
-('M044', 'Buku Piutang', 'M007', 'piutang', 'far fa-circle', 410, 1, 'Aktif', 'Lihat, Tambah, Edit, Hapus'),
+
 ('M045', 'Retur Penjualan', 'M007', 'returpenjualan', 'far fa-circle', 420, 1, 'Aktif', 'Lihat, Tambah, Edit, Hapus'),
-('M046', 'Laporan', 'M007', NULL, 'fas fa-print', 430, 1, 'Aktif', ''),
-('M047', 'Lap. Penjualan', 'M046', 'lappenjualan', 'far fa-circle', 440, 2, 'Aktif', 'Lihat'),
-('M048', 'Lap. Rincian Piutang', 'M046', 'lapbukupiutang', 'far fa-circle', 450, 2, 'Aktif', 'Lihat'),
-('M049', 'Lap. Rekap Piutang', 'M046', 'laprekappiutang', 'far fa-circle', 460, 2, 'Aktif', 'Lihat'),
-('M050', 'Lap. Retur Penjualan', 'M046', 'lapreturpenjualan', 'far fa-circle', 470, 2, 'Aktif', 'Lihat'),
+('M047', 'Lap. Penjualan', 'M007', 'lappenjualan', 'fas fa-print', 440, 2, 'Aktif', 'Lihat'),
+('M050', 'Lap. Retur Penjualan', 'M007', 'lapreturpenjualan', 'fas fa-print', 470, 2, 'Aktif', 'Lihat'),
+
+('PI01', 'Piutang', 'M007', NULL, 'fa fa-credit-card', 475, 1, 'Aktif', ''),
+('PI02', 'Buku Piutang', 'PI01', 'piutang', 'far fa-circle', 476, 1, 'Aktif', 'Lihat, Tambah, Edit, Hapus'),
+('PI03', 'Pembayaran Piutang', 'PI01', 'pembayaranpiutang', 'far fa-circle', 477, 1, 'Aktif', 'Lihat, Tambah, Edit, Hapus'),
+('PI04', 'Lap. Rincian Piutang', 'PI01', 'lapbukupiutang', 'fas fa-print', 478, 2, 'Aktif', 'Lihat'),
+('PI05', 'Lap. Rekap Piutang', 'PI01', 'laprekappiutang', 'fas fa-print', 479, 2, 'Aktif', 'Lihat'),
+
 ('M008', 'Transaksi Umum', NULL, NULL, 'fas fa-tv', 480, 0, 'Aktif', ''),
 ('M051', 'Pengeluaran', 'M008', 'pengeluaran', 'far fa-circle', 490, 1, 'Aktif', 'Lihat, Tambah, Edit, Hapus'),
 ('M052', 'Penerimaan', 'M008', 'penerimaan', 'far fa-circle', 500, 1, 'Aktif', 'Lihat, Tambah, Edit, Hapus'),
@@ -75,4 +79,6 @@ INSERT INTO menus (idmenus, menus, parent, urlmenus, iconmenus, urut, levels, st
 
 /**
 	UPDATE menus SET urlmenus = 'konversistok' WHERE idmenus = 'MB03'
+	
+	ALTER TABLE `pengguna_menus` DROP FOREIGN KEY `pengguna_menus_ibfk_1`;
 **/
