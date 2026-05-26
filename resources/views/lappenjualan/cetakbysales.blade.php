@@ -115,6 +115,8 @@
                 @php
                 $total = 0;
                 $subtotalsales = 0;
+                $subtotaldppsales = 0;
+                $subtotalppnsales = 0;
                 @endphp
 
                 @foreach ($rsPenjualan as $row)
@@ -128,14 +130,20 @@
                 if ($no != 1) {
                 echo '
                 <tr style="font-size: 10px;">
-                    <td width="90%" style="text-align:right; font-weight: bold;" colspan="8">
+                    <td width="70%" style="text-align:right; font-weight: bold;" colspan="6">
                         SUBTOTAL '. strtoupper($namasales_old) . '
+                    </td>
+                    <td width="10%" style="text-align:right; font-weight: bold;">'. format_rupiah($subtotaldppsales) .'
+                    </td>
+                    <td width="10%" style="text-align:right; font-weight: bold;">'. format_rupiah($subtotalppnsales) .'
                     </td>
                     <td width="10%" style="text-align:right; font-weight: bold;">'. format_rupiah($subtotalsales) .'
                     </td>
                 </tr>
                 ';
                 $subtotalsales = 0;
+                $subtotaldppsales = 0;
+                $subtotalppnsales = 0;
                 }
 
                 echo '
@@ -187,6 +195,8 @@
                 @php
                 $idsales_old = $row->idsales;
                 $subtotalsales += $row->totalinvoice;
+                $subtotaldppsales += $row->totaldpp;
+                $subtotalppnsales += $row->totalppn;
                 $namasales_old = $row->namasales;
                 @endphp
                 @endforeach

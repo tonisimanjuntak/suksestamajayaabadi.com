@@ -98,3 +98,5 @@
 [2026-05-21] [customize] Surat Penagihan Sales - Untuk penagihan sales nanti diubah seperti Excel yg saya foto ya. Untuk kolom no 1,2,3 dihapus aja.  Dibuat nama toko nya berurutan dan no invoice nya juga berurutan seperti diexcel. Tambahin jarak untuk setiap toko seperti di Excel.
 
 [2026-05-25] [customize] Konversi Barang - Nama satuan asal boleh sama dengan nama satuan tujuan
+
+[2026-05-26] [customize] Laporan Penjualan - minta total dpp dan ppn ditampilkan juga

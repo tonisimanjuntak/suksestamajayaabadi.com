@@ -111,11 +111,15 @@
                 @else
                 @php
                 $total = 0;
+                $totaldpp = 0;
+                $totalppn = 0;
                 @endphp
 
                 @foreach ($rsPenjualan as $row)
                 @php
                 $total += $row->totalinvoice;
+                $totaldpp += $row->totaldpp;
+                $totalppn += $row->totalppn;
                 @endphp
 
                 <tr style="font-size: 9px;">
@@ -153,7 +157,11 @@
                 @endforeach
 
                 <tr style="font-size: 10px; font-weight: bold;">
-                    <td width="90%" style="text-align:right;" colspan="7">TOTAL</td>
+                    <td width="70%" style="text-align:right;" colspan="7">TOTAL</td>
+                    <td width="10%" style="text-align:right;">
+                        {{ format_rupiah($totaldpp) }}</td>
+                    <td width="10%" style="text-align:right;">
+                        {{ format_rupiah($totalppn) }}</td>
                     <td width="10%" style="text-align:right;">
                         {{ format_rupiah($total) }}</td>
                 </tr>
