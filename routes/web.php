@@ -34,6 +34,7 @@ use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\LaplabarugiController;
 use App\Http\Controllers\LappembelianController;
 use App\Http\Controllers\LappenjualanController;
+use App\Http\Controllers\LappenjualandetailController;
 use App\Http\Controllers\LappersediaanController;
 use App\Http\Controllers\KartustokbarangController;
 use App\Http\Controllers\LapneracasaldoController;
@@ -566,6 +567,11 @@ Route::middleware(['check.menu.access'])->group(function () {
         Route::controller(LappenjualanController::class)->group(function () {
             Route::get('lappenjualan', 'index');
             Route::get('lappenjualan/cetak/{jenisCetakan}', 'cetak');            
+        });
+
+        Route::controller(LappenjualandetailController::class)->group(function () {
+            Route::get('lappenjualandetail', 'index');
+            Route::get('lappenjualandetail/cetak/{jenisCetakan}', 'cetak');            
         });
 
         Route::controller(LapbonussalesController::class)->group(function () {
