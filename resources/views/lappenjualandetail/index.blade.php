@@ -239,7 +239,7 @@
             params.append('idpenjualan', idpenjualan);
             params.append('orderBy', orderBy);
 
-            window.open("{{ url('lappenjualan/cetak') }}/" + jenisCetakan + "?" + params.toString());
+            window.open("{{ url('lappenjualandetail/cetak') }}/" + jenisCetakan + "?" + params.toString());
 
         }
 </script>

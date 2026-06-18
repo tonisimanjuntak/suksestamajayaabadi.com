@@ -50,8 +50,10 @@ class LappenjualandetailController extends Controller
         */
 
         if ($orderBy == 'bysales') {
-            $data['rsPenjualan'] = $this->model->getPenjualanBySales($tglawal, $tglakhir, $idkonsumen, $idpengguna, $carabayar, $idsales, $idwilayah, $idpenjualan);
-            // dd($data['rsPenjualan']);
+            
+            $data['rsPenjualanDetail'] = $this->model->getPenjualanBySales($tglawal, $tglakhir, $idkonsumen, $idpengguna, $carabayar, $idsales, $idwilayah, $idpenjualan);
+
+            // dd($data['rsPenjualanDetail']);
 
             $data['tglawal'] = $tglawal;
             $data['tglakhir'] = $tglakhir;
@@ -59,7 +61,7 @@ class LappenjualandetailController extends Controller
             $data['idpengguna'] = $idpengguna;
             $view = view('lappenjualandetail.cetakbysales', $data)->render();
         }else{
-            $data['rsPenjualan'] = $this->model->getPenjualan($tglawal, $tglakhir, $idkonsumen, $idpengguna, $carabayar, $idsales, $idwilayah, $idpenjualan);
+            $data['rsPenjualanDetail'] = $this->model->getPenjualan($tglawal, $tglakhir, $idkonsumen, $idpengguna, $carabayar, $idsales, $idwilayah, $idpenjualan);
             $data['tglawal'] = $tglawal;
             $data['tglakhir'] = $tglakhir;
             $data['idkonsumen'] = $idkonsumen;

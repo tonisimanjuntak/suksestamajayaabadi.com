@@ -50,6 +50,7 @@ INSERT INTO menus (idmenus, menus, parent, urlmenus, iconmenus, urut, levels, st
 
 ('M045', 'Retur Penjualan', 'M007', 'returpenjualan', 'far fa-circle', 420, 1, 'Aktif', 'Lihat, Tambah, Edit, Hapus'),
 ('M047', 'Lap. Penjualan', 'M007', 'lappenjualan', 'fas fa-print', 440, 2, 'Aktif', 'Lihat'),
+('M048', 'Lap. Detail Penjualan', 'M007', 'lapdetailpenjualan', 'fas fa-print', 441, 2, 'Aktif', 'Lihat'),
 ('M050', 'Lap. Retur Penjualan', 'M007', 'lapreturpenjualan', 'fas fa-print', 470, 2, 'Aktif', 'Lihat'),
 
 ('PI01', 'Piutang', 'M007', NULL, 'fa fa-credit-card', 475, 1, 'Aktif', ''),
@@ -77,8 +78,17 @@ INSERT INTO menus (idmenus, menus, parent, urlmenus, iconmenus, urut, levels, st
 ('M010', 'Logout', NULL, 'logout', 'fas fa-sign-out-alt text-warning', 610, 0, 'Aktif', '');
 
 
+
 /**
+
+	INSERT INTO menus (idmenus, menus, parent, urlmenus, iconmenus, urut, levels, statusaktif, event_exist) VALUES
+	('M048', 'Lap. Detail Penjualan', 'M007', 'lappenjualandetail', 'fas fa-print', 441, 2, 'Aktif', 'Lihat')
+	
 	UPDATE menus SET urlmenus = 'konversistok' WHERE idmenus = 'MB03'
 	
 	ALTER TABLE `pengguna_menus` DROP FOREIGN KEY `pengguna_menus_ibfk_1`;
+	
+	DELETE FROM menus WHERE idmenus = 'M048'
+	
+	
 **/

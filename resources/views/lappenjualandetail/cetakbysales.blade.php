@@ -71,7 +71,7 @@
     </table>
 
     <div class="judullaporan">
-        <div class="nama-laporan">LAPORAN PENJUALAN</div>
+        <div class="nama-laporan">LAPORAN DETAIL PENJUALAN</div>
         @if ($tglawal == $tglakhir)
         <div class="periode-laporan">PERIODE {{ Str::upper(tglindonesia($tglawal)) }}</div>
 
@@ -87,14 +87,16 @@
             <thead>
                 <tr style="font-size: 10px; font-weight: bold;">
                     <th width="5%" style="text-align:center;">NO</th>
-                    <th width="10%" style="text-align:center;">TANGGAL/<br>NO INVOICE</th>
-                    <th width="25%" style="text-align:center;">KETERANGAN</th>
-                    <th width="10%" style="text-align:center;">KASIR</th>
-                    <th width="10%" style="text-align:center;">KONSUMEN</th>
-                    <th width="10%" style="text-align:center;">UMUR<br>(HARI)</th>
+                    <th width="10%" style="text-align:center;">TANGGAL</th>
+                    <th width="10%" style="text-align:center;">NO INVOICE</th>
+                    <th width="15%" style="text-align:center;">KETERANGAN</th>
+                    <th width="5%" style="text-align:center;">QTY</th>
+                    <th width="5%" style="text-align:center;">SATUAN</th>
+                    <th width="10%" style="text-align:center;">KATEGORI</th>
                     <th width="10%" style="text-align:center;">DPP</th>
                     <th width="10%" style="text-align:center;">PPN</th>
-                    <th width="10%" style="text-align:center;">JUMLAH</th>
+                    <th width="10%" style="text-align:center;">DISKON</th>
+                    <th width="10%" style="text-align:center;">SUB TOTAL</th>
                 </tr>
             </thead>
             <tbody>
@@ -106,7 +108,7 @@
 
 
 
-                @if (count($rsPenjualan) == 0)
+                @if (count($rsPenjualanDetail) == 0)
                 <tr style="font-size:10px;">
                     <td width="100%" style="text-align:center;" colspan="5">Data tidak
                         ditemukan...</td>
@@ -121,122 +123,11 @@
                 $subtotalppnsales = 0;
                 @endphp
 
-                @foreach ($rsPenjualan as $row)
+                @foreach ($rsPenjualanDetail as $row)
 
-                @php
-
-                $total += $row->totalinvoice; //total keseluruhan
-                $totaldpp += $row->totaldpp; //total keseluruhan
-                $totalppn += $row->totalppn; //total keseluruhan
-
-                if ($row->idsales != $idsales_old) {
-
-                if ($no != 1) {
-                echo '
-                <tr style="font-size: 10px;">
-                    <td width="70%" style="text-align:right; font-weight: bold;" colspan="6">
-                        SUBTOTAL '. strtoupper($namasales_old) . '
-                    </td>
-                    <td width="10%" style="text-align:right; font-weight: bold;">'. format_rupiah($subtotaldppsales) .'
-                    </td>
-                    <td width="10%" style="text-align:right; font-weight: bold;">'. format_rupiah($subtotalppnsales) .'
-                    </td>
-                    <td width="10%" style="text-align:right; font-weight: bold;">'. format_rupiah($subtotalsales) .'
-                    </td>
-                </tr>
-                ';
-                $subtotalsales = 0;
-                $subtotaldppsales = 0;
-                $subtotalppnsales = 0;
-                }
-
-                echo '
-                <tr style="font-size: 10px;">
-                    <td width="100%" style="text-align:left; font-weight: bold;" colspan="9">
-                        '. strtoupper($row->namasales) . '
-                    </td>
-                </tr>
-                ';
-                }
-                @endphp
-
-
-
-                <tr style="font-size: 9px;">
-                    <td width="5%" style="text-align:center;">{{ $no++ }}</td>
-                    <td width="10%" style="text-align:center;">{{ tglindonesia($row->tglinvoice) }} <br> {{
-                        $row->noinvoice }}</td>
-                    <td width="25%" style="text-align:left;">
-                        {{ $row->keterangan }}<br>
-                        Cara Bayar: {{ $row->carabayar }}
-                        @if ($row->carabayar=='Transfer')
-                        <br>{{ $row->namabank.' ('.$row->norekening.')' }}
-                        @endif
-                    </td>
-                    <td width="10%" style="text-align:center;">{{ $row->namapengguna }}</td>
-                    <td width="10%" style="text-align:left;">{{ $row->namakonsumen }}</td>
-                    <td width="10%" style="text-align:center;">
-                        @if ($row->carabayar == 'Piutang')
-                        @if (!empty($row->tgllunas))
-                        {{ hitungUmurPiutang($row->tglpiutang, $row->tgllunas) }}
-                        {{-- {{ hitungUmurPiutang($row->tglpiutang, '2026-05-16') }} --}}
-
-                        @else
-                        {{ hitungUmurPiutang($row->tglpiutang) }}
-                        @endif
-                        @else
-                        -
-                        @endif
-                    </td>
-                    <td width="10%" style="text-align:right;">
-                        {{ format_rupiah($row->totaldpp) }}</td>
-                    <td width="10%" style="text-align:right;">
-                        {{ format_rupiah($row->totalppn) }}</td>
-                    <td width="10%" style="text-align:right;">
-                        {{ format_rupiah($row->totalinvoice) }}</td>
-                </tr>
-
-                @php
-                $idsales_old = $row->idsales;
-                $subtotalsales += $row->totalinvoice;
-                $subtotaldppsales += $row->totaldpp;
-                $subtotalppnsales += $row->totalppn;
-                $namasales_old = $row->namasales;
-                @endphp
                 @endforeach
 
 
-                @php
-                if ($no != 1) {
-                echo '
-                <tr style="font-size: 10px;">
-                    <td width="70%" style="text-align:right; font-weight: bold;" colspan="6">
-                        SUBTOTAL '. strtoupper($namasales_old) . '
-                    </td>
-                    <td width="10%" style="text-align:right; font-weight: bold;">'. format_rupiah($subtotaldppsales) .'
-                    </td>
-                    <td width="10%" style="text-align:right; font-weight: bold;">'. format_rupiah($subtotalppnsales) .'
-                    </td>
-                    <td width="10%" style="text-align:right; font-weight: bold;">'. format_rupiah($subtotalsales) .'
-                    </td>
-                </tr>
-                ';
-                $subtotalsales = 0;
-                }
-                @endphp
-                <tr style="font-size: 10px; font-weight: bold;">
-                    <td width="90%" style="text-align:right;" colspan="8"></td>
-                    <td width="10%" style="text-align:right;"></td>
-                </tr>
-                <tr style="font-size: 10px; font-weight: bold;">
-                    <td width="70%" style="text-align:right;" colspan="6">TOTAL</td>
-                    <td width="10%" style="text-align:right;">
-                        {{ format_rupiah($totaldpp) }}</td>
-                    <td width="10%" style="text-align:right;">
-                        {{ format_rupiah($totalppn) }}</td>
-                    <td width="10%" style="text-align:right;">
-                        {{ format_rupiah($total) }}</td>
-                </tr>
 
                 @endif
             </tbody>
