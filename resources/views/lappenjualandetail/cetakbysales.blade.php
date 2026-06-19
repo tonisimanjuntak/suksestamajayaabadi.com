@@ -85,17 +85,16 @@
     <div class="content">
         <table border="1" cellpadding="2" width="100%">
             <thead>
-                <tr style="font-size: 10px; font-weight: bold;">
+                <tr style="font-size: 9px; font-weight: bold;">
                     <th width="5%" style="text-align:center;">NO</th>
                     <th width="10%" style="text-align:center;">TANGGAL</th>
                     <th width="10%" style="text-align:center;">NO INVOICE</th>
-                    <th width="15%" style="text-align:center;">KETERANGAN</th>
+                    <th width="25%" style="text-align:center;">KETERANGAN</th>
                     <th width="5%" style="text-align:center;">QTY</th>
                     <th width="5%" style="text-align:center;">SATUAN</th>
                     <th width="10%" style="text-align:center;">KATEGORI</th>
-                    <th width="10%" style="text-align:center;">DPP</th>
-                    <th width="10%" style="text-align:center;">PPN</th>
-                    <th width="10%" style="text-align:center;">DISKON</th>
+                    <th width="10%" style="text-align:center;">HARGA SATUAN</th>
+                    <th width="10%" style="text-align:center;">DISKON SATUAN</th>
                     <th width="10%" style="text-align:center;">SUB TOTAL</th>
                 </tr>
             </thead>
@@ -119,13 +118,92 @@
                 $totaldpp = 0;
                 $totalppn = 0;
                 $subtotalsales = 0;
-                $subtotaldppsales = 0;
-                $subtotalppnsales = 0;
+                $subtotalhargasatuansales = 0;
+                $subtotaldiskonsatuansales = 0;
+                $idsales_old = '';
+                $namasales_old = '';
+                $idpenjualan_old = '';
+                $no = 1;
                 @endphp
+
 
                 @foreach ($rsPenjualanDetail as $row)
 
+                @if ($idsales_old != $row->idsales)
+
+
+
+                @if ($no != 1)
+                <tr style="font-size: 10px; font-weight: bold;">
+                    <td width="70%" style="text-align:right;" colspan="7">SUB TOTAL {{ strtoupper($namasales_old) }}
+                    </td>
+                    <td width="10%" style="text-align:right;">{{ format_rupiah($subtotalhargasatuansales) }}</td>
+                    <td width="10%" style="text-align:right;">{{ format_rupiah($subtotaldiskonsatuansales) }}</td>
+                    <td width="10%" style="text-align:right;">{{ format_rupiah($subtotalsales) }}</td>
+                </tr>
+                <tr style="font-size: 10px; font-weight: bold;">
+                    <td width="100%" style="text-align:center;" colspan="10">&nbsp;</td>
+                </tr>
+                @php
+                $subtotalhargasatuansales = 0;
+                $subtotaldiskonsatuansales = 0;
+                $subtotalsales =0;
+                @endphp
+
+                @endif
+
+
+                <tr style="font-size: 10px; font-weight: bold;">
+                    <td width="100%" style="text-align:left;" colspan="10">{{ strtoupper($row->namasales) }}</td>
+                </tr>
+
+
+                @endif
+
+
+
+
+
+                <tr style="font-size: 9px;">
+                    <td width="5%" style="text-align:center;">{{ ($idpenjualan_old != $row->idpenjualan) ? $no++ : '' }}
+                    </td>
+                    <td width="10%" style="text-align:center;">{{ ($idpenjualan_old != $row->idpenjualan) ?
+                        tgldmy($row->tglinvoice) : '' }}</td>
+                    <td width="10%" style="text-align:center;">{{ ($idpenjualan_old != $row->idpenjualan) ?
+                        $row->noinvoice : '' }}</td>
+                    <td width="25%" style="text-align:left;">{{ $row->kdbarang }} - {{ $row->namabarang }}</td>
+                    <td width="5%" style="text-align:center;">{{ $row->jumlahjual }}</td>
+                    <td width="5%" style="text-align:center;">{{ $row->namasatuan }}</td>
+                    <td width="10%" style="text-align:center;">{{ $row->namakategori }}</td>
+                    <td width="10%" style="text-align:right;">{{ format_rupiah($row->hargasatuan) }}</td>
+                    <td width="10%" style="text-align:right;">{{ format_rupiah($row->jumlahdiskon) }}</td>
+                    <td width="10%" style="text-align:right;">{{ format_rupiah($row->jumlahjual * ($row->hargasatuan -
+                        $row->jumlahdiskon))
+                        }}</td>
+                </tr>
+                @php
+                $idpenjualan_old = $row->idpenjualan;
+                $idsales_old = $row->idsales;
+                $namasales_old = $row->namasales;
+                $subtotalsales += $row->jumlahjual * ($row->hargasatuan - $row->jumlahdiskon);
+                $subtotalhargasatuansales += $row->hargasatuan;
+                $subtotaldiskonsatuansales += $row->jumlahdiskon;
+                @endphp
+
                 @endforeach
+
+                @if ($no != 1)
+                <tr style="font-size: 10px; font-weight: bold;">
+                    <td width="70%" style="text-align:right;" colspan="7">SUB TOTAL {{ strtoupper($namasales_old) }}
+                    </td>
+                    <td width="10%" style="text-align:right;">{{ format_rupiah($subtotalhargasatuansales) }}</td>
+                    <td width="10%" style="text-align:right;">{{ format_rupiah($subtotaldiskonsatuansales) }}</td>
+                    <td width="10%" style="text-align:right;">{{ format_rupiah($subtotalsales) }}</td>
+                </tr>
+                <tr style="font-size: 10px; font-weight: bold;">
+                    <td width="100%" style="text-align:center;" colspan="10">&nbsp;</td>
+                </tr>
+                @endif
 
 
 
