@@ -87,14 +87,15 @@
             <thead>
                 <tr style="font-size: 10px; font-weight: bold;">
                     <th width="5%" style="text-align:center;">NO</th>
-                    <th width="10%" style="text-align:center;">TANGGAL/<br>NO INVOICE</th>
-                    <th width="15%" style="text-align:center;">KETERANGAN</th>
+                    <th width="8%" style="text-align:center;">TANGGAL</th>
+                    <th width="10%" style="text-align:center;">NO INVOICE</th>
+                    <th width="16%" style="text-align:center;">KETERANGAN</th>
                     <th width="10%" style="text-align:center;">SALES</th>
                     <th width="10%" style="text-align:center;">KASIR</th>
                     <th width="10%" style="text-align:center;">KONSUMEN</th>
-                    <th width="10%" style="text-align:center;">UMUR<br>(HARI)</th>
-                    <th width="10%" style="text-align:center;">DPP</th>
-                    <th width="10%" style="text-align:center;">PPN</th>
+                    <th width="5%" style="text-align:center;">UMUR<br>(HARI)</th>
+                    <th width="8%" style="text-align:center;">DPP</th>
+                    <th width="8%" style="text-align:center;">PPN</th>
                     <th width="10%" style="text-align:center;">JUMLAH</th>
                 </tr>
             </thead>
@@ -124,9 +125,9 @@
 
                 <tr style="font-size: 9px;">
                     <td width="5%" style="text-align:center;">{{ $no++ }}</td>
-                    <td width="10%" style="text-align:center;">{{ tglindonesia($row->tglinvoice) }} <br> {{
-                        $row->noinvoice }}</td>
-                    <td width="15%" style="text-align:left;">
+                    <td width="8%" style="text-align:center;">{{ tglindonesia($row->tglinvoice) }}</td>
+                    <td width="10%" style="text-align:center;">{{ $row->noinvoice }}</td>
+                    <td width="16%" style="text-align:left;">
                         {{ $row->keterangan }}<br>
                         Cara Bayar: {{ $row->carabayar }}
                         @if ($row->carabayar=='Transfer')
@@ -136,7 +137,7 @@
                     <td width="10%" style="text-align:center;">{{ $row->namasales }}</td>
                     <td width="10%" style="text-align:center;">{{ $row->namapengguna }}</td>
                     <td width="10%" style="text-align:left;">{{ $row->namakonsumen }}</td>
-                    <td width="10%" style="text-align:center;">
+                    <td width="5%" style="text-align:center;">
                         @if ($row->carabayar == 'Piutang')
                         @if (!empty($row->tgllunas))
                         {{ hitungUmurPiutang($row->tglpiutang, $row->tgllunas) }}
@@ -147,20 +148,20 @@
                         -
                         @endif
                     </td>
-                    <td width="10%" style="text-align:right;">
+                    <td width="8%" style="text-align:right;">
                         {{ format_rupiah($row->totaldpp) }}</td>
-                    <td width="10%" style="text-align:right;">
+                    <td width="8%" style="text-align:right;">
                         {{ format_rupiah($row->totalppn) }}</td>
                     <td width="10%" style="text-align:right;">
                         {{ format_rupiah($row->totalinvoice) }}</td>
                 </tr>
                 @endforeach
 
-                <tr style="font-size: 10px; font-weight: bold;">
-                    <td width="70%" style="text-align:right;" colspan="7">TOTAL</td>
-                    <td width="10%" style="text-align:right;">
+                <tr style="font-size: 9px; font-weight: bold;">
+                    <td width="74%" style="text-align:right;" colspan="8">TOTAL</td>
+                    <td width="8%" style="text-align:right;">
                         {{ format_rupiah($totaldpp) }}</td>
-                    <td width="10%" style="text-align:right;">
+                    <td width="8%" style="text-align:right;">
                         {{ format_rupiah($totalppn) }}</td>
                     <td width="10%" style="text-align:right;">
                         {{ format_rupiah($total) }}</td>

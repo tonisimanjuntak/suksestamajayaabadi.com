@@ -236,7 +236,14 @@
             reverse: true,
             placeholder: "000,000,000,000"
         });
+
+        $(".rupiahDesimal").mask("000,000,000,000.00", {
+            reverse: true,
+            placeholder: "000,000,000,000"
+        });
+
         $(".rupiah").css("text-align", "right");
+        $(".rupiahDesimal").css("text-align", "right");
 
         $(".persen").mask("000.00", {
             reverse: true,

@@ -149,13 +149,6 @@
                             },
                         }
                     },
-                    hargasatuan: {
-                        validators: {
-                            notEmpty: {
-                                message: "harga beli tidak boleh kosong"
-                            },
-                        }
-                    },
                 }
             })
             .on('success.form.bv', function(e) {
@@ -212,10 +205,15 @@
         var totalSemua = parseInt(subtotalbeli);
         for (var i = 0; i < tableData.length; i++) {
             totalSemua += parseInt(untitik(tableData[i][13]));
-            if (idbarang == tableData[i][1]) {
-                swal("Informasi", "Data barang sudah ada!", "info");
-                return;
-            }
+
+            /* 
+            Request 21-06-2026 Bisa barang yang sama karena ada bonus barang dengan harga nol
+            */
+
+            // if (idbarang == tableData[i][1]) {
+            //     swal("Informasi", "Data barang sudah ada!", "info");
+            //     return;
+            // }
         }
 
         $('#total').val(numberWithCommas(totalSemua));

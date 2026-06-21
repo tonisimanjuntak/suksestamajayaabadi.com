@@ -1,5 +1,6 @@
 <!-- Modal -->
-<div class="modal fade" id="modalTambahBarang" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+<div class="modal fade" id="modalTambahBarang" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -10,7 +11,8 @@
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
-                    <form action="{{ url('pembelianpenerimaan/simpanData') }}" method="post" id="formModalTambahDetail" enctype="multipart/form-data">
+                    <form action="{{ url('pembelianpenerimaan/simpanData') }}" method="post" id="formModalTambahDetail"
+                        enctype="multipart/form-data">
 
                         <input type="hidden" name="ltambahbarang" id="ltambahbarang">
                         <input type="hidden" name="rowIndex" id="rowIndex">
@@ -21,7 +23,8 @@
 
                                     <div class="col-12">
                                         <div class="alert alert-warning" role="alert">
-                                            <strong>INFO! </strong> Harga yang diinput adalah harga sebelum dikenakan PPN.
+                                            <strong>INFO! </strong> Harga yang diinput adalah harga sebelum dikenakan
+                                            PPN.
                                         </div>
                                     </div>
 
@@ -31,7 +34,8 @@
                                             <div class="col-md-9">
                                                 <div class="row">
                                                     <div class="col-12">
-                                                        <select name="idbarang" id="idbarang" class="form-control searchBarang"></select>
+                                                        <select name="idbarang" id="idbarang"
+                                                            class="form-control searchBarang"></select>
                                                         <input type="hidden" name="stok" id="stok">
                                                         <input type="hidden" name="namabarang" id="namabarang">
                                                     </div>
@@ -39,12 +43,15 @@
                                                         <table class="table">
                                                             <tbody>
                                                                 <tr>
-                                                                    <td style="width: 15%; text-align: left;">Kategori</td>
+                                                                    <td style="width: 15%; text-align: left;">Kategori
+                                                                    </td>
                                                                     <td style="width: 3%; text-align: center;">:</td>
-                                                                    <td style="width: 32%; text-align: left;" id="tdKategori"></td>
+                                                                    <td style="width: 32%; text-align: left;"
+                                                                        id="tdKategori"></td>
                                                                     <td style="width: 15%; text-align: left;">Stok</td>
                                                                     <td style="width: 3%; text-align: center;">:</td>
-                                                                    <td style="width: 32%; text-align: left;" id="tdStok"></td>
+                                                                    <td style="width: 32%; text-align: left;"
+                                                                        id="tdStok"></td>
                                                                 </tr>
                                                             </tbody>
 
@@ -68,38 +75,49 @@
                                         <div class="row">
                                             <div class="col-12">
                                                 <div class="form-group row">
-                                                    <label for="jumlahbeli" class="col-md-4 col-form-label">Jumlah Qty</label>
+                                                    <label for="jumlahbeli" class="col-md-4 col-form-label">Jumlah
+                                                        Qty</label>
                                                     <div class="col-md-8">
-                                                        <input type="number" name="jumlahbeli" id="jumlahbeli" class="form-control" min="1" value="1">
+                                                        <input type="number" name="jumlahbeli" id="jumlahbeli"
+                                                            class="form-control" min="1" value="1">
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div class="col-12">
                                                 <div class="form-group row">
-                                                    <label for="hargasatuan" class="col-md-4 col-form-label">Harga Beli</label>
+                                                    <label for="hargasatuan" class="col-md-4 col-form-label">Harga
+                                                        Beli</label>
                                                     <div class="col-md-8">
-                                                        <input type="text" name="hargasatuan" id="hargasatuan" class="form-control rupiah">
+                                                        <input type="text" name="hargasatuan" id="hargasatuan"
+                                                            class="form-control rupiah">
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div class="col-12">
                                                 <div class="form-group row">
-                                                    <label for="hargadpp" class="col-md-4 col-form-label">Harga DPP</label>
+                                                    <label for="hargadpp" class="col-md-4 col-form-label">Harga
+                                                        DPP</label>
                                                     <div class="col-md-8">
-                                                        <input type="hidden" name="hargadpp" id="hargadpp" class="form-control rupiah" value="0" readonly>
-                                                        <input type="text" name="hargadpp_display" id="hargadpp_display" class="form-control rupiah" value="0" readonly>
+                                                        <input type="hidden" name="hargadpp" id="hargadpp"
+                                                            class="form-control rupiah" value="0" readonly>
+                                                        <input type="text" name="hargadpp_display" id="hargadpp_display"
+                                                            class="form-control rupiah" value="0" readonly>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div class="col-12">
                                                 <div class="form-group row">
-                                                    <label for="jumlahppn" class="col-md-4 col-form-label">Jumlah PPN</label>
+                                                    <label for="jumlahppn" class="col-md-4 col-form-label">Jumlah
+                                                        PPN</label>
                                                     <div class="col-md-8">
-                                                        <input type="hidden" name="jumlahppn" id="jumlahppn" class="form-control rupiah" value="0" readonly>
-                                                        <input type="text" name="jumlahppn_display" id="jumlahppn_display" class="form-control rupiah" value="0" readonly>
+                                                        <input type="hidden" name="jumlahppn" id="jumlahppn"
+                                                            class="form-control rupiah" value="0" readonly>
+                                                        <input type="text" name="jumlahppn_display"
+                                                            id="jumlahppn_display" class="form-control rupiah" value="0"
+                                                            readonly>
                                                     </div>
                                                 </div>
                                             </div>
@@ -107,19 +125,25 @@
 
                                             <div class="col-12">
                                                 <div class="form-group row">
-                                                    <label for="jumlahdiskon2" class="col-md-4 col-form-label">Jumlah Diskon</label>
+                                                    <label for="jumlahdiskon2" class="col-md-4 col-form-label">Jumlah
+                                                        Diskon</label>
                                                     <div class="col-md-8">
-                                                        <input type="hidden" name="jumlahdiskon2" id="jumlahdiskon2" class="form-control rupiah" value="0" readonly>
-                                                        <input type="text" name="jumlahdiskon2_display" id="jumlahdiskon2_display" class="form-control rupiah" value="0" readonly>
+                                                        <input type="hidden" name="jumlahdiskon2" id="jumlahdiskon2"
+                                                            class="form-control rupiah" value="0" readonly>
+                                                        <input type="text" name="jumlahdiskon2_display"
+                                                            id="jumlahdiskon2_display" class="form-control rupiah"
+                                                            value="0" readonly>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div class="col-12">
                                                 <div class="form-group row">
-                                                    <label for="subtotalbeli" class="col-md-4 col-form-label">Sub Total</label>
+                                                    <label for="subtotalbeli" class="col-md-4 col-form-label">Sub
+                                                        Total</label>
                                                     <div class="col-md-8">
-                                                        <input type="text" name="subtotalbeli" id="subtotalbeli" class="form-control rupiah" value="0" readonly>
+                                                        <input type="text" name="subtotalbeli" id="subtotalbeli"
+                                                            class="form-control rupiah" value="0" readonly>
                                                     </div>
                                                 </div>
                                             </div>
@@ -135,15 +159,22 @@
 
                                                     <div class="col-12">
                                                         <div class="form-group row">
-                                                            <label for="jenisdiskon" class="col-md-12">Jenis Diskon</label>
+                                                            <label for="jenisdiskon" class="col-md-12">Jenis
+                                                                Diskon</label>
                                                             <div class="col-12">
                                                                 <div class="form-check form-check-inline">
-                                                                    <input class="form-check-input" type="radio" name="jenisdiskon" id="jenisdiskon1" value="Nominal" checked>
-                                                                    <label class="form-check-label" for="jenisdiskon1">Diskon Nominal</label>
+                                                                    <input class="form-check-input" type="radio"
+                                                                        name="jenisdiskon" id="jenisdiskon1"
+                                                                        value="Nominal" checked>
+                                                                    <label class="form-check-label"
+                                                                        for="jenisdiskon1">Diskon Nominal</label>
                                                                 </div>
                                                                 <div class="form-check form-check-inline">
-                                                                    <input class="form-check-input" type="radio" name="jenisdiskon" id="jenisdiskon2" value="Persen">
-                                                                    <label class="form-check-label" for="jenisdiskon2">Diskon Persen</label>
+                                                                    <input class="form-check-input" type="radio"
+                                                                        name="jenisdiskon" id="jenisdiskon2"
+                                                                        value="Persen">
+                                                                    <label class="form-check-label"
+                                                                        for="jenisdiskon2">Diskon Persen</label>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -152,30 +183,42 @@
 
                                                     <div class="col-12 diskonpersen" style="display: none;">
                                                         <div class="form-group row">
-                                                            <label for="diskonpersen1" class="col-md-5 col-form-label">Discount 1 (%)</label>
+                                                            <label for="diskonpersen1"
+                                                                class="col-md-5 col-form-label">Discount 1 (%)</label>
                                                             <div class="col-md-7">
-                                                                <input type="number" name="diskonpersen1" id="diskonpersen1" class="form-control" min="0" max="100" value="0" readonly>
+                                                                <input type="number" name="diskonpersen1"
+                                                                    id="diskonpersen1" class="form-control" min="0"
+                                                                    max="100" value="0" readonly>
                                                             </div>
                                                         </div>
                                                         <div class="form-group row">
-                                                            <label for="diskonpersen2" class="col-md-5 col-form-label">Discount 2 (%)</label>
+                                                            <label for="diskonpersen2"
+                                                                class="col-md-5 col-form-label">Discount 2 (%)</label>
                                                             <div class="col-md-7">
-                                                                <input type="number" name="diskonpersen2" id="diskonpersen2" class="form-control" min="0" max="100" value="0" readonly>
+                                                                <input type="number" name="diskonpersen2"
+                                                                    id="diskonpersen2" class="form-control" min="0"
+                                                                    max="100" value="0" readonly>
                                                             </div>
                                                         </div>
                                                         <div class="form-group row">
-                                                            <label for="diskonpersen3" class="col-md-5 col-form-label">Discount 3 (%)</label>
+                                                            <label for="diskonpersen3"
+                                                                class="col-md-5 col-form-label">Discount 3 (%)</label>
                                                             <div class="col-md-7">
-                                                                <input type="number" name="diskonpersen3" id="diskonpersen3" class="form-control" min="0" max="100" value="0" readonly>
+                                                                <input type="number" name="diskonpersen3"
+                                                                    id="diskonpersen3" class="form-control" min="0"
+                                                                    max="100" value="0" readonly>
                                                             </div>
                                                         </div>
                                                     </div>
 
                                                     <div class="col-12">
                                                         <div class="form-group row">
-                                                            <label for="jumlahdiskon" class="col-md-5 col-form-label">Jumlah Satuan Discount</label>
+                                                            <label for="jumlahdiskon"
+                                                                class="col-md-5 col-form-label">Jumlah Satuan
+                                                                Discount</label>
                                                             <div class="col-md-7">
-                                                                <input type="text" name="jumlahdiskon" id="jumlahdiskon" class="form-control rupiah">
+                                                                <input type="text" name="jumlahdiskon" id="jumlahdiskon"
+                                                                    class="form-control rupiah">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -191,8 +234,10 @@
                                 </div>
                             </div>
                             <div class="col-12 mt-5">
-                                <button type="submit" class="btn btn-primary float-right ml-1" id="tambahkan">Tambahkan</button>
-                                <button type="button" class="btn btn-secondary float-right" data-dismiss="modal">Batal</button>
+                                <button type="submit" class="btn btn-primary float-right ml-1"
+                                    id="tambahkan">Tambahkan</button>
+                                <button type="button" class="btn btn-secondary float-right"
+                                    data-dismiss="modal">Batal</button>
                             </div>
                         </div>
                     </form>
@@ -384,10 +429,13 @@
         var totalSemua = parseInt(subtotalbeli);
         for (var i = 0; i < tableData.length; i++) {
             totalSemua += parseInt(untitik(tableData[i][13]));
-            if (idbarang == tableData[i][1]) {
-                swal("Informasi", "Data barang sudah ada!", "info");
-                return;
-            }
+            /*
+                Request tgl 21-06-2026 Data barang bisa sama karena ada bonus barang yang nilainya nol
+            */
+            // if (idbarang == tableData[i][1]) {
+            //     swal("Informasi", "Data barang sudah ada!", "info");
+            //     return;
+            // }
         }
 
         $('#total').val(numberWithCommas(totalSemua));

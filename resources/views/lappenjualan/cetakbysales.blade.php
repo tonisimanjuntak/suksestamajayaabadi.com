@@ -87,8 +87,9 @@
             <thead>
                 <tr style="font-size: 10px; font-weight: bold;">
                     <th width="5%" style="text-align:center;">NO</th>
-                    <th width="10%" style="text-align:center;">TANGGAL/<br>NO INVOICE</th>
-                    <th width="25%" style="text-align:center;">KETERANGAN</th>
+                    <th width="10%" style="text-align:center;">TANGGAL</th>
+                    <th width="10%" style="text-align:center;">NO INVOICE</th>
+                    <th width="15%" style="text-align:center;">KETERANGAN</th>
                     <th width="10%" style="text-align:center;">KASIR</th>
                     <th width="10%" style="text-align:center;">KONSUMEN</th>
                     <th width="10%" style="text-align:center;">UMUR<br>(HARI)</th>
@@ -134,7 +135,7 @@
                 if ($no != 1) {
                 echo '
                 <tr style="font-size: 10px;">
-                    <td width="70%" style="text-align:right; font-weight: bold;" colspan="6">
+                    <td width="70%" style="text-align:right; font-weight: bold;" colspan="7">
                         SUBTOTAL '. strtoupper($namasales_old) . '
                     </td>
                     <td width="10%" style="text-align:right; font-weight: bold;">'. format_rupiah($subtotaldppsales) .'
@@ -152,7 +153,7 @@
 
                 echo '
                 <tr style="font-size: 10px;">
-                    <td width="100%" style="text-align:left; font-weight: bold;" colspan="9">
+                    <td width="100%" style="text-align:left; font-weight: bold;" colspan="10">
                         '. strtoupper($row->namasales) . '
                     </td>
                 </tr>
@@ -164,9 +165,9 @@
 
                 <tr style="font-size: 9px;">
                     <td width="5%" style="text-align:center;">{{ $no++ }}</td>
-                    <td width="10%" style="text-align:center;">{{ tglindonesia($row->tglinvoice) }} <br> {{
-                        $row->noinvoice }}</td>
-                    <td width="25%" style="text-align:left;">
+                    <td width="10%" style="text-align:center;">{{ tglindonesia($row->tglinvoice) }}</td>
+                    <td width="10%" style="text-align:center;">{{ $row->noinvoice }}</td>
+                    <td width="15%" style="text-align:left;">
                         {{ $row->keterangan }}<br>
                         Cara Bayar: {{ $row->carabayar }}
                         @if ($row->carabayar=='Transfer')
@@ -210,7 +211,7 @@
                 if ($no != 1) {
                 echo '
                 <tr style="font-size: 10px;">
-                    <td width="70%" style="text-align:right; font-weight: bold;" colspan="6">
+                    <td width="70%" style="text-align:right; font-weight: bold;" colspan="7">
                         SUBTOTAL '. strtoupper($namasales_old) . '
                     </td>
                     <td width="10%" style="text-align:right; font-weight: bold;">'. format_rupiah($subtotaldppsales) .'
@@ -225,11 +226,11 @@
                 }
                 @endphp
                 <tr style="font-size: 10px; font-weight: bold;">
-                    <td width="90%" style="text-align:right;" colspan="8"></td>
+                    <td width="90%" style="text-align:right;" colspan="9"></td>
                     <td width="10%" style="text-align:right;"></td>
                 </tr>
                 <tr style="font-size: 10px; font-weight: bold;">
-                    <td width="70%" style="text-align:right;" colspan="6">TOTAL</td>
+                    <td width="70%" style="text-align:right;" colspan="7">TOTAL</td>
                     <td width="10%" style="text-align:right;">
                         {{ format_rupiah($totaldpp) }}</td>
                     <td width="10%" style="text-align:right;">

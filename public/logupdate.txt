@@ -100,3 +100,7 @@
 [2026-05-25] [customize] Konversi Barang - Nama satuan asal boleh sama dengan nama satuan tujuan
 
 [2026-05-26] [customize] Laporan Penjualan - minta total dpp dan ppn ditampilkan juga
+
+[2026-06-21] [customize] Laporan Penjualan - Tanggal dan no invoice nya dipisah ya. Jgn digabung.
+[2026-06-21] [customize] Purchase Order - Bang, bantu utk pembelian bisa dlm 1 invoice brng yg sama bang Ini urgent ya, minta dibantu dl
+[2026-06-21] [customize] Penerimaan PO - Bang, bantu utk pembelian bisa dlm 1 invoice brng yg sama bang Ini urgent ya, minta dibantu dl
