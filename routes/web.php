@@ -343,6 +343,18 @@ Route::middleware(['check.menu.access'])->group(function () {
             Route::get('piutang/cetakBukuPiutang/{id}', 'cetakBukuPiutang');
         });
 
+        Route::controller(PembayaranpiutangController::class)->group(function () {
+            Route::get('pembayaranpiutang', 'index');
+            Route::get('pembayaranpiutang/tambah', 'tambah');
+            Route::get('pembayaranpiutang/edit/{idpiutang}', 'edit');
+            Route::get('pembayaranpiutang/detail/{idpiutang}', 'detail');
+            Route::get('pembayaranpiutang/getDataID', 'getDataID');
+            Route::get('pembayaranpiutang/hapus/{id}', 'hapus');
+            Route::get('pembayaranpiutang/hapusList/{id}', 'hapusList');
+            Route::post('pembayaranpiutang/simpanData', 'simpanData');
+            Route::get('pembayaranpiutang/listdata', 'listdata')->name('piutang.listdata');          
+        });
+
         Route::controller(SuratjalanController::class)->group(function () {            
             Route::get('suratjalan', 'index');
             Route::get('suratjalan/tambah', 'tambah');
