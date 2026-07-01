@@ -13,8 +13,8 @@ class Pembayaranpiutang extends Model
 {
     use HasFactory;
 
-    protected $table = 'v_piutang';
-    protected $primaryKey = 'idpiutang';
+    protected $table = 'v_pembayaranpiutang';
+    protected $primaryKey = 'idpembayaranpiutang';
     protected $keyType = 'char';
 
     public $timestamps = false; // Menonaktifkan timestamps
@@ -32,12 +32,12 @@ class Pembayaranpiutang extends Model
 
     public function allView()
     {
-        return DB::table('v_piutang')
-            ->orderBy('idpiutang', 'desc')
+        return DB::table('v_pembayaranpiutang')
+            ->orderBy('idpembayaranpiutang', 'desc')
             ->get();
     }
 
-    public function simpanData($dataDetail, $idpiutang, $rsPiutang, $nokwitansi)
+    public function simpanData($dataDetail, $idpembayaranpiutang, $rsPiutang, $nokwitansi)
     {
         try {
             DB::beginTransaction();
@@ -73,12 +73,12 @@ class Pembayaranpiutang extends Model
             
 
             $totalkredit = DB::table('piutangdetail')
-                ->where('idpiutang', $idpiutang)
+                ->where('idpembayaranpiutang', $idpembayaranpiutang)
                 ->sum('kredit');
 
             if (!empty($totalkredit)) {
                 DB::table('piutang')
-                    ->where('idpiutang', $idpiutang)
+                    ->where('idpembayaranpiutang', $idpembayaranpiutang)
                     ->update([
                         'totalkredit' => $totalkredit,
                         'tgllunas' => DB::raw("
@@ -103,7 +103,7 @@ class Pembayaranpiutang extends Model
         }
     }
 
-    public function hapusData($idpiutang, $idpiutangdetail, $rspiutangdetail)
+    public function hapusData($idpembayaranpiutang, $idpembayaranpiutangdetail, $rspiutangdetail)
     {
         try {
 
@@ -119,18 +119,18 @@ class Pembayaranpiutang extends Model
 
 
             DB::table('piutangdetail')
-                ->where('idpiutangdetail', $idpiutangdetail)
+                ->where('idpembayaranpiutangdetail', $idpembayaranpiutangdetail)
                 ->delete();
 
             $this->App->riwayatAktifitas($rspiutangdetail, 'piutangdetail', 'hapusData');
 
 
             $totalkredit = DB::table('piutangdetail')
-                ->where('idpiutang', $idpiutang)
+                ->where('idpembayaranpiutang', $idpembayaranpiutang)
                 ->sum('kredit');
 
             DB::table('piutang')
-                ->where('idpiutang', $idpiutang)
+                ->where('idpembayaranpiutang', $idpembayaranpiutang)
                 ->update([
                     'totalkredit' => $totalkredit,
                     'tgllunas' => null
@@ -150,25 +150,25 @@ class Pembayaranpiutang extends Model
 
     public function createID()
     {
-        return DB::select('SELECT create_idpiutang() AS id')[0]->id;
+        return DB::select('SELECT create_idpembayaranpiutang() AS id')[0]->id;
     }
 
-    public function createIDDetail($idpiutang)
+    public function createIDDetail($idpembayaranpiutang)
     {
-        return DB::select("SELECT create_idpiutangdetail('$idpiutang') AS id")[0]->id;
+        return DB::select("SELECT create_idpembayaranpiutangdetail('$idpembayaranpiutang') AS id")[0]->id;
     }
 
-    public function getDetail($idpiutang)
+    public function getDetail($idpembayaranpiutang)
     {
-        return DB::table('v_piutangdetail')
-            ->where('idpiutang', $idpiutang)
+        return DB::table('v_pembayaranpiutangdetail')
+            ->where('idpembayaranpiutang', $idpembayaranpiutang)
             ->get();
     }
 
-    public function getDetailID($idpiutangdetail)
+    public function getDetailID($idpembayaranpiutangdetail)
     {
-        return DB::table('v_piutangdetail')
-            ->where('idpiutangdetail', $idpiutangdetail)
+        return DB::table('v_pembayaranpiutangdetail')
+            ->where('idpembayaranpiutangdetail', $idpembayaranpiutangdetail)
             ->first();
     }
 

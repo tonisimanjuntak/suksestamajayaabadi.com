@@ -7,12 +7,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Buku Piutang</h1>
+                    <h1 class="m-0">Pembayaran Piutang</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="{{ url('/') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item"><a href="{{ url('piutang') }}">Buku Piutang</a></li>
+                        <li class="breadcrumb-item"><a href="{{ url('piutang') }}">Pembayaran Piutang</a></li>
                         <li class="breadcrumb-item label-judul active"></li>
                     </ol>
                 </div>
@@ -31,20 +31,20 @@
                             <div class="card-header">
                                 <div class="d-flex justify-content-between">
                                     <h4 class="card-title font-weight-bold"><i class="fab fa-wpforms mr-1"></i><span
-                                            class="label-judul"></span> Data Buku Piutang </h4>
-                                    <span class="float-right font-weight-bold" id="lblidpiutang"></span>
+                                            class="label-judul"></span> Data Pembayaran Piutang </h4>
+                                    <span class="float-right font-weight-bold" id="lblidpembayaranpiutang"></span>
                                 </div>
                             </div>
                             <div class="card-body">
 
                                 @csrf
-                                <input type="hidden" name="idpiutang" id="idpiutang">
+                                <input type="hidden" name="idpembayaranpiutang" id="idpembayaranpiutang">
 
                                 <div class="form-group row">
-                                    <label for="tglpiutang" class="col-md-3">Tgl Hutang</label>
+                                    <label for="tglpembayaran" class="col-md-3">Tgl Pembayaran</label>
                                     <div class="col-md-3">
-                                        <input type="date" name="tglpiutang" id="tglpiutang"
-                                            class="form-control" value="{{ date('Y-m-d') }}">
+                                        <input type="date" name="tglpembayaran" id="tglpembayaran" class="form-control"
+                                            value="{{ date('Y-m-d') }}">
                                     </div>
                                 </div>
 
@@ -59,7 +59,8 @@
                                 <div class="form-group row">
                                     <label for="idjenispiutang" class="col-md-3">Jenis Piutang</label>
                                     <div class="col-md-9">
-                                        <select name="idjenispiutang" id="idjenispiutang" class="form-control searchJenisPiutang">
+                                        <select name="idjenispiutang" id="idjenispiutang"
+                                            class="form-control searchJenisPiutang">
                                         </select>
                                     </div>
                                 </div>
@@ -75,10 +76,11 @@
                                 <div class="form-group row">
                                     <label for="keterangan" class="col-md-3">Keterangan</label>
                                     <div class="col-md-9">
-                                        <textarea name="keterangan" id="keterangan" class="form-control" rows="3" placeholder="Keterangan"></textarea>
+                                        <textarea name="keterangan" id="keterangan" class="form-control" rows="3"
+                                            placeholder="Keterangan"></textarea>
 
                                     </div>
-                                </div>                                
+                                </div>
 
                             </div>
                             <div class="card-footer">
@@ -101,13 +103,13 @@
 
 @section('scripts')
 <script>
-    var idpiutang = "{{ $idpiutang }}";
+    var idpembayaranpiutang = "{{ $idpembayaranpiutang }}";
 
     $(document).ready(function() {
 
-        if (idpiutang != "") {
-            $('#idpiutang').val(idpiutang);
-            $('#lblidpiutang').html('ID: ' + idpiutang);
+        if (idpembayaranpiutang != "") {
+            $('#idpembayaranpiutang').val(idpembayaranpiutang);
+            $('#lblidpembayaranpiutang').html('ID: ' + idpembayaranpiutang);
             $('.label-judul').html('Edit');
             $('#divStatusAktif').show();
 
@@ -116,15 +118,15 @@
                     type: 'GET',
                     dataType: 'json',
                     data: {
-                        'idpiutang': idpiutang
+                        'idpembayaranpiutang': idpembayaranpiutang
                     },
                 })
                 .done(function(response) {
                     console.log(response);
                     var rsPiutang = response['rsPiutang'];
 
-                    $('#idpiutang').val(rsPiutang['idpiutang']);
-                    $('#tglpiutang').val(rsPiutang['tglpiutang']);
+                    $('#idpembayaranpiutang').val(rsPiutang['idpembayaranpiutang']);
+                    $('#tglpembayaran').val(rsPiutang['tglpembayaran']);
                     addSelectOption("idkonsumen", rsPiutang['idkonsumen'], rsPiutang['namakonsumen']);
                     $('#idkonsumen').val(rsPiutang['idkonsumen']);                    
 
@@ -149,7 +151,7 @@
                     validating: 'glyphicon glyphicon-refresh'
                 },
                 fields: {
-                    tglpiutang: {
+                    tglpembayaran: {
                         validators: {
                             notEmpty: {
                                 message: 'tanggal tidak boleh kosong'

@@ -51,6 +51,7 @@ use App\Http\Controllers\PenagihanController;
 use App\Http\Controllers\PenerimaanController;
 use App\Http\Controllers\PengeluaranController;
 use App\Http\Controllers\PiutangController;
+use App\Http\Controllers\PembayaranpiutangController;
 use App\Http\Controllers\PostingjurnalController;
 use App\Http\Controllers\ReturpembelianController;
 use App\Http\Controllers\ReturpenjualanController;

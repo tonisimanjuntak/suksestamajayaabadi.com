@@ -16,7 +16,7 @@ class PembayaranpiutangController extends Controller
 
     public function __construct()
     {
-        $this->model = new Piutang;
+        $this->model = new Pembayaranpiutang;
         $this->isLogin();
     }
 
@@ -29,50 +29,50 @@ class PembayaranpiutangController extends Controller
     public function tambah()
     {
         $data['menu'] = 'pembayaranpiutang';
-        $data['idpiutang'] = "";
+        $data['idpembayaranpiutang'] = "";
         return view('pembayaranpiutang.form', $data);
     }
 
-    public function edit($idpiutang)
+    public function edit($idpembayaranpiutang)
     {
         try {
-            $idpiutang = Crypt::decrypt($idpiutang);
-            $rsPiutang = Piutang::findOrFail($idpiutang);
+            $idpembayaranpiutang = Crypt::decrypt($idpembayaranpiutang);
+            $rsPiutang = Pembayaranpiutang::findOrFail($idpembayaranpiutang);
         } catch (ModelNotFoundException $e) {
             return redirect('/piutang')->with('other', 'Data tidak ditemukan!');
         }
 
-        $tglpiutang = $rsPiutang->tglpiutang;
-        if (App::isPosting($tglpiutang)) {
-            $bulan = bulan(date('m', strtotime($tglpiutang)));
-            $tahun = date('Y', strtotime($tglpiutang));
+        $tglpembayaran = $rsPiutang->tglpembayaran;
+        if (App::isPosting($tglpembayaran)) {
+            $bulan = bulan(date('m', strtotime($tglpembayaran)));
+            $tahun = date('Y', strtotime($tglpembayaran));
             return redirect('/piutang')->with('other', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
         }
 
         //cek jika sudah dilakukan pembayaran hutang
-        if (Piutang::piutangSudahDibayarByIdPiutang($idpiutang)) {
+        if (Pembayaranpiutang::piutangSudahDibayarByidpembayaranpiutang($idpembayaranpiutang)) {
             return redirect('/piutang')->with('other', 'pembayaranpiutang ini sudah dilakukan pembayaran sehingga tidak dapat dirubah lagi!');
         }
 
         $data['menu'] = 'pembayaranpiutang';
-        $data['idpiutang'] = $idpiutang;
+        $data['idpembayaranpiutang'] = $idpembayaranpiutang;
         return view('pembayaranpiutang.form', $data);
     }
 
-    public function detail($idpiutang)
+    public function detail($idpembayaranpiutang)
     {
         try {
-            $idpiutang = Crypt::decrypt($idpiutang);
-            $rsPiutang = Piutang::findOrFail($idpiutang);
+            $idpembayaranpiutang = Crypt::decrypt($idpembayaranpiutang);
+            $rsPiutang = Pembayaranpiutang::findOrFail($idpembayaranpiutang);
         } catch (ModelNotFoundException $e) {
             return redirect('/piutang')->with('other', 'Data tidak ditemukan!');
         }
-        $rsPiutangDetail = $this->model->getDetailPembayaran($idpiutang);
+        $rsPiutangDetail = $this->model->getDetailPembayaran($idpembayaranpiutang);
 
         $sisaPiutang = $rsPiutang->totaldebet - $rsPiutang->totalkredit;
 
         $data['menu'] = 'pembayaranpiutang';
-        $data['idpiutang'] = $idpiutang;
+        $data['idpembayaranpiutang'] = $idpembayaranpiutang;
         $data['rsPiutang'] = $rsPiutang;
         $data['rsPiutangDetail'] = $rsPiutangDetail;
         $data['sisaPiutang'] = $sisaPiutang;
@@ -83,32 +83,22 @@ class PembayaranpiutangController extends Controller
     public function listdata(Request $request)
     {
         // Query dasar
-        $query = Piutang::select(['idpiutang', 'tglpiutang', 'tgljatuhtempo', 'namakonsumen', 'totaldebet', 'totalkredit', 'noinvoice', 'namajenispiutang', 'jatuhtempo', 'jenissumber', 'keterangan']);
+        $query = Pembayaranpiutang::select("*");
 
         $tglawal = $request->input('tglawal');
         $tglakhir = $request->input('tglakhir');
         $idkonsumen = $request->input('idkonsumen');
-        $statusbayar = $request->input('statusbayar');
 
-        $query->whereBetween("tglpiutang", [$tglawal, $tglakhir]);
+        $query->whereBetween("tglpembayaran", [$tglawal, $tglakhir]);
         if ($idkonsumen != '' && $idkonsumen != null) {
             $query->where('idkonsumen', $idkonsumen);
-        }
-
-        if (!empty($statusbayar)) {
-            if ($statusbayar == 'Belum Lunas') {
-                $query->whereRaw('totaldebet > totalkredit');
-            } else {
-                $query->whereRaw('totaldebet <= totalkredit');
-            }
         }
 
         // Cek apakah ada pencarian
         if ($request->has('search') && !empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where(function ($groupwhere) use ($search) {
-                $groupwhere->where('idpiutang', 'LIKE', "%{$search}%")
-                    ->orWhere('noinvoice', 'LIKE', "%{$search}%")
+                $groupwhere->where('idpembayaranpiutang', 'LIKE', "%{$search}%")
                     ->orWhere('namakonsumen', 'LIKE', "%{$search}%");
             });
         }
@@ -119,23 +109,23 @@ class PembayaranpiutangController extends Controller
             $orderDirection = $request->input('order.0.dir'); // Arah sorting (asc/desc)
 
             // Daftar kolom yang bisa di-sort
-            $columns = [null, 'idpiutang', 'noinvoice', 'tgljatuhtempo', 'namakonsumen', 'totaldebet', 'totalkredit', null, null];
+            $columns = [null, 'idpembayaranpiutang', 'tglpembayaran', 'namakonsumen', 'totaldibayar', 'totalpembayaran', null];
 
             // Pastikan index kolom valid
             if (isset($columns[$orderColumn])) {
                 $query->orderBy($columns[$orderColumn], $orderDirection);
             } else {
-                $query->orderBy('tglpiutang', 'Desc');
-                $query->orderBy('idpiutang', 'Desc');
+                $query->orderBy('tglpembayaran', 'Desc');
+                $query->orderBy('idpembayaranpiutang', 'Desc');
             }
         } else {
-            $query->orderBy('tglpiutang', 'Desc');
-            $query->orderBy('idpiutang', 'Desc');
+            $query->orderBy('tglpembayaran', 'Desc');
+            $query->orderBy('idpembayaranpiutang', 'Desc');
         }
 
 
         // Hitung total data tanpa filter
-        $totalData = Piutang::count();
+        $totalData = Pembayaranpiutang::count();
 
         // Hitung total data setelah filter (jika ada pencarian)
         $totalFiltered = $query->count();
@@ -154,51 +144,26 @@ class PembayaranpiutangController extends Controller
         $no = 1;
         foreach ($rsData as $row) {
 
-            if ($row->totaldebet <= $row->totalkredit) {
-                $statuslunas = '<span class="badge badge-success">Lunas</span>';
-            } else {
-                $statuslunas = '<span class="badge badge-danger">Belum Lunas</span>';
-            }
-
-            if ($row->jenissumber == 'Penjualan') {
-                $btnAksi = '<div class="btn-group btn-block">
-                                <div class="btn-group dropleft" role="group">
-                                    <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span class="sr-only">Toggle Dropleft</span>
-                                    </button>
-                                    <div class="dropdown-menu">
-                                        <a href="' . url('pembayaranpiutang/cetakBukuPiutang/' . Crypt::encrypt($row->idpiutang)) . '" class="dropdown-item" target="_blank">Cetak Buku Hutang</a>
-                                    </div>
-                                </div>
-                                <a href="' . url('pembayaranpiutang/detail/' . Crypt::encrypt($row->idpiutang)) . '" class="btn btn-primary">Bayar</a>                                
-                            </div>';
-            } else {
-                $btnAksi = '<div class="btn-group btn-block">
-                                <div class="btn-group dropleft" role="group">
-                                    <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span class="sr-only">Toggle Dropleft</span>
-                                    </button>
-                                    <div class="dropdown-menu">
-                                        <a href="' . url('pembayaranpiutang/cetakBukuPiutang/' . Crypt::encrypt($row->idpiutang)) . '" class="dropdown-item" target="_blank">Cetak Buku Hutang</a>
-                                        <div class="dropdown-divider"></div>
-                                        <a href="' . url('pembayaranpiutang/edit/' . Crypt::encrypt($row->idpiutang)) . '" class="dropdown-item">Edit</a>
-                                        <a href="' . url('pembayaranpiutang/hapusList/' . Crypt::encrypt($row->idpiutang)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
-                                    </div>
-                                </div>
-                                <a href="' . url('pembayaranpiutang/detail/' . Crypt::encrypt($row->idpiutang)) . '" class="btn btn-primary">Bayar</a>                                
-                            </div>';
-            }
-
             $data[] = [
                 'no' => $no++,
-                'idpiutang' => $row->idpiutang . '<br>' . tgldmy($row->tglpiutang),
-                'noinvoice' => (!empty($row->noinvoice) ? $row->noinvoice : '-'),
-                'tgljatuhtempo' => tgldmy($row->tgljatuhtempo) . '<br>' . $row->namajenispiutang . ' (' . $row->jatuhtempo . ' hari)',
+                'idpembayaranpiutang' => $row->idpembayaranpiutang,
+                'tgljatuhtempo' => tgldmy($row->tglpembayaran),
                 'namakonsumen' => $row->namakonsumen . '<br><i>' . $row->keterangan . '</i>',
-                'totaldebet' => format_rupiah($row->totaldebet),
-                'totalkredit' => format_rupiah($row->totalkredit),
-                'statuslunas' => $statuslunas,
-                'action' => $btnAksi,
+                'totaldebet' => format_rupiah($row->totaldibayar),
+                'totalkredit' => format_rupiah($row->totalpembayaran),
+                'action' => '<div class="btn-group btn-block">
+                                <div class="btn-group dropleft" role="group">
+                                    <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="sr-only">Toggle Dropleft</span>
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a href="' . url('pembayaranpiutang/cetakBukuPiutang/' . Crypt::encrypt($row->idpembayaranpiutang)) . '" class="dropdown-item" target="_blank">Cetak Kwitansi</a>
+                                        <div class="dropdown-divider"></div>
+                                        <a href="' . url('pembayaranpiutang/hapusList/' . Crypt::encrypt($row->idpembayaranpiutang)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
+                                    </div>
+                                </div>
+                                <a href="' . url('pembayaranpiutang/edit/' . Crypt::encrypt($row->idpembayaranpiutang)) . '" class="btn btn-warning">Edit</a>                                
+                            </div>',
 
             ];
         }
@@ -215,9 +180,9 @@ class PembayaranpiutangController extends Controller
 
     public function simpanData(Request $request)
     {
-        $idpiutang = $request->get('modalidpiutang');
-        $idpiutangdetail = $request->get('idpiutangdetail');
-        $tglpiutang = $request->get('tglpiutang');
+        $idpembayaranpiutang = $request->get('modalidpembayaranpiutang');
+        $idpembayaranpiutangdetail = $request->get('idpembayaranpiutangdetail');
+        $tglpembayaran = $request->get('tglpembayaran');
         $carabayar = $request->get('carabayar');
         $idbank = $request->get('idbank');
         $nobilyetgiro = $request->get('nobilyetgiro');
@@ -226,9 +191,9 @@ class PembayaranpiutangController extends Controller
         $updated_date = date('Y-m-d H:i:s');
 
 
-        if (App::isPosting($tglpiutang)) {
-            $bulan = bulan(date('m', strtotime($tglpiutang)));
-            $tahun = date('Y', strtotime($tglpiutang));
+        if (App::isPosting($tglpembayaran)) {
+            $bulan = bulan(date('m', strtotime($tglpembayaran)));
+            $tahun = date('Y', strtotime($tglpembayaran));
             return response()->json(array("msg" => "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!"));
         }
 
@@ -242,10 +207,10 @@ class PembayaranpiutangController extends Controller
 
 
 
-        $idpiutangdetail = $this->model->createIDDetail($idpiutang);
+        $idpembayaranpiutangdetail = $this->model->createIDDetail($idpembayaranpiutang);
 
 
-        $rsPiutang = Piutang::find($idpiutang);
+        $rsPiutang = Pembayaranpiutang::find($idpembayaranpiutang);
         $idpenjualan = $rsPiutang->idpenjualan;
         
         //create kwitansi
@@ -256,13 +221,13 @@ class PembayaranpiutangController extends Controller
         }
 
         if (($rsPiutang->totaldebet - $rsPiutang->totalkredit) < $kredit) {
-            return redirect('/piutang/detail/' . Crypt::encrypt($idpiutang))->with('fail', 'Jumlah yang dibayar tidak boleh melebihi sisa piutang!');
+            return redirect('/piutang/detail/' . Crypt::encrypt($idpembayaranpiutang))->with('fail', 'Jumlah yang dibayar tidak boleh melebihi sisa piutang!');
         }
 
         $data = array(
-            'idpiutangdetail' => $idpiutangdetail,
-            'idpiutang' => $idpiutang,
-            'tglpiutang' => $tglpiutang,
+            'idpembayaranpiutangdetail' => $idpembayaranpiutangdetail,
+            'idpembayaranpiutang' => $idpembayaranpiutang,
+            'tglpembayaran' => $tglpembayaran,
             'debet' => 0,
             'kredit' => $kredit,
             'inserted_date' => $inserted_date,
@@ -274,52 +239,52 @@ class PembayaranpiutangController extends Controller
             'jenis' => 'Pembayaran Piutang',
             'nokwitansi' => $nokwitansi,
         );
-        $simpan = $this->model->simpanData($data, $idpiutang, $rsPiutang, $nokwitansi);
+        $simpan = $this->model->simpanData($data, $idpembayaranpiutang, $rsPiutang, $nokwitansi);
 
         if ($simpan['status'] == 'success') {
-            return redirect('/piutang/detail/' . Crypt::encrypt($idpiutang))->with('success', $simpan['message']);
+            return redirect('/piutang/detail/' . Crypt::encrypt($idpembayaranpiutang))->with('success', $simpan['message']);
         } else {
-            return redirect('/piutang/detail/' . Crypt::encrypt($idpiutang))->with('fail', 'Data gagal disimpan! Error: ' . $simpan['message']);
+            return redirect('/piutang/detail/' . Crypt::encrypt($idpembayaranpiutang))->with('fail', 'Data gagal disimpan! Error: ' . $simpan['message']);
         }
     }
 
 
 
-    public function hapus($idpiutangdetail)
+    public function hapus($idpembayaranpiutangdetail)
     {
-        $idpiutangdetail = Crypt::decrypt($idpiutangdetail);
+        $idpembayaranpiutangdetail = Crypt::decrypt($idpembayaranpiutangdetail);
         try {
-            $rsPiutangDetail = $this->model->getDetailID($idpiutangdetail);
+            $rsPiutangDetail = $this->model->getDetailID($idpembayaranpiutangdetail);
         } catch (ModelNotFoundException $e) {
             return redirect('/piutang')->with('other', 'Data tidak ditemukan!');
         }
 
-        $idpiutang = $rsPiutangDetail->idpiutang;
-        $tglpiutang = $rsPiutangDetail->tglpiutang;
-        if (App::isPosting($tglpiutang)) {
-            $bulan = bulan(date('m', strtotime($tglpiutang)));
-            $tahun = date('Y', strtotime($tglpiutang));
-            return redirect('/piutang/detail/' . Crypt::encrypt($idpiutang))->with('other', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
+        $idpembayaranpiutang = $rsPiutangDetail->idpembayaranpiutang;
+        $tglpembayaran = $rsPiutangDetail->tglpembayaran;
+        if (App::isPosting($tglpembayaran)) {
+            $bulan = bulan(date('m', strtotime($tglpembayaran)));
+            $tahun = date('Y', strtotime($tglpembayaran));
+            return redirect('/piutang/detail/' . Crypt::encrypt($idpembayaranpiutang))->with('other', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
         }
 
-        if ($this->model->cekPiutangSetelahnya($idpiutang, $idpiutangdetail)) {
-            return redirect('/piutang/detail/' . Crypt::encrypt($idpiutang))->with('other', "Tidak boleh menghapus pembayaran ini. Hapus pembayaran harus dilakukan secara berurutan dari yang terakhir terlebih dahulu!");
+        if ($this->model->cekPiutangSetelahnya($idpembayaranpiutang, $idpembayaranpiutangdetail)) {
+            return redirect('/piutang/detail/' . Crypt::encrypt($idpembayaranpiutang))->with('other', "Tidak boleh menghapus pembayaran ini. Hapus pembayaran harus dilakukan secara berurutan dari yang terakhir terlebih dahulu!");
         }
 
-        $hapus = $this->model->hapusData($idpiutang, $idpiutangdetail, $rsPiutangDetail);
+        $hapus = $this->model->hapusData($idpembayaranpiutang, $idpembayaranpiutangdetail, $rsPiutangDetail);
         if ($hapus['status'] == 'success') {
-            return redirect('/piutang/detail/' . Crypt::encrypt($idpiutang))->with('success', $hapus['message']);
+            return redirect('/piutang/detail/' . Crypt::encrypt($idpembayaranpiutang))->with('success', $hapus['message']);
         } else {
-            return redirect('/piutang/detail/' . Crypt::encrypt($idpiutang))->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/piutang/detail/' . Crypt::encrypt($idpembayaranpiutang))->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
         }
     }
 
     public function getDataID(Request $request)
     {
-        $idpiutang = $request->input('idpiutang');
-        $rsPiutang = Piutang::find($idpiutang);
+        $idpembayaranpiutang = $request->input('idpembayaranpiutang');
+        $rsPiutang = Pembayaranpiutang::find($idpembayaranpiutang);
 
-        $rsDetail = $this->model->getDetail($idpiutang);
+        $rsDetail = $this->model->getDetail($idpembayaranpiutang);
         return response()->json(array('rsPiutang' => $rsPiutang, 'rsDetail' => $rsDetail));
     }
 }

@@ -7,12 +7,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Buku Piutang</h1>
+                    <h1 class="m-0">Pembayaran Piutang</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="{{ url('/') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Buku Piutang</li>
+                        <li class="breadcrumb-item active">Pembayaran Piutang</li>
                     </ol>
                 </div>
             </div>
@@ -28,9 +28,9 @@
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title font-weight-bold"><i class="far fa-list-alt mr-1"></i>List Data
-                                Buku Piutang</h3>
-                            <a href="{{ url('piutang/tambah') }}" class="btn btn-sm btn-primary float-right" <?php if
-                                (!str_contains(strtolower(session('hakaksi_aktif')), 'tambah' ) ) {
+                                Pembayaran Piutang</h3>
+                            <a href="{{ url('pembayaranpiutang/tambah') }}" class="btn btn-sm btn-primary float-right"
+                                <?php if (!str_contains(strtolower(session('hakaksi_aktif')), 'tambah' ) ) {
                                 echo 'style="display: none;"' ; } ?>
                                 ><i class="fa fa-plus-circle mr-1"></i> Tambah Data</a>
 
@@ -98,13 +98,11 @@
                                         <thead class="">
                                             <tr>
                                                 <th style="width: 5%; text-align: center;">No</th>
-                                                <th style="width: 10%; text-align: center;">ID Piutang</th>
-                                                <th style="width: 10%; text-align: center;">No Invoice</th>
-                                                <th style="width: 10%; text-align: center;">Tanggal<br>J.Tempo</th>
+                                                <th style="width: 10%; text-align: center;">ID Pembayaran</th>
+                                                <th style="width: 10%; text-align: center;">Tgl Bayar</th>
                                                 <th style="text-align: left;">Nama Konsumen</th>
-                                                <th style="width: 10%; text-align: right;">Jumlah Piutang</th>
                                                 <th style="width: 10%; text-align: right;">Jumlah Dibayar</th>
-                                                <th style="width: 10%; text-align: center;">Status</th>
+                                                <th style="width: 10%; text-align: right;">Total Pembayaran</th>
                                                 <th style="width: 10%; text-align: center;">Aksi</th>
                                             </tr>
                                         </thead>
@@ -135,7 +133,7 @@
             processing: true,
             serverSide: true,
             ajax: {
-                url: "{{ route('piutang.listdata') }}",
+                url: "{{ route('pembayaranpiutang.listdata') }}",
                 type: 'GET',
                 data: function(d) {
                     d.tglawal = $('#tglawal').val();
@@ -157,20 +155,14 @@
                     searchable: false
                 },
                 {
-                    data: 'idpiutang',
-                    name: 'idpiutang',
+                    data: 'idpembayaranpiutang',
+                    name: 'idpembayaranpiutang',
                     className: 'dt-body-center',
                     orderable: true,
                 },
                 {
-                    data: 'noinvoice',
-                    name: 'noinvoice',
-                    className: 'dt-body-center',
-                    orderable: true,
-                },
-                {
-                    data: 'tgljatuhtempo',
-                    name: 'tgljatuhtempo',
+                    data: 'tglpembayaran',
+                    name: 'tglpembayaran',
                     className: 'dt-body-center',
                     orderable: true,
                 },
@@ -181,21 +173,15 @@
                     orderable: false,
                 },
                 {
-                    data: 'totaldebet',
-                    name: 'totaldebet',
+                    data: 'totaldibayar',
+                    name: 'totaldibayar',
                     className: 'dt-body-right',
                     orderable: false,
                 },
                 {
-                    data: 'totalkredit',
-                    name: 'totalkredit',
+                    data: 'totalpembayaran',
+                    name: 'totalpembayaran',
                     className: 'dt-body-right',
-                    orderable: false,
-                },
-                {
-                    data: 'statuslunas',
-                    name: 'statuslunas',
-                    className: 'dt-body-center',
                     orderable: false,
                 },
                 {
