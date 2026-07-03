@@ -104,3 +104,5 @@
 [2026-06-21] [customize] Laporan Penjualan - Tanggal dan no invoice nya dipisah ya. Jgn digabung.
 [2026-06-21] [customize] Purchase Order - Bang, bantu utk pembelian bisa dlm 1 invoice brng yg sama bang Ini urgent ya, minta dibantu dl
 [2026-06-21] [customize] Penerimaan PO - Bang, bantu utk pembelian bisa dlm 1 invoice brng yg sama bang Ini urgent ya, minta dibantu dl
+
+[2026-07-03] [customize] Retur Pernjualan - Bg ini tolong jngn dikuci ya (Harga return). Biar kami bisa edit harga nya. Trs PPN nya salah

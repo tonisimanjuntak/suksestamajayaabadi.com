@@ -55,7 +55,7 @@
                                         <div class="form-group row">
                                             <label for="hargaretur" class="col-md-3 col-form-label">Harga Retur</label>
                                             <div class="col-md-4">
-                                                <input type="text" name="hargaretur" id="hargaretur" class="form-control rupiah" readonly>
+                                                <input type="text" name="hargaretur" id="hargaretur" class="form-control rupiah">
                                             </div>
                                         </div>
 
@@ -144,6 +144,11 @@
 
     function addTableRow(idbarang, namabarang, jumlahretur, hargaretur, subtotalretur,
         jumlahjual) {
+
+        if (idbarang == "" || namabarang == "") {
+            swal("Informasi", "Nama barang tidak ada!", "info");
+            return;
+        }
 
         if (jumlahjual == "" || jumlahjual == "0") {
             swal("Informasi", "Jumlah pembelian tidak ada!", "info");
@@ -253,7 +258,7 @@
     }
 
     function hitungPPNBarang() {
-        var jumlahppn = parseInt(parseInt($('#jumlahretur').val()) * (parseInt($('#hargaretur').val()) * ppn_penjualan / 100))
+        var jumlahppn = parseInt(parseInt(untitik($('#jumlahretur').val())) * (parseInt(untitik($('#hargaretur').val())) * ppn_penjualan / 100))
         $('#jumlahppn').val(numberWithCommas(jumlahppn));
     }
 </script>
