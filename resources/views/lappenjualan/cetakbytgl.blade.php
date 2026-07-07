@@ -89,10 +89,10 @@
                     <th width="5%" style="text-align:center;">NO</th>
                     <th width="8%" style="text-align:center;">TANGGAL</th>
                     <th width="10%" style="text-align:center;">NO INVOICE</th>
-                    <th width="16%" style="text-align:center;">KETERANGAN</th>
                     <th width="10%" style="text-align:center;">SALES</th>
-                    <th width="10%" style="text-align:center;">KASIR</th>
-                    <th width="10%" style="text-align:center;">KONSUMEN</th>
+                    <th width="21%" style="text-align:center;">KONSUMEN</th>
+                    <th width="5%" style="text-align:center;">KET</th>
+                    <th width="10%" style="text-align:center;">JATUH TEMPO</th>
                     <th width="5%" style="text-align:center;">UMUR<br>(HARI)</th>
                     <th width="8%" style="text-align:center;">DPP</th>
                     <th width="8%" style="text-align:center;">PPN</th>
@@ -127,16 +127,10 @@
                     <td width="5%" style="text-align:center;">{{ $no++ }}</td>
                     <td width="8%" style="text-align:center;">{{ tglindonesia($row->tglinvoice) }}</td>
                     <td width="10%" style="text-align:center;">{{ $row->noinvoice }}</td>
-                    <td width="16%" style="text-align:left;">
-                        {{ $row->keterangan }}<br>
-                        Cara Bayar: {{ $row->carabayar }}
-                        @if ($row->carabayar=='Transfer')
-                        <br>{{ $row->namabank.' ('.$row->norekening.')' }}
-                        @endif
-                    </td>
                     <td width="10%" style="text-align:center;">{{ $row->namasales }}</td>
-                    <td width="10%" style="text-align:center;">{{ $row->namapengguna }}</td>
-                    <td width="10%" style="text-align:left;">{{ $row->namakonsumen }}</td>
+                    <td width="21%" style="text-align:left;">{{ $row->namakonsumen }}</td>
+                    <td width="5%" style="text-align:center;">{{ $row->namajenispiutang }}</td>
+                    <td width="10%" style="text-align:center;">{{ tglindonesia($row->tgljatuhtempo) }}</td>
                     <td width="5%" style="text-align:center;">
                         @if ($row->carabayar == 'Piutang')
                         @if (!empty($row->tgllunas))

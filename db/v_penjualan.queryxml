@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <querybuilder version="8.3">
 <source>
-<database charset="utf8mb4" collation="utf8mb4_0900_ai_ci">pointofsales</database>
+<database charset="latin1" collation="latin1_swedish_ci">sukd9756_suksestamajayaabadi</database>
 </source>
 <canvas>
 <table tablename="penjualan" alias="" left="10" top="21" width="150" height="278" />
@@ -11,6 +11,7 @@
 <table tablename="jenispiutang" alias="" left="628" top="277" width="150" height="113" />
 <table tablename="sales" alias="" left="274" top="382" width="150" height="113" />
 <table tablename="wilayah" alias="" left="914" top="25" width="150" height="113" />
+<table tablename="piutang" alias="" left="832" top="182" width="150" height="113" />
 <join type = "Left Join">
 <from tablename = "penjualan" alias = "">idkonsumen</from>
 <to tablename = "konsumen" alias = "">idkonsumen</to>
@@ -35,6 +36,10 @@
 <from tablename = "konsumen" alias = "">idwilayah</from>
 <to tablename = "wilayah" alias = "">idwilayah</to>
 </join>
+<join type = "Left Join">
+<from tablename = "piutang" alias = "">idpenjualan</from>
+<to tablename = "penjualan" alias = "">idpenjualan</to>
+</join>
 </canvas>
 <grid>
 <column id="1">
@@ -44,7 +49,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -59,7 +64,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -74,7 +79,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -89,7 +94,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -104,7 +109,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -119,7 +124,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -134,7 +139,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -149,7 +154,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -164,7 +169,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -179,7 +184,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -194,7 +199,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -209,7 +214,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -224,7 +229,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -239,7 +244,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -254,7 +259,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -269,7 +274,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -284,7 +289,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -299,7 +304,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -314,7 +319,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -329,7 +334,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -344,7 +349,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -359,7 +364,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -374,7 +379,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -389,7 +394,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -404,7 +409,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -419,7 +424,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -434,7 +439,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -449,7 +454,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -464,7 +469,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -479,7 +484,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -494,7 +499,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -509,7 +514,7 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>
@@ -524,7 +529,22 @@
 <show>true</show>
 <sortorder></sortorder>
 <sort></sort>
-<groupby>false</groupby>
+<groupby>true</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="34">
+<table tablename="piutang"></table>
+<field>tgljatuhtempo</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>true</groupby>
 <aggfunct></aggfunct>
 <criteria></criteria>
 <or1></or1>

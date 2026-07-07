@@ -106,3 +106,5 @@
 [2026-06-21] [customize] Penerimaan PO - Bang, bantu utk pembelian bisa dlm 1 invoice brng yg sama bang Ini urgent ya, minta dibantu dl
 
 [2026-07-03] [customize] Retur Pernjualan - Bg ini tolong jngn dikuci ya (Harga return). Biar kami bisa edit harga nya. Trs PPN nya salah
+
+[2026-07-07] [customize] Laporan Penjualan - Laporan penjualan nya tambahin tgl jatuh tempo ya. Bagian keterangan dan kasir di hapus aja. Tambahin bagian keterangan nota fast, slow, cash nya juga ya bang

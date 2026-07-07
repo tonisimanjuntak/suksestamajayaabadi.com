@@ -157,7 +157,7 @@ function hari($date)
 
 function tglindonesialengkap($tanggal)
 {
-    if (!empty($tanggal)) {
+    if (!empty($tanggal) && $tanggal != '0000-00-00' && $tanggal != null) {
 
         $ntgl = date('d', strtotime($tanggal));
         $nbln = date('m', strtotime($tanggal));
