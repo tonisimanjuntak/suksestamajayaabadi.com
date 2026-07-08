@@ -1,6 +1,6 @@
 /*
 SQLyog Ultimate v10.42 
-MySQL - 8.0.30 : Database - suksestamajayaabadi
+MySQL - 8.0.30 : Database - sukd9756_suksestamajayaabadi
 *********************************************************************
 */
 
@@ -12,22 +12,24 @@ MySQL - 8.0.30 : Database - suksestamajayaabadi
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-CREATE DATABASE /*!32312 IF NOT EXISTS*/`suksestamajayaabadi` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+CREATE DATABASE /*!32312 IF NOT EXISTS*/`sukd9756_suksestamajayaabadi` /*!40100 DEFAULT CHARACTER SET latin1 */ /*!80016 DEFAULT ENCRYPTION='N' */;
 
-USE `suksestamajayaabadi`;
+USE `sukd9756_suksestamajayaabadi`;
 
 /*Table structure for table `pembayaranpiutang` */
 
 DROP TABLE IF EXISTS `pembayaranpiutang`;
 
 CREATE TABLE `pembayaranpiutang` (
-  `idpembayaranpiutang` char(15) COLLATE utf8mb4_general_ci NOT NULL,
+  `idpembayaranpiutang` char(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `tglpembayaran` date DEFAULT NULL,
-  `carabayar` enum('Tunai','Transfer','Giro') COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `idbank` char(5) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `carabayar` enum('Tunai','Transfer','Giro') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `idbank` char(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `totalpembayaran` decimal(18,0) DEFAULT NULL,
   `totaldibayar` decimal(18,0) DEFAULT NULL,
   `totaldiskon` decimal(18,0) DEFAULT NULL,
+  `idkonsumen` char(6) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `keterangan` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `inserted_date` datetime DEFAULT NULL,
   `updated_date` datetime DEFAULT NULL,
   `idpengguna` char(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
@@ -36,8 +38,10 @@ CREATE TABLE `pembayaranpiutang` (
   KEY `carabayar` (`carabayar`),
   KEY `idbank` (`idbank`),
   KEY `idpengguna` (`idpengguna`),
+  KEY `idkonsumen` (`idkonsumen`),
   CONSTRAINT `pembayaranpiutang_ibfk_1` FOREIGN KEY (`idbank`) REFERENCES `bank` (`idbank`),
-  CONSTRAINT `pembayaranpiutang_ibfk_2` FOREIGN KEY (`idpengguna`) REFERENCES `pengguna` (`idpengguna`)
+  CONSTRAINT `pembayaranpiutang_ibfk_2` FOREIGN KEY (`idpengguna`) REFERENCES `pengguna` (`idpengguna`),
+  CONSTRAINT `pembayaranpiutang_ibfk_3` FOREIGN KEY (`idkonsumen`) REFERENCES `konsumen` (`idkonsumen`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 /*Data for the table `pembayaranpiutang` */
@@ -48,8 +52,8 @@ DROP TABLE IF EXISTS `pembayaranpiutangdetail`;
 
 CREATE TABLE `pembayaranpiutangdetail` (
   `iddetail` int NOT NULL AUTO_INCREMENT,
-  `idpembayaranpiutang` char(15) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `idpiutang` char(12) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `idpembayaranpiutang` char(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `idpiutang` char(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `debet` decimal(18,0) DEFAULT NULL,
   `kredit` decimal(18,0) DEFAULT NULL,
   `bonuspenagihansudahdibayar` decimal(10,0) DEFAULT NULL,

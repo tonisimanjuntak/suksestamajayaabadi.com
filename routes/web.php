@@ -353,7 +353,8 @@ Route::middleware(['check.menu.access'])->group(function () {
             Route::get('pembayaranpiutang/hapus/{id}', 'hapus');
             Route::get('pembayaranpiutang/hapusList/{id}', 'hapusList');
             Route::post('pembayaranpiutang/simpanData', 'simpanData');
-            Route::get('pembayaranpiutang/listdata', 'listdata')->name('piutang.listdata');          
+            Route::get('pembayaranpiutang/listdata', 'listdata')->name('pembayaranpiutang.listdata');          
+            Route::get('pembayaranpiutang/getPiutangKonsumen', 'getPiutangKonsumen');
         });
 
         Route::controller(SuratjalanController::class)->group(function () {            

@@ -172,4 +172,12 @@ class Pembayaranpiutang extends Model
             ->first();
     }
 
+    public function getPiutangKonsumen($idkonsumen)
+    {
+        return DB::table('v_piutang_belum_lunas')
+            ->where('idkonsumen', $idkonsumen)
+            ->orderBy('tgljatuhtempo', 'asc')
+            ->get();
+    }
+
 }

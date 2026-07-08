@@ -287,4 +287,11 @@ class PembayaranpiutangController extends Controller
         $rsDetail = $this->model->getDetail($idpembayaranpiutang);
         return response()->json(array('rsPiutang' => $rsPiutang, 'rsDetail' => $rsDetail));
     }
+
+    public function getPiutangKonsumen(Request $request)
+    {
+        $idkonsumen = $request->input('idkonsumen');
+        $rsPiutang = $this->model->getPiutangKonsumen($idkonsumen);
+        return response()->json(array('rsPiutang' => $rsPiutang));
+    }
 }
