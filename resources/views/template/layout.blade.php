@@ -397,9 +397,8 @@
 
         function hilangkanTitik(input) {
             // Menggunakan metode replace dengan regular expression untuk menghapus semua tanda titik
-            return input.replace(/\./g, '');
+            return input.replace(/[^0-9]/g, '');
         }
-
 
         
     </script>

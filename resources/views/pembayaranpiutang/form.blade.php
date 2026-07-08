@@ -318,63 +318,59 @@
                 var keterangan = $("#keterangan").val();
 
 
-                var tableData = [];
-                $("#tablePiutang tbody tr").each(function() {
-                    var rowData = [];
-                    $(this).find("td").not(":last").each(function() {
-                        rowData.push($(this).text());
-                    });
-                    tableData.push(rowData);
+
+                var detailPiutang = [];
+                $('input[name="jumlahdibayar[]"]').each(function() {
+                    detailPiutang.push({ idpiutang: $(this).data('idpiutang'), jumlahdibayar: hilangkanTitik($(this).val()) });
                 });
 
-
-                if (carabayar == '') {
-                    swal("Informasi", "Cara bayar tidak boleh kosong!", "info")
-                        .then(function() {
-                            $('#carabayar').focus();
-                        });
+                if (detailPiutang.length == 0) {
+                    swal("Informasi", "Detail piutang yang dibayar belum ada!!", "info");
+                    $('#btnSimpan').attr("disabled", false);
                     return;
                 }
 
+                idbank = '';
+                nobilyetgiro = '';
 
                 if (carabayar == 'Transfer') {
                     if (idbank == null) {
                         swal("Informasi", "Nama bank harus dipilih!", "info")
                             .then(function() {
                                 $('#idbank').focus();
+                                $('#btnSimpan').attr("disabled", false);
+
                             });
                         return;
+                    }else{
+                        idbank = $("#idbank").val();
                     }
-                } else {
-                    idbank = '';
+                } 
+
+                if (carabayar == 'Giro') {
+                    if (idbank == null) {
+                        swal("Informasi", "Nama bank harus dipilih!", "info")
+                            .then(function() {
+                                $('#idbank').focus();
+                                $('#btnSimpan').attr("disabled", false);
+                            });
+                        return;
+                    }else{
+                        idbank = $("#idbank").val();
+                    }
+
+                    if (nobilyetgiro == '') {
+                        swal("Informasi", "Nomor bilyet giro tidak boleh kosong!", "info")
+                            .then(function() {
+                                $('#nobilyetgiro').focus();
+                                $('#btnSimpan').attr("disabled", false);
+                            });
+                        return;
+                    }else{
+                        nobilyetgiro = $("#nobilyetgiro").val();
+                    }
                 }
-
-
-
-                if (tglpembayaran == '') {
-                    swal("Informasi", "Tanggal pembayaran piutang tidak boleh kosong!", "info")
-                        .then(function() {
-                            $('#tglpembayaran').focus();
-                        });
-                    return;
-                }
-
                 
-
-                if ($("#tablePiutang tbody tr").length == 0) {
-                    swal("Informasi", "Detail piutang belum ada!!", "info");
-                    return;
-                }
-
-                isidatatable = [];
-                for (var i = 0; i < tableData.length; i++) {
-                    isidatatable.push({
-                        'kdakun': tableData[i][1],
-                        'namaakun': tableData[i][2],
-                        'jumlahpengeluaran': tableData[i][3],
-                    })
-                }
-
                 var formData = {
                     "idpembayaranpiutang": idpembayaranpiutang,
                     "tglpembayaran": tglpembayaran,
@@ -384,7 +380,7 @@
                     "nobilyetgiro": nobilyetgiro,
                     "totaldibayar": totaldibayar,
                     "keterangan": keterangan,
-                    "isidatatable": isidatatable
+                    "detailPiutang": detailPiutang
                 };
 
                 // console.log(formData);
@@ -411,10 +407,13 @@
                                 });
                         } else {
                             swal("Informasi", result.msg, "info");
+                            $('#btnSimpan').attr("disabled", false);
                         }
                     })
                     .fail(function() {
-                        console.log("Gagal script simpanData!");
+                        // console.log("Gagal script simpanData!");
+                        swal("Error", "Terjadi kesalahan script simpanData!!", "error");
+                        $('#btnSimpan').attr("disabled", false);
                     });
             });
 
