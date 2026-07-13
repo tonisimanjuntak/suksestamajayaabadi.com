@@ -108,3 +108,5 @@
 [2026-07-03] [customize] Retur Pernjualan - Bg ini tolong jngn dikuci ya (Harga return). Biar kami bisa edit harga nya. Trs PPN nya salah
 
 [2026-07-07] [customize] Laporan Penjualan - Laporan penjualan nya tambahin tgl jatuh tempo ya. Bagian keterangan dan kasir di hapus aja. Tambahin bagian keterangan nota fast, slow, cash nya juga ya bang
+
+[2026-07-13] [feature] Nota Return - Laporan Return Penjualan

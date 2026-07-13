@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <querybuilder version="8.3">
 <source>
-<database charset="utf8mb4" collation="utf8mb4_0900_ai_ci">pointofsales</database>
+<database charset="latin1" collation="latin1_swedish_ci">sukd9756_suksestamajayaabadi</database>
 </source>
 <canvas>
 <table tablename="returpenjualandetail" alias="" left="10" top="21" width="150" height="158" />
 <table tablename="returpenjualan" alias="" left="272" top="17" width="150" height="113" />
-<table tablename="barang" alias="" left="288" top="157" width="150" height="248" />
+<table tablename="barang" alias="" left="288" top="157" width="149" height="293" />
 <table tablename="kategoribarang" alias="" left="596" top="138" width="150" height="128" />
+<table tablename="satuan" alias="" left="770" top="240" width="150" height="113" />
 <join type = "Inner Join">
 <from tablename = "returpenjualandetail" alias = "">idreturpenjualan</from>
 <to tablename = "returpenjualan" alias = "">idreturpenjualan</to>
@@ -19,6 +20,10 @@
 <join type = "Inner Join">
 <from tablename = "barang" alias = "">idkategori</from>
 <to tablename = "kategoribarang" alias = "">idkategori</to>
+</join>
+<join type = "Left Join">
+<from tablename = "barang" alias = "">idsatuan</from>
+<to tablename = "satuan" alias = "">idsatuan</to>
 </join>
 </canvas>
 <grid>
@@ -190,6 +195,36 @@
 <column id="12">
 <table tablename="kategoribarang"></table>
 <field>namakategori</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="13">
+<table tablename="barang"></table>
+<field>idsatuan</field>
+<alias></alias>
+<show>true</show>
+<sortorder></sortorder>
+<sort></sort>
+<groupby>false</groupby>
+<aggfunct></aggfunct>
+<criteria></criteria>
+<or1></or1>
+<or2></or2>
+<or3></or3>
+<or4></or4>
+</column>
+<column id="14">
+<table tablename="satuan"></table>
+<field>namasatuan</field>
 <alias></alias>
 <show>true</show>
 <sortorder></sortorder>

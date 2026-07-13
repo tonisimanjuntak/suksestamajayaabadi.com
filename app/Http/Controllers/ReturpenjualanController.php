@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Returpenjualan;
+use App\Models\Konsumen;
+use App\Models\Sales;
+use App\Models\Bank;
 use App\Models\Uploads;
 use App\Models\Barang;
 use App\Models\Supplier;
@@ -12,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\App;
+use TCPDF;
 
 class ReturpenjualanController extends Controller
 {
@@ -137,6 +141,8 @@ class ReturpenjualanController extends Controller
                                     <span class="sr-only">Toggle Dropleft</span>
                                     </button>
                                     <div class="dropdown-menu">
+                                        <a href="' . url('returpenjualan/cetak/' . Crypt::encrypt($row->idreturpenjualan)) . '" class="dropdown-item" target="_blank">Cetak Nota Retur</a>
+                                        <div class="dropdown-divider"></div>
                                         <a href="' . url('returpenjualan/hapus/' . Crypt::encrypt($row->idreturpenjualan)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
                                     </div>
                                 </div>
@@ -312,5 +318,59 @@ class ReturpenjualanController extends Controller
         $idbarang = $request->idbarang;
         $rowBarang = $this->model->getDetailPenjualan($idpenjualan, $idbarang);
         return response()->json($rowBarang);
+    }
+
+    public function cetak($idreturpenjualan)
+    {
+        $idreturpenjualan = Crypt::decrypt($idreturpenjualan);
+        $rowReturPenjualan = Returpenjualan::findOrFail($idreturpenjualan);
+        $rsDetail = $this->model->getDetail($idreturpenjualan);        
+
+        $rowKonsumen = Konsumen::find($rowReturPenjualan->idkonsumen);
+        $rowSales = Sales::find($rowReturPenjualan->idsales);
+
+        $data['idreturpenjualan'] = $idreturpenjualan;
+        $data['rowReturPenjualan'] = $rowReturPenjualan;
+        $data['rsDetail'] = $rsDetail;
+        $data['rowKonsumen'] = $rowKonsumen;
+        $data['rowSales'] = $rowSales;
+        $view = view('returpenjualan.cetak', $data);
+
+        // Buat instance TCPDF
+        $pdf = new TCPDF();
+
+        // Set properti dokumen
+        $pdf->SetCreator(PDF_CREATOR);
+        $pdf->SetAuthor('TZ Developer');
+        $pdf->SetTitle('Retur Penjualan');
+        $pdf->SetSubject('Retur Penjualan');
+        $pdf->SetKeywords('TCPDF, PDF, laporan, returnpenjualan');
+        $pdf->SetFont('times', '', 10);
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+
+        // Atur ukuran kertas khusus (218 mm x 140 mm)
+        $customPaperSize = array(218, 140); // Lebar: 218 mm, Tinggi: 140 mm
+        $pdf->AddPage('L', $customPaperSize); // 'P' untuk portrait, 'L' untuk landscape
+
+        // Atur margin (1 cm = 10 mm)
+        $marginKiri = 10; // 1 cm = 10 mm
+        $marginAtas = 0; // 1 cm = 10 mm
+        $marginKanan = 15; // 1 cm = 10 mm
+        $margin = 0; // 1 cm = 10 mm
+        $pdf->SetMargins($marginKiri, $marginAtas, $marginKanan); // Margin kiri, atas, kanan
+        $pdf->SetAutoPageBreak(true, $margin);       // Margin bawah (untuk auto page break)
+
+        // Hilangkan padding internal cell
+        $pdf->SetCellPadding(0);
+
+        // Gambar garis bantu untuk debugging
+        // $pdf->Rect($margin, $margin, $pdf->getPageWidth() - $margin * 2, $pdf->getPageHeight() - $margin * 2);
+
+        // Tulis konten HTML ke dalam PDF
+        $pdf->writeHTML($view, true, false, true, false, '');
+
+        // Output PDF
+        $pdf->Output('returnpenjualan.pdf', 'I');
     }
 }

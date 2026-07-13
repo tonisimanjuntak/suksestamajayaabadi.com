@@ -286,7 +286,8 @@ Route::middleware(['check.menu.access'])->group(function () {
             Route::get('returpenjualan/searchPenjualan', 'searchPenjualan')->name('returpenjualan.searchPenjualan');
             Route::get('returpenjualan/searchBarangRetur', 'searchBarangRetur')->name('returpenjualan.searchBarangRetur');
             Route::get('returpenjualan/getPenjualan', 'getPenjualan');
-            Route::get('returpenjualan/getDetailPenjualan', 'getDetailPenjualan');            
+            Route::get('returpenjualan/getDetailPenjualan', 'getDetailPenjualan');          
+            Route::get('returpenjualan/cetak/{id}', [ReturpenjualanController::class, 'cetak']);  
         });
 
         Route::controller(PenjualanController::class)->group(function () {
