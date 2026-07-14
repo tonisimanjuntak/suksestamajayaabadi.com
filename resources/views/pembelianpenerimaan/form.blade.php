@@ -797,11 +797,11 @@
         }
 
         // Pembulatan akhir (2 desimal untuk DPP, Diskon; PPN dengan roundPPN)
-        totalPPN = totalKotor * (ppnpersen / 100);
+        totalPPN = (totalKotor - totalDiskon) * 11 / 111; // totalPPN = totalKotor * (ppnpersen / 100);
         totalPPN = roundPPN(totalPPN); 
 
         // Pembulatan akhir (2 desimal untuk DPP, Diskon)
-        totaldpp = totalKotor - totalPPN;
+        totaldpp = totalKotor - totalDiskon - totalPPN;
         totaldpp = roundToTwo(totaldpp);
         totalDiskon = roundToTwo(totalDiskon);
         
