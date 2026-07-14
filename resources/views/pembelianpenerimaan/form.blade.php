@@ -796,20 +796,22 @@
             totalDiskon += jumlahbeli * diskonSatuan;
         }
 
+        // Baca potongan tambahan
+        var totalpotongan = parseFloat(untitik($('#totalpotongan').val())) || 0;
+        totalpotongan = roundToTwo(totalpotongan);
+
         // Pembulatan akhir (2 desimal untuk DPP, Diskon; PPN dengan roundPPN)
-        totalPPN = (totalKotor - totalDiskon) * 11 / 111; // totalPPN = totalKotor * (ppnpersen / 100);
+        totalPPN = (totalKotor - totalDiskon - totalpotongan) * 11 / 111; // totalPPN = totalKotor * (ppnpersen / 100);
         totalPPN = roundPPN(totalPPN); 
 
         // Pembulatan akhir (2 desimal untuk DPP, Diskon)
-        totaldpp = totalKotor - totalDiskon - totalPPN;
+        totaldpp = totalKotor - totalDiskon -totalpotongan - totalPPN;
         totaldpp = roundToTwo(totaldpp);
         totalDiskon = roundToTwo(totalDiskon);
         
         
 
-        // Baca potongan tambahan
-        var totalpotongan = parseFloat(untitik($('#totalpotongan').val())) || 0;
-        totalpotongan = roundToTwo(totalpotongan);
+        
 
         // Hitung total faktur
         var totalFaktur = totaldpp + totalPPN - totalDiskon - totalpotongan;
