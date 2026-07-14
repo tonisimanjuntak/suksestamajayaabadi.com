@@ -47,27 +47,33 @@
                                             <div class="row">
                                                 <div class="col-12">
                                                     <div class="form-group row">
-                                                        <label for="tgl_po" class="col-md-3 col-form-label">Tanggal PO</label>
+                                                        <label for="tgl_po" class="col-md-3 col-form-label">Tanggal
+                                                            PO</label>
                                                         <div class="col-md-4">
-                                                            <input type="text" name="tgl_po" id="tgl_po" class="form-control" value="{{ date('Y-m-d') }}">
+                                                            <input type="text" name="tgl_po" id="tgl_po"
+                                                                class="form-control" value="{{ date('Y-m-d') }}">
                                                         </div>
-                                                    </div>                                             
+                                                    </div>
                                                 </div>
 
                                                 <div class="col-12">
                                                     <div class="form-group row">
-                                                        <label for="idsupplier" class="col-md-3 col-form-label">Nama Supplier</label>
+                                                        <label for="idsupplier" class="col-md-3 col-form-label">Nama
+                                                            Supplier</label>
                                                         <div class="col-md-9">
-                                                            <select name="idsupplier" id="idsupplier" class="form-control searchSupplier"></select>
+                                                            <select name="idsupplier" id="idsupplier"
+                                                                class="form-control searchSupplier"></select>
                                                         </div>
-                                                    </div>                                             
+                                                    </div>
                                                 </div>
 
                                                 <div class="col-md-12">
                                                     <div class="form-group row">
-                                                        <label for="keterangan" class="col-md-3 col-form-label">Keterangan</label>
+                                                        <label for="keterangan"
+                                                            class="col-md-3 col-form-label">Keterangan</label>
                                                         <div class="col-md-9">
-                                                            <textarea name="keterangan" id="keterangan" rows="3" class="form-control"
+                                                            <textarea name="keterangan" id="keterangan" rows="3"
+                                                                class="form-control"
                                                                 placeholder="Keterangan PO"></textarea>
                                                         </div>
                                                     </div>
@@ -87,7 +93,10 @@
                                                     <h3 class="text-muted">Detail Purchase Order</h3>
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <button class="btn btn-md btn-success float-right" data-toggle="modal" data-target="#modalTambahBarang" id="btnTambahDetail"><i class="fa fa-plus-circle mr-1"></i> Tambah Detail</button>
+                                                    <button class="btn btn-md btn-success float-right"
+                                                        data-toggle="modal" data-target="#modalTambahBarang"
+                                                        id="btnTambahDetail"><i class="fa fa-plus-circle mr-1"></i>
+                                                        Tambah Detail</button>
                                                 </div>
                                                 <div class="col-12 mt-3">
                                                     <div class="table-responsive">
@@ -98,11 +107,14 @@
                                                                     <th style="">idbarang</th>
                                                                     <th style="">Nama Barang</th>
                                                                     <th style="width: 5%; text-align: center;">Qty</th>
-                                                                    <th style="width: 10%; text-align: right;">Harga Satuan</th>
+                                                                    <th style="width: 10%; text-align: right;">Harga
+                                                                        Satuan</th>
                                                                     <th style="width: 10%; text-align: right;">DPP</th>
                                                                     <th style="width: 10%; text-align: right;">PPN</th>
-                                                                    <th style="width: 10%; text-align: right;">Sub Total</th>
-                                                                    <th style="width: 10%; text-align: center;">Aksi</th>
+                                                                    <th style="width: 10%; text-align: right;">Sub Total
+                                                                    </th>
+                                                                    <th style="width: 10%; text-align: center;">Aksi
+                                                                    </th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
@@ -118,18 +130,23 @@
 
                                 </div>
                                 <div class="col-6">
-                                    
+
                                 </div>
                                 <div class="col-md-6">
                                     <div class="row">
-                                        <label for="totaldpp" class="col-md-6 col-form-label">Jumlah DPP</label>
+                                        <label for="totaldpp" class="col-md-6 col-form-label"
+                                            style="display: none;">Jumlah DPP</label>
                                         <input type="text" name="totaldpp" id="totaldpp"
-                                        class="form-control col-md-6 rupiah" value="0" readonly>
-                                        
-                                        <input type="hidden" name="ppnpersen" id="ppnpersen" value="{{ session()->get('ppn_pembelian') }}" readonly>
-                                        <label for="totalppn" class="col-md-6 col-form-label">PPN (%)</label>
+                                            class="form-control col-md-6 rupiah" value="0" readonly
+                                            style="display: none;">
+
+                                        <input type="hidden" name="ppnpersen" id="ppnpersen"
+                                            value="{{ session()->get('ppn_pembelian') }}" readonly>
+                                        <label for="totalppn" class="col-md-6 col-form-label" style="display: none;">PPN
+                                            (%)</label>
                                         <input type="text" name="totalppn" id="totalppn"
-                                            class="form-control col-md-6 rupiah" value="0" readonly>
+                                            class="form-control col-md-6 rupiah" value="0" readonly
+                                            style="display: none;">
 
 
                                         <div class="col-md-12">
@@ -140,7 +157,7 @@
                                         <input type="text" name="totalfaktur" id="totalfaktur"
                                             class="form-control col-md-6 rupiah" value="0" readonly>
 
-                                        
+
                                     </div>
 
                                 </div>
@@ -178,9 +195,13 @@
     $(document).ready(function() {
 
         $('#tableDetail thead tr :nth-child(2)').hide();
+        $('#tableDetail thead tr :nth-child(6)').hide();
+        $('#tableDetail thead tr :nth-child(7)').hide();
         
 
         $('#tableDetail tbody tr :nth-child(2)').hide();
+        $('#tableDetail tbody tr :nth-child(6)').hide();
+        $('#tableDetail tbody tr :nth-child(7)').hide();
         
 
         $('.select2').select2();
@@ -366,13 +387,15 @@
 
         var totaldpp = 0;
         var totalPPN = 0;
+        var totalFaktur = 0;
 
         for (var i = 0; i < arrTable.length; i++) {
             totaldpp += parseInt(untitik(arrTable[i][3])) * parseInt(untitik(arrTable[i][5]));
             totalPPN += parseInt(untitik(arrTable[i][3])) * parseInt(untitik(arrTable[i][6]));
+            totalFaktur += parseInt(untitik(arrTable[i][7]));
         }
 
-        var totalFaktur = totaldpp + totalPPN;
+        
 
         $('#totaldpp').val(totitik(totaldpp));
         $('#totalppn').val(totitik(totalPPN));

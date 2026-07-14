@@ -95,7 +95,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="col-12">
+                                            <div class="col-12" style="display: none;">
                                                 <div class="form-group row">
                                                     <label for="hargadpp" class="col-md-4 col-form-label">Harga
                                                         DPP</label>
@@ -108,7 +108,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="col-12">
+                                            <div class="col-12" style="display: none;">
                                                 <div class="form-group row">
                                                     <label for="jumlahppn" class="col-md-4 col-form-label">Jumlah
                                                         PPN</label>
@@ -129,10 +129,10 @@
                                                         Diskon</label>
                                                     <div class="col-md-8">
                                                         <input type="hidden" name="jumlahdiskon2" id="jumlahdiskon2"
-                                                            class="form-control rupiah" value="0" readonly>
+                                                            class="form-control rupiahDesimal" value="0" readonly>
                                                         <input type="text" name="jumlahdiskon2_display"
-                                                            id="jumlahdiskon2_display" class="form-control rupiah"
-                                                            value="0" readonly>
+                                                            id="jumlahdiskon2_display"
+                                                            class="form-control rupiahDesimal" value="0" readonly>
                                                     </div>
                                                 </div>
                                             </div>
@@ -143,7 +143,7 @@
                                                         Total</label>
                                                     <div class="col-md-8">
                                                         <input type="text" name="subtotalbeli" id="subtotalbeli"
-                                                            class="form-control rupiah" value="0" readonly>
+                                                            class="form-control rupiahDesimal" value="0" readonly>
                                                     </div>
                                                 </div>
                                             </div>
@@ -186,27 +186,27 @@
                                                             <label for="diskonpersen1"
                                                                 class="col-md-5 col-form-label">Discount 1 (%)</label>
                                                             <div class="col-md-7">
-                                                                <input type="number" name="diskonpersen1"
-                                                                    id="diskonpersen1" class="form-control" min="0"
-                                                                    max="100" value="0" readonly>
+                                                                <input type="text" name="diskonpersen1"
+                                                                    id="diskonpersen1" class="form-control persen"
+                                                                    readonly>
                                                             </div>
                                                         </div>
                                                         <div class="form-group row">
                                                             <label for="diskonpersen2"
                                                                 class="col-md-5 col-form-label">Discount 2 (%)</label>
                                                             <div class="col-md-7">
-                                                                <input type="number" name="diskonpersen2"
-                                                                    id="diskonpersen2" class="form-control" min="0"
-                                                                    max="100" value="0" readonly>
+                                                                <input type="text" name="diskonpersen2"
+                                                                    id="diskonpersen2" class="form-control persen"
+                                                                    value="0" readonly>
                                                             </div>
                                                         </div>
                                                         <div class="form-group row">
                                                             <label for="diskonpersen3"
                                                                 class="col-md-5 col-form-label">Discount 3 (%)</label>
                                                             <div class="col-md-7">
-                                                                <input type="number" name="diskonpersen3"
-                                                                    id="diskonpersen3" class="form-control" min="0"
-                                                                    max="100" value="0" readonly>
+                                                                <input type="text" name="diskonpersen3"
+                                                                    id="diskonpersen3" class="form-control persen"
+                                                                    value="0" readonly>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -218,7 +218,7 @@
                                                                 Discount</label>
                                                             <div class="col-md-7">
                                                                 <input type="text" name="jumlahdiskon" id="jumlahdiskon"
-                                                                    class="form-control rupiah">
+                                                                    class="form-control rupiahDesimal">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -293,9 +293,9 @@
                 var subtotalbeli = untitik($('#subtotalbeli').val());
                 var jenisdiskon = $('input[name="jenisdiskon"]:checked').val();
                 var jumlahdiskon = untitik($('#jumlahdiskon').val());
-                var diskonpersen1 = untitik($('#diskonpersen1').val());
-                var diskonpersen2 = untitik($('#diskonpersen2').val());
-                var diskonpersen3 = untitik($('#diskonpersen3').val());
+                var diskonpersen1 = ($('#diskonpersen1').val() == '') ? 0 : untitik($('#diskonpersen1').val());
+                var diskonpersen2 = ($('#diskonpersen2').val() == '') ? 0 : untitik($('#diskonpersen2').val());
+                var diskonpersen3 = ($('#diskonpersen3').val() == '') ? 0 : untitik($('#diskonpersen3').val());
                 var jumlahdiskon = untitik($('#jumlahdiskon').val());
                 var stok = untitik($('#stok').val());
 
@@ -370,12 +370,12 @@
                         $('input[name="jenisdiskon"]').trigger('change');
 
                         $('#jumlahdiskon').val('0');
-                        $('#diskonpersen1').val('0');
+                        $('#diskonpersen1').val('');
                         $('#diskonpersen2').val('0');
                         $('#diskonpersen3').val('0');                            
                     }else{
                         $('#jumlahdiskon').val('0');
-                        $('#diskonpersen1').val('0');
+                        $('#diskonpersen1').val('');
                         $('#diskonpersen2').val('0');
                         $('#diskonpersen3').val('0');
 
@@ -496,6 +496,8 @@
         $('#tableDetail thead tr :nth-child(5)').hide();
         $('#tableDetail thead tr :nth-child(6)').hide();
         $('#tableDetail thead tr :nth-child(7)').hide();
+        $('#tableDetail thead tr :nth-child(12)').hide();
+        $('#tableDetail thead tr :nth-child(13)').hide();
         $('#tableDetail thead tr :nth-child(16)').hide(); //iddetail
 
         $('#tableDetail tbody tr :nth-child(2)').hide();
@@ -504,6 +506,8 @@
         $('#tableDetail tbody tr :nth-child(5)').hide();
         $('#tableDetail tbody tr :nth-child(6)').hide();
         $('#tableDetail tbody tr :nth-child(7)').hide();
+        $('#tableDetail tbody tr :nth-child(12)').hide();
+        $('#tableDetail tbody tr :nth-child(13)').hide();
         $('#tableDetail tbody tr :nth-child(16)').hide(); //iddetail
         hitungTotalFaktur();
         kosongkanModal();
@@ -647,41 +651,58 @@
     });
 
     function hitungSubTotal() {
-        var jumlahbeli = untitik($('#jumlahbeli').val());
-        var hargasatuan = untitik($('#hargasatuan').val());
+        // Ambil nilai (semua nilai sudah dalam format angka tanpa titik)
+        var jumlahbeli = parseFloat(untitik($('#jumlahbeli').val())) || 0;
+        var hargasatuan = parseFloat(untitik($('#hargasatuan').val())) || 0;
         var jenisdiskon = $('input[name="jenisdiskon"]:checked').val();
 
-        if (jenisdiskon == 'Nominal') {
-            var jumlahdiskon = untitik($('#jumlahdiskon').val());
-            var jumlahdiskon = parseInt(jumlahdiskon);
-            //console.log(jumlahdiskon);
+        // --- Proses Diskon ---
+        var totalDiskonSatuan = 0;
+
+        if (jenisdiskon === 'Nominal') {
+            var jumlahdiskon = parseFloat(untitik($('#jumlahdiskon').val())) || 0;
+            jumlahdiskon = roundToTwo(jumlahdiskon);
+            console.log("jumlahdiskon = " + jumlahdiskon);
             $('#jumlahdiskon').val(numberWithCommas(jumlahdiskon));
             $('#jumlahdiskon2').val(numberWithCommas(jumlahdiskon));
-            $('#jumlahdiskon2_display').val(numberWithCommas( parseInt(jumlahdiskon) * parseInt(jumlahbeli) ));
+            var totalDiskon = roundToTwo(jumlahdiskon * jumlahbeli);
+            $('#jumlahdiskon2_display').val(numberWithCommas(totalDiskon));
+            totalDiskonSatuan = jumlahdiskon;
         } else {
-            var diskon1 = untitik($('#diskonpersen1').val());
-            var diskon2 = untitik($('#diskonpersen2').val());
-            var diskon3 = untitik($('#diskonpersen3').val());
+            // Diskon persen bertingkat
+            var diskon1 = parseFloat(untitik($('#diskonpersen1').val())) || 0;
+            var diskon2 = parseFloat(untitik($('#diskonpersen2').val())) || 0;
+            var diskon3 = parseFloat(untitik($('#diskonpersen3').val())) || 0;
 
-            var jumlahdiskon1 = parseInt(hargasatuan) * (parseInt(diskon1) / 100);
-            var jumlahdiskon2 = (parseInt(hargasatuan) - parseInt(jumlahdiskon1)) * (parseInt(diskon2) / 100);
-            var jumlahdiskon3 = (parseInt(hargasatuan) - parseInt(jumlahdiskon1) - parseInt(jumlahdiskon2)) * (parseInt(diskon3) / 100);
+            var jumlahdiskon1 = roundToTwo(hargasatuan * (diskon1 / 100));
+            var sisa1 = hargasatuan - jumlahdiskon1;
+            var jumlahdiskon2 = roundToTwo(sisa1 * (diskon2 / 100));
+            var sisa2 = sisa1 - jumlahdiskon2;
+            var jumlahdiskon3 = roundToTwo(sisa2 * (diskon3 / 100));
 
-
-            var jumlahdiskon = parseInt(jumlahdiskon1) + parseInt(jumlahdiskon2) + parseInt(jumlahdiskon3);
-            $('#jumlahdiskon').val(numberWithCommas(jumlahdiskon));
-            $('#jumlahdiskon2').val(numberWithCommas(jumlahdiskon));
-            $('#jumlahdiskon2_display').val(numberWithCommas( parseInt(jumlahdiskon) * parseInt(jumlahbeli) ));
+            totalDiskonSatuan = roundToTwo(jumlahdiskon1 + jumlahdiskon2 + jumlahdiskon3);
+            $('#jumlahdiskon').val(numberWithCommas(totalDiskonSatuan));
+            $('#jumlahdiskon2').val(numberWithCommas(totalDiskonSatuan));
+            $('#jumlahdiskon2_display').val(numberWithCommas(roundToTwo(totalDiskonSatuan * jumlahbeli)));
         }
-        var jumlahppnsatuan = parseInt((11 / 111) * (parseInt(hargasatuan) ));
-        var jumlahdppsatuan = parseInt(hargasatuan) - parseInt(jumlahppnsatuan);
 
+        // --- Hitung PPN dan DPP (Pembulatan khusus) ---
+        // PPN = 11/111 dari harga satuan (karena harga sudah include PPN 11%)
+        var ppnRaw = hargasatuan * 11 / 111;
+        var jumlahppnsatuan = roundPPN(ppnRaw);  // integer (sesuai aturan)
+        var jumlahdppsatuan = hargasatuan - jumlahppnsatuan; // integer
+
+        // DPP dan ppn dihitung dari total pembelian jadi untuk detail di nolkan terlebih dahulu
+        jumlahdppsatuan = 0;
+        jumlahppnsatuan = 0;
         $('#hargadpp').val(numberWithCommas(jumlahdppsatuan));
-        $('#hargadpp_display').val(numberWithCommas(parseInt(jumlahdppsatuan) * parseInt(jumlahbeli) ));
+        $('#hargadpp_display').val(numberWithCommas(jumlahdppsatuan * jumlahbeli));
         $('#jumlahppn').val(numberWithCommas(jumlahppnsatuan));
-        $('#jumlahppn_display').val(numberWithCommas(parseInt(jumlahppnsatuan) * parseInt(jumlahbeli) ));
+        $('#jumlahppn_display').val(numberWithCommas(jumlahppnsatuan * jumlahbeli));
 
-        var subtotal = parseInt(jumlahbeli) * (parseInt(jumlahdppsatuan + jumlahppnsatuan - jumlahdiskon));
+        // --- Subtotal ---
+        // Subtotal = jumlah beli * (harga satuan - diskon satuan)
+        var subtotal = roundToTwo(jumlahbeli * (hargasatuan - totalDiskonSatuan));
         $('#subtotalbeli').val(numberWithCommas(subtotal));
     }
 
@@ -700,7 +721,7 @@
         $('#jenisdiskon1').prop('checked', true);
         $('input[name="jenisdiskon"]').trigger('change');
         $('#jumlahdiskon').val('0');
-        $('#diskonpersen1').val('0');
+        $('#diskonpersen1').val('');
         $('#diskonpersen2').val('0');
         $('#diskonpersen3').val('0');
 
@@ -712,13 +733,13 @@
         if (jenisDiskon === 'Nominal') {
             $('#jumlahdiskon').val('0').removeAttr('readonly');
             $('.diskonpersen').hide();
-            $('.diskonpersen input').val('0').attr('readonly', true);
+            $('.diskonpersen input').val('').attr('readonly', true);
             $('#jumlahdiskon').focus();
 
         } else if (jenisDiskon === 'Persen') {
             $('#jumlahdiskon').val('0').attr('readonly', true);
             $('.diskonpersen').show();
-            $('.diskonpersen input').val('0').attr('readonly', false);
+            $('.diskonpersen input').val('').attr('readonly', false);
             $('#diskonpersen1').focus();
         }
         hitungSubTotal();

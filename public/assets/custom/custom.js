@@ -18,6 +18,8 @@ $(".rupiah").mask("000,000,000,000", {
     placeholder: "000,000,000,000",
 });
 $(".rupiah").addClass("text-right");
+
+
 $(".stokbarang").mask("000,000", {
     reverse: true,
     placeholder: "000,000",
@@ -205,4 +207,31 @@ function tglymd(date) {
         padTo2Digits(date.getMonth() + 1),
         padTo2Digits(date.getDate()),
     ].join("-");
+}
+
+
+/**
+ * Pembulatan ke 2 desimal (untuk diskon, subtotal, dll)
+ */
+function roundToTwo(num) {
+    return Math.round(num * 100) / 100;
+}
+
+
+/**
+ * Membulatkan nilai PPN sesuai aturan faktur pajak:
+ * - Jika angka desimal < 0,50 → dibulatkan ke bawah (floor)
+ * - Jika angka desimal ≥ 0,50 → dibulatkan ke atas (ceil)
+ * 
+ * @param {number|string} value - Nilai yang akan dibulatkan (bisa string angka)
+ * @returns {number} - Hasil pembulatan integer
+ */
+function roundPPN(value) {
+    // Pastikan berupa number
+    var num = parseFloat(value);
+    if (isNaN(num)) {
+        return 0;
+    }
+    // Pembulatan dengan aturan .5 ke atas (Math.floor(x + 0.5))
+    return Math.floor(num + 0.5);
 }

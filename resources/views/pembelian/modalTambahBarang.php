@@ -72,7 +72,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="col-12">
+                                            <div class="col-12" style="display: none;">
                                                 <div class="form-group row">
                                                     <label for="hargadpp" class="col-md-3 col-form-label">Harga DPP</label>
                                                     <div class="col-md-3">
@@ -81,7 +81,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="col-12">
+                                            <div class="col-12" style="display: none;">
                                                 <div class="form-group row">
                                                     <label for="jumlahppn" class="col-md-3 col-form-label">Jumlah PPN</label>
                                                     <div class="col-md-3">
@@ -228,7 +228,11 @@
 
         $('#tableDetail').append(addText);
         $('#tableDetail thead tr :nth-child(2)').hide();
+        $('#tableDetail thead tr :nth-child(6)').hide();
+        $('#tableDetail thead tr :nth-child(7)').hide();
         $('#tableDetail tbody tr :nth-child(2)').hide();
+        $('#tableDetail tbody tr :nth-child(6)').hide();
+        $('#tableDetail tbody tr :nth-child(7)').hide();
         hitungTotalFaktur();
         kosongkanModal();
     }
@@ -296,10 +300,13 @@
         var jumlahppnsatuan = parseInt((11 / 111) * (parseInt(hargasatuan)));
         var jumlahdppsatuan = parseInt(hargasatuan) - parseInt(jumlahppnsatuan);
 
+        //dpp dan ppn dihitung di penerimaan pembelian saja
+        jumlahppnsatuan = 0;
+        jumlahdppsatuan = 0;
         $('#hargadpp').val(numberWithCommas(jumlahdppsatuan));
         $('#jumlahppn').val(numberWithCommas(jumlahppnsatuan));
 
-        var subtotal = parseInt(jumlahbeli) * (parseInt(jumlahdppsatuan + jumlahppnsatuan));
+        var subtotal = parseInt(jumlahbeli) * parseInt(hargasatuan);
         $('#subtotalbeli').val(numberWithCommas(subtotal));
     }
 
