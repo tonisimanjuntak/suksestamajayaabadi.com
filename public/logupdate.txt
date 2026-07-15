@@ -113,3 +113,6 @@
 
 [2026-07-14] [customize] Penerimaan PO - Diskon persen bisa desimal 
 [2026-07-14] [customize] Penerimaan PO - Perhitungan PPN dari total Nota, bukan dari detail barang.
+
+
+[2026-07-14] [bugfix] Penerimaan PO - bug loading di tambah penerimaan PO.
