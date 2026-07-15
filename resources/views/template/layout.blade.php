@@ -288,7 +288,7 @@
         $("#nobilyetgiro").mask("S", {
             translation: {
                 "S": {
-                    pattern: /[^ ]/, // Hanya karakter selain spasi
+                    pattern: /[a-zA-Z0-9 ]/, // huruf, angka, dan spasi
                     recursive: true
                 }
             },

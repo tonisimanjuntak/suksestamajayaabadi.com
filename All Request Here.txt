@@ -1,0 +1,4 @@
+Request
+=====
+
+* Bang laporan penagihan di tambahin kategori nota fast, slow juga ya Dibagian setelah tgl jatuh tempo. Utk bagian keterangan dihapus aja
