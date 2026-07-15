@@ -26,8 +26,8 @@
     <link rel="stylesheet" href="{{ asset('') }}assets/jquery-ui/themes/base/jquery-ui.css">
     <!-- select2 -->
     <link href="{{ asset('') }}assets/select2/css/select2.min.css" rel="stylesheet" />
-    <!-- NotifIT -->
-    <link rel="stylesheet" type="text/css" href="{{ asset('') }}assets/notifit/css/notifIt.css">
+    <!-- NotifiT -->
+    <link rel="stylesheet" type="text/css" href="{{ asset('') }}assets/notifit/css/notifit.css">
     <!-- Custom -->
     <link rel="stylesheet" type="text/css" href="{{ asset('') }}assets/custom/custom.css">
 
@@ -152,8 +152,8 @@
     <script src="{{ asset('') }}assets/bootstrap-validator/js/bootstrapValidator.js"></script>
     <!-- jquery-ui -->
     <script src="{{ asset('') }}assets/jquery-ui/jquery-ui-2.js"></script>
-    <!-- NotifIT -->
-    <script type="text/javascript" src="{{ asset('') }}assets/notifit/js/notifIt.js"></script>
+    <!-- NotifiT -->
+    <script type="text/javascript" src="{{ asset('') }}assets/notifit/js/notifit.js"></script>
     <!-- select2 -->
     <script src="{{ asset('') }}assets/select2/js/select2.min.js"></script>
     <!-- sweet Alert -->
