@@ -116,3 +116,4 @@
 
 
 [2026-07-15] [bugfix] Penerimaan PO - bug loading di tambah penerimaan PO.
+[2026-07-15] [customize] Supplier & Konsumen - NPWP bisa sampai 20 Digit.

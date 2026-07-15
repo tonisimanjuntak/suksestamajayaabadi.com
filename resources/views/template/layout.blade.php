@@ -264,7 +264,7 @@
             reverse: true,
             placeholder: "Nomor whatsapp"
         });
-        $(".npwp").mask("000000000000000", {
+        $(".npwp").mask("00000000000000000000", {
             reverse: true,
             placeholder: "Nomor pokok wajib pajak"
         });
