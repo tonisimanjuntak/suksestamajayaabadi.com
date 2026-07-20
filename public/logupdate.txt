@@ -118,3 +118,6 @@
 [2026-07-15] [bugfix] Penerimaan PO - bug loading di tambah penerimaan PO.
 [2026-07-15] [customize] Supplier & Konsumen - NPWP bisa sampai 20 Digit.
 [2026-07-15] [customize] Buku Piutang & Nomor bilyet giro bisa spasi.
+
+
+[2026-07-20] [customize] Penualan - aku minta utk invoice yg udah dibuka surat jalan diblokir ga bisa edit Hrs hapus surat jalan dl Biar ga keliru.

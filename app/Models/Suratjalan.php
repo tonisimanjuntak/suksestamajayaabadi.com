@@ -540,4 +540,18 @@ class Suratjalan extends Model
             return false;
         }
     }
+
+    public static function sudahAdaSuratJalan($idpenjualan)
+    {
+        $cekSuratJalan = DB::table('suratjalandetail')
+            ->where('idpenjualan', $idpenjualan)
+            ->count();
+        if ($cekSuratJalan > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    
 }

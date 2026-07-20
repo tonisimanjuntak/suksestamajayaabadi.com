@@ -8,6 +8,7 @@ use App\Models\Material;
 use App\Models\Penjualan;
 use App\Models\Barang;
 use App\Models\Piutang;
+use App\Models\Suratjalan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -71,6 +72,12 @@ class PenjualanController extends Controller
         //cek jika sudah ada retur
         if (Returpenjualan::penjualanSudahDiRetur($idpenjualan)) {
             return redirect('/penjualan')->with('other', 'Penjualan ini sudah di retur, sehingga tidak dapat dirubah lagi!');
+        }
+
+
+        //cek jika sudah ada suratjalan
+        if (Suratjalan::sudahAdaSuratJalan($idpenjualan)) {
+            return redirect('/penjualan')->with('other', 'Penjualan ini sudah ada suratjalan, sehingga tidak dapat dirubah lagi!');
         }
 
         $rsSales = Sales::getSalesAktif();
@@ -413,6 +420,11 @@ class PenjualanController extends Controller
         //cek jika sudah ada retur
         if (Returpenjualan::penjualanSudahDiRetur($idpenjualan)) {
             return redirect('/penjualan')->with('other', 'Penjualan ini sudah di retur, sehingga tidak dapat dihapus lagi!');
+        }
+
+        //cek jika sudah ada suratjalan
+        if (Suratjalan::sudahAdaSuratJalan($idpenjualan)) {
+            return redirect('/penjualan')->with('other', 'Penjualan ini sudah ada suratjalan, sehingga tidak dapat dihapus lagi!');
         }
 
         $hapus = $this->model->hapusData($idpenjualan, $rsPenjualan);
