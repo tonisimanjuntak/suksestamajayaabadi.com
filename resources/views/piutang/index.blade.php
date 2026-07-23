@@ -56,7 +56,7 @@
                                                 <label for="" class="col-md-2 col-form-label text-center">S/D</label>
                                                 <div class="col-md-5">
                                                     <input type="date" name="tglakhir" id="tglakhir"
-                                                        class="form-control" value="{{ date('Y-m-d') }}">
+                                                        class="form-control" value="{{ date('Y-12-31') }}">
 
                                                 </div>
 
@@ -71,8 +71,8 @@
                                         </div>
                                         <div class="col-12">
                                             <select name="statusbayar" id="statusbayar" class="form-control select2">
-                                                <option value="" selected>Semua...</option>
-                                                <option value="Belum Lunas">Belum Lunas</option>
+                                                <option value="">Semua...</option>
+                                                <option value="Belum Lunas" selected>Belum Lunas</option>
                                                 <option value="Lunas">Sudah Lunas</option>
                                             </select>
                                         </div>
