@@ -116,18 +116,18 @@
                 <tr style="font-size: 8px; font-weight: bold;">
                     <th width="5%" class="add-border-top add-border-bottom" style="text-align:center;">NO</th>
                     <th width="8%" class="add-border-top add-border-bottom" style="text-align:left;">NAMA SALES</th>
-                    <th width="14%" class="add-border-top add-border-bottom" style="text-align:left;">NAMA KONSUMEN</th>
+                    <th width="17%" class="add-border-top add-border-bottom" style="text-align:left;">NAMA KONSUMEN</th>
                     <th width="10%" class="add-border-top add-border-bottom" style="text-align:center;">No INVOICE</th>
                     <th width="8%" class="add-border-top add-border-bottom" style="text-align:center;">
                         TANGGAL<br>INVOICE</th>
                     <th width="8%" class="add-border-top add-border-bottom" style="text-align:center;">JATUH<br>TEMPO
                     </th>
+                    <th width="5%" class="add-border-top add-border-bottom" style="text-align:center;">KET</th>
                     <th width="8%" class="add-border-top add-border-bottom" style="text-align:right;">TOTAL INVOICE</th>
                     <th width="8%" class="add-border-top add-border-bottom" style="text-align:right;">LANCAR</th>
                     <th width="8%" class="add-border-top add-border-bottom" style="text-align:right;"> > 90 Hari</th>
                     <th width="8%" class="add-border-top add-border-bottom" style="text-align:right;">BAD DEBT</th>
                     <th width="8%" class="add-border-top add-border-bottom" style="text-align:center;">UMUR</th>
-                    <th width="8%" class="add-border-top add-border-bottom" style="text-align:center;">KET</th>
                 </tr>
             </thead>
             <tbody>
@@ -159,17 +159,17 @@
                 <tr style="font-size: 8px;">
                     <td width="5%" style="text-align:center;">{{ $no++ }}</td>
                     <td width="8%" style="text-align:left;">{{ $row->namasales }}</td>
-                    <td width="14%" style="text-align:left;">{{ $row->namakonsumen }}</td>
+                    <td width="17%" style="text-align:left;">{{ $row->namakonsumen }}</td>
                     <td width="10%" style="text-align:center;">{{ $row->noinvoice }}</td>
                     <td width="8%" style="text-align:center;">{{ tgldmy($row->tglinvoice) }}</td>
                     <td width="8%" style="text-align:center;">{{ tgldmy($row->tgljatuhtempo) }}</td>
+                    <td width="5%" style="text-align:center;">{{ $row->namajenispiutang }}</td>
                     <td width="8%" style="text-align:right;">{{ format_rupiah($row->totalinvoice) }}</td>
                     <td width="8%" style="text-align:right;">{{ format_rupiah($row->jumlahlancar) }}</td>
                     <td width="8%" style="text-align:right;">{{ format_rupiah($row->jumlahlebih90hari) }}</td>
                     <td width="8%" style="text-align:right;">{{ format_rupiah($row->jumlahlebih150hari) }}</td>
                     <td width="8%" style="text-align:center;">{{
                         $row->umur. ' hari' }}</td>
-                    <td width="8%" style="text-align:center;">{{ (!empty($row->tgllunas) ? 'Lunas' : '') }}</td>
                 </tr>
                 @endforeach
 
