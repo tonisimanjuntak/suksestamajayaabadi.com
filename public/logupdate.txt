@@ -122,5 +122,7 @@
 
 [2026-07-20] [customize] Penualan - aku minta utk invoice yg udah dibuka surat jalan diblokir ga bisa edit Hrs hapus surat jalan dl Biar ga keliru.
 
-[2026-07-23] [customize] Laporan Penagihan - Bang laporan penagihan di tambahin kategori nota fast, slow juga ya Dibagian setelah tgl jatuh tempo. Utk bagian keterangan dihapus aja
-[2026-07-23] [customize] Cetak Invoice - Bang, di Qty minta tambah titik.
+[2026-07-23] [customize] Laporan Penagihan - laporan penagihan di tambahin kategori nota fast, slow juga ya Dibagian setelah tgl jatuh tempo. Utk bagian keterangan dihapus aja
+[2026-07-23] [customize] Cetak Invoice - di Qty minta tambah titik.
+[2026-07-23] [customize] Buku Piutang - utk sini Tgl invoice dipatok 31 Des 22 Dan Status "Belum Lunas"
+
