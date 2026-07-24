@@ -126,3 +126,5 @@
 [2026-07-23] [customize] Cetak Invoice - di Qty minta tambah titik.
 [2026-07-23] [customize] Buku Piutang - utk sini Tgl invoice dipatok 31 Des 22 Dan Status "Belum Lunas"
 
+[2026-07-24] [feature] Riwayat Update - Notifikasi Update aplikasi lebih informatif.
+

@@ -106,9 +106,7 @@ $level = session()->get('level');
                                     <li class="nav-item">
                                         <a href="{{ route('riwayatupdate') }}" class="nav-link">
                                             <i class="nav-icon fa fa-calendar"></i>
-                                            <p>Riwayat Update
-                                                <span class="right badge badge-danger">New</span>
-
+                                            <p id="pRiwayatUpdate">Riwayat Update
                                             </p>
                                         </a>
                                     </li>

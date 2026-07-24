@@ -1026,6 +1026,100 @@
         });
 
     </script>
+
+
+    {{-- SCHEDULE UNTUK EKSEKUSI JAVASCRIPT SETIAP 10 MENIT --}}
+    <script>
+        var INTERVAL_MS = 5 * 60 * 1000; // 10 menit
+    var STORAGE_TIMER_KEY = 'lastRiwayatUpdateCheck';    
+    
+    function cekSessionLogin() {
+        $.ajax({
+            url: "{{ url('ajax/cekSessionLogin') }}", // atau route('cek.session.login')
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                if (response.status === 'inactive') {
+                    // Session sudah habis
+                    alert('Sesi Anda telah berakhir. Silakan login kembali.');
+                    window.location.href = "{{ url('login') }}";
+                }
+            },
+            error: function(xhr, status, error) {
+                console.log('Gagal mengecek session:', error);
+            }
+        });
+    }
+
+    // Fungsi untuk menjalankan pengecekan dan memperbarui timestamp
+    function runCheckAndSchedule() {
+        // Jalankan pengecekan
+        cekSessionLogin();
+
+        // Simpan timestamp terakhir
+        localStorage.setItem(STORAGE_TIMER_KEY, Date.now());
+
+        // Set interval berikutnya setelah 10 menit
+        setInterval(function() {
+            cekSessionLogin();
+            localStorage.setItem(STORAGE_TIMER_KEY, Date.now());
+        }, INTERVAL_MS);
+    }
+
+    // Saat halaman dimuat, tentukan kapan pengecekan berikutnya
+    $(document).ready(function() {
+        var lastRun = localStorage.getItem(STORAGE_TIMER_KEY);
+        var now = Date.now();
+
+        if (lastRun) {
+            var elapsed = now - parseInt(lastRun);
+            if (elapsed >= INTERVAL_MS) {
+                // Sudah lebih dari 10 menit, jalankan sekarang
+                runCheckAndSchedule();
+            } else {
+                // Masih dalam interval, tunggu sisa waktu
+                var remaining = INTERVAL_MS - elapsed;
+                console.log('Scheduled next run in ' + remaining + ' ms');
+                setTimeout(function() {
+                    runCheckAndSchedule();
+                }, remaining);
+            }
+        } else {
+            // Belum pernah dijalankan, jalankan sekarang
+            runCheckAndSchedule();
+        }
+    });
+    </script>
+
+
+    //cek riwayat update
+    <script>
+        var STORAGE_LOG_KEY = 'logupdate';
+
+        function cekRiwayatUpdate() {
+            $.ajax({
+                url: "{{ url('ajax/cekRiwayatUpdate') }}", // endpoint yang mengembalikan isi file
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    var lastLine = response.lastLine; // misal dari server
+                    var lastUpdate = localStorage.getItem(STORAGE_LOG_KEY); // dari localStorage
+
+                    if (lastUpdate !== lastLine) {
+                        // tampilkan notifikasi
+                        $('#badgeRiwayatUpdate').remove();
+                        $('#pRiwayatUpdate').append('<span class="right badge badge-danger" id="badgeRiwayatUpdate">New</span>');
+                    }
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            cekRiwayatUpdate();            
+        });
+    
+
+    </script>
 </body>
 
 </html>

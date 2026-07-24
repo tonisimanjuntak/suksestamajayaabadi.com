@@ -101,6 +101,8 @@ Route::controller(LoginController::class)->group(function () {
 Route::controller(AjaxController::class)->group(function () {
     Route::get('ajax/getBarangId', 'getBarangId');
     Route::get('ajax/getRiwayatAkivitas', 'getRiwayatAkivitas');
+    Route::get('ajax/cekRiwayatUpdate', 'cekRiwayatUpdate');
+    Route::get('ajax/cekSessionLogin', 'cekSessionLogin');
 });
 
 

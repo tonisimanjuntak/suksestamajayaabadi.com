@@ -158,6 +158,24 @@
 
 @section('scripts')
 <script>
-    // Jika diperlukan script tambahan
+    // Fungsi untuk memperbarui riwayat update di local sehingga menghilangkan notifikasi update
+
+    $(document).ready(function() {
+        updateLocalStorage();
+    })
+
+    
+    function updateLocalStorage() {
+            $.ajax({
+                url: "{{ url('ajax/cekRiwayatUpdate') }}",
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    var lastLine = response.lastLine; 
+                    localStorage.setItem(STORAGE_LOG_KEY, lastLine);                    
+                }
+            });
+        }
+
 </script>
 @endsection
