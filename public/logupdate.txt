@@ -128,3 +128,5 @@
 
 [2026-07-24] [feature] Riwayat Update - Notifikasi Update aplikasi lebih informatif.
 
+[2026-08-02] [customize] Penerimaan PO - Bang, ini sekali masuk ke Penerima PO Napa jumlah Qty jd kosong ya?
+[2026-08-02] [customize] Penerimaan PO - DPP & PPN udah sesuai, Cm total fakturnya mengurangi diskon lg, Pdhal nilai dpp nya udah setelah disc

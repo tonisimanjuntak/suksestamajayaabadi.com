@@ -438,8 +438,9 @@
                 }
 
                 
-
-                $('#jumlahbeli').val(varjumlahbeli);
+                
+                $('#jumlahbeli').val(parseInt(untitik(varjumlahbeli)));
+                console.log("jumlah beli: " + $('#jumlahbeli').val());
                 $('#hargasatuan').val( varhargasatuan );
                 $('#hargadpp').val( varhargadpp );
                 $('#jumlahppn').val( varjumlahppn );
@@ -814,7 +815,7 @@
         
 
         // Hitung total faktur
-        var totalFaktur = totaldpp + totalPPN - totalDiskon - totalpotongan;
+        var totalFaktur = totaldpp + totalPPN;
         totalFaktur = roundToTwo(totalFaktur);
 
         // Tampilkan ke field dengan format ribuan

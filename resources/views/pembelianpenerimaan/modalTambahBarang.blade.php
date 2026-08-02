@@ -347,7 +347,7 @@
                     },
                 })
                 .done(function(response) {
-                    // console.log(response);
+                    console.log(response);
                     var rowDetail = response['rowDetail'];
 
 
