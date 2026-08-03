@@ -254,18 +254,28 @@
         </tr>
     </thead>
     <tbody>
-        @php $no = 1; @endphp
+        @php
+        $no = 1;
+        @endphp
         @foreach ($rsDetail as $row)
         <tr class="fs-9">
             <td class="add-border-left add-border-right" width="4%" align="center">{{ $no++ }}</td>
-            <td class="add-border-left add-border-right nama-barang" align="left">{{ $row->namabarang }}</td>
+            <td class="add-border-left add-border-right" width="49%" align="left"
+                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{
+                \Illuminate\Support\Str::limit($row->namabarang, 55) }}</td>
             <td class="add-border-left add-border-right" width="7%" align="center">{{ number_format($row->jumlahjual) }}
             </td>
             <td class="add-border-left add-border-right" width="7%" align="center">{{ $row->namasatuan }}</td>
-            <td class="add-border-left add-border-right" width="11%" align="right">{{ $row->hargasatuan > 0 ?
-                format_rupiah($row->hargasatuan) : '-' }}</td>
-            <td class="add-border-left add-border-right" width="11%" align="right">{{ $row->jumlahdiskon > 0 ?
-                format_rupiah($row->jumlahdiskon) : '-' }}</td>
+            <td class="add-border-left add-border-right" width="11%" align="right">
+                @php
+                echo $row->hargasatuan > 0 ? format_rupiah($row->hargasatuan) : '-';
+                @endphp
+            </td>
+            <td class="add-border-left add-border-right" width="11%" align="right">
+                @php
+                echo $row->jumlahdiskon > 0 ? format_rupiah($row->jumlahdiskon) : '-';
+                @endphp
+            </td>
             <td class="add-border-left add-border-right" width="11%" align="right">{{ format_rupiah($row->subtotaljual)
                 }}</td>
         </tr>
