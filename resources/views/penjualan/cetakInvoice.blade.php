@@ -14,6 +14,10 @@
     th {
         margin: 0;
         padding: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        /* atau clip */
     }
 
     table {
@@ -220,7 +224,7 @@
     </tr>
 </table>
 
-<table border="0" cellpadding="2" width="100%">
+<table border="0" cellpadding="2" width="100%" style="table-layout: fixed; width: 100%;">
     <thead>
         <tr class="fs-9">
             <th class="add-border-top add-border-bottom add-border-left add-border-right" width="4%" align="center">NO

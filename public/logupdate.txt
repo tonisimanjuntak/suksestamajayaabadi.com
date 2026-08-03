@@ -130,3 +130,5 @@
 
 [2026-08-02] [customize] Penerimaan PO - Bang, ini sekali masuk ke Penerima PO Napa jumlah Qty jd kosong ya?
 [2026-08-02] [customize] Penerimaan PO - DPP & PPN udah sesuai, Cm total fakturnya mengurangi diskon lg, Pdhal nilai dpp nya udah setelah disc
+
+[2026-08-03] [customize] Cetak Invoice - wordwrap nama barang di cetakan invoice dihilangkan jadi biar ukuran kolomnya fix tidak berubah jika nama barang kepanjangan.
