@@ -251,7 +251,8 @@
         @foreach ($rsDetail as $row)
         <tr class="fs-9">
             <td class="add-border-left add-border-right" width="4%" align="center">{{ $no++ }}</td>
-            <td class="add-border-left add-border-right" width="49%" align="left">{{ $row->namabarang }}</td>
+            <td class="add-border-left add-border-right" width="49%" align="left"
+                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $row->namabarang }}</td>
             <td class="add-border-left add-border-right" width="7%" align="center">{{ number_format($row->jumlahjual) }}
             </td>
             <td class="add-border-left add-border-right" width="7%" align="center">{{ $row->namasatuan }}</td>
