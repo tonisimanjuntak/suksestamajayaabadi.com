@@ -132,3 +132,5 @@
 [2026-08-02] [customize] Penerimaan PO - DPP & PPN udah sesuai, Cm total fakturnya mengurangi diskon lg, Pdhal nilai dpp nya udah setelah disc
 
 [2026-08-03] [customize] Cetak Invoice - wordwrap nama barang di cetakan invoice dihilangkan jadi biar ukuran kolomnya fix tidak berubah jika nama barang kepanjangan.
+
+[2026-08-04] [customize] Cetak Invoice - wordwrap diaktifkan lagi, ukuran font dikecilkan jika nama barang nya kepanjangan

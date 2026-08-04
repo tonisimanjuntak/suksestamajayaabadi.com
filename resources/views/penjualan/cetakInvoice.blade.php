@@ -4,6 +4,10 @@
         padding: 0;
     }
 
+    .maxheight {
+        max-height: 300px !important;
+    }
+
     table {
         margin: 0;
         padding: 0;
@@ -23,6 +27,14 @@
     table {
         width: 100%;
         border-collapse: collapse;
+    }
+
+    .fs-6 {
+        font-size: 6px;
+    }
+
+    .fs-7 {
+        font-size: 7px;
     }
 
     .fs-8 {
@@ -253,16 +265,39 @@
                 Jumlah</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody class="maxheight">
         @php
         $no = 1;
         @endphp
         @foreach ($rsDetail as $row)
         <tr class="fs-9">
             <td class="add-border-left add-border-right" width="4%" align="center">{{ $no++ }}</td>
-            <td class="add-border-left add-border-right" width="49%" align="left"
+
+            {{-- <td class="add-border-left add-border-right" width="49%" align="left"
                 style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{
-                \Illuminate\Support\Str::limit($row->namabarang, 55) }}</td>
+                \Illuminate\Support\Str::limit($row->namabarang, 55) }}</td> --}}
+            @php
+            //jika jumlah karakter nama barang > 55
+            $fs = "fs-9";
+            $length = strlen($row->namabarang);
+            switch ($length) {
+            case $length > 85:
+            $fs = "fs-6";
+            case $length > 70:
+            $fs = "fs-7";
+            break;
+            case $length > 55:
+            $fs = "fs-8";
+            break;
+            default:
+            $fs = "fs-9";
+            break;
+            }
+            @endphp
+
+
+            <td class="add-border-left add-border-right {{ $fs }}" width="49%" align="left">{{ $row->namabarang }}</td>
+
             <td class="add-border-left add-border-right" width="7%" align="center">{{ number_format($row->jumlahjual) }}
             </td>
             <td class="add-border-left add-border-right" width="7%" align="center">{{ $row->namasatuan }}</td>
