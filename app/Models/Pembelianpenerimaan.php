@@ -8,6 +8,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\App;
 use App\Models\Barang;
+use App\Helpers\StokFifoService;
 
 class Pembelianpenerimaan extends Model
 {
@@ -132,6 +133,28 @@ class Pembelianpenerimaan extends Model
                 DB::table('barang')
                     ->where('idbarang', $detail['idbarang'])
                     ->update($dataStokBarang);
+            }
+
+            /*
+                FIFO
+            */
+            foreach ($dataDetail as $detail) {
+                $stokfifo = new StokFifoService();
+                $idstokfifo = DB::select('SELECT create_idstokfifo() AS id')[0]->id;
+
+                $stokfifo->barangMasuk(
+                    $idstokfifo,
+                    $detail['idbarang'],
+                    $idpembelian,
+                    $data['tglfaktur'],
+                    'Pembelian',
+                    $detail['jumlahbeli'],
+                    $detail['hargasatuan'],
+                    $detail['hargadpp'],
+                    $detail['jumlahppn'],
+                    $detail['jumlahdiskon'],
+                    'Penerimaan PO dengan No Faktur ' . $data['nofaktur'] . ' dan nama supplier ' . $namasupplier
+                );
             }
 
 
