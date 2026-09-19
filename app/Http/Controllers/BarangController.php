@@ -243,6 +243,7 @@ class BarangController extends Controller
                 'kdbarang' => $kdbarang,
                 'namabarang' => $namabarang,
                 'idsatuan' => $idsatuan,
+                'idkategori' => $idkategori,
                 'kdakun' => $kdakun,
                 'hargabeli' => $hargabeli,
                 'hargajualasli' => $hargajualdiskon,

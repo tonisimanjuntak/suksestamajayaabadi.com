@@ -134,3 +134,6 @@
 [2026-08-03] [customize] Cetak Invoice - wordwrap nama barang di cetakan invoice dihilangkan jadi biar ukuran kolomnya fix tidak berubah jika nama barang kepanjangan.
 
 [2026-08-04] [customize] Cetak Invoice - wordwrap diaktifkan lagi, ukuran font dikecilkan jika nama barang nya kepanjangan
+
+[2026-09-20] [customize] Master Barang - tolong yg kategori barang di unlock aja ya. Biar kami bisa ubah sendiri
+

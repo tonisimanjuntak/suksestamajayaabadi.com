@@ -267,7 +267,7 @@
                     $('#hargajualdiskon').val(format_rupiah(response['hargajualdiskon']));
                     $('#stokminimum').val(response['stokminimum']);
                     $('#statusaktif').val(response['statusaktif']).trigger('change');
-                    $('#idkategori').attr('disabled', true);
+                    // $('#idkategori').attr('disabled', true);
 
                     
                     //defaultnya 0.25%
