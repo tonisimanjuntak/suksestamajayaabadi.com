@@ -135,9 +135,15 @@ class Pembelianpenerimaan extends Model
                     ->update($dataStokBarang);
             }
 
+            
+
+            
             /*
                 FIFO
             */
+                //Matikan FIFO dulu
+            /*
+            
             foreach ($dataDetail as $detail) {
                 $stokfifo = new StokFifoService();
                 $idstokfifo = DB::select('SELECT create_idstokfifo() AS id')[0]->id;
@@ -156,6 +162,7 @@ class Pembelianpenerimaan extends Model
                     'Penerimaan PO dengan No Faktur ' . $data['nofaktur'] . ' dan nama supplier ' . $namasupplier
                 );
             }
+            */
 
 
             /*

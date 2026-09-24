@@ -221,10 +221,10 @@ class PembelianpenerimaanController extends Controller
         }
 
         //Jika nanti ada biaya lain di luar biaya pengiriman
-        $totalBiayaLainnya = $biayapengiriman;
+        // $totalBiayaLainnya = $biayapengiriman;
 
         //Total harga beli detail tidak ambil dari total faktur karena total faktur potongan dan ditambah biaya pengiriman
-        $totalSubTotalBeliDetail = array_sum(array_column($isidatatable, 'subtotalbeli'));
+        // $totalSubTotalBeliDetail = array_sum(array_column($isidatatable, 'subtotalbeli'));
         
         $dataDetail = array();
         for ($i = 0; $i < count($isidatatable); $i++) {
@@ -233,8 +233,12 @@ class PembelianpenerimaanController extends Controller
             $jumlahDiskon = untitik($isidatatable[$i]['jumlahdiskon']);
             $jumlahBeli = untitik($isidatatable[$i]['jumlahbeli']);
             
+            /*
+            MATIKAN PROPORSIONAL SEMENTARA
+
             // Proporsional Per 1 Item Barang
             $rasioProporsi = $subTotalBeli / $totalSubTotalBeliDetail;
+            
             
             $jumlahPotonganProporsional = $rasioProporsi * $totalpotongan;
             $jumlahPpnProporsional = $rasioProporsi * $totalppn;
@@ -253,6 +257,25 @@ class PembelianpenerimaanController extends Controller
                 'jumlahdiskon' => $jumlahDiskon,
                 'jumlahpotongan' => $jumlahPotonganProporsional,
                 'hargahpp' => $hargaHpp,
+                'subtotalbeli' => untitik($isidatatable[$i]['subtotalbeli']),
+                'jenisdiskon' => $isidatatable[$i]['jenisdiskon'],
+                'diskonpersen1' => $isidatatable[$i]['diskonpersen1'],
+                'diskonpersen2' => $isidatatable[$i]['diskonpersen2'],
+                'diskonpersen3' => $isidatatable[$i]['diskonpersen3']
+            );
+
+            */
+            
+
+            $dataDetail[] = array(
+                'idpembelian' => $idpembelian,
+                'iddetail' => $isidatatable[$i]['iddetail'],
+                'idbarang' => $isidatatable[$i]['idbarang'],
+                'jumlahbeli' => $jumlahBeli,
+                'hargasatuan' => untitik($isidatatable[$i]['hargasatuan']),
+                'hargadpp' => untitik($isidatatable[$i]['hargadpp']),
+                'jumlahppn' => untitik($isidatatable[$i]['jumlahppn']),
+                'jumlahdiskon' => untitik($isidatatable[$i]['jumlahdiskon']),
                 'subtotalbeli' => untitik($isidatatable[$i]['subtotalbeli']),
                 'jenisdiskon' => $isidatatable[$i]['jenisdiskon'],
                 'diskonpersen1' => $isidatatable[$i]['diskonpersen1'],
