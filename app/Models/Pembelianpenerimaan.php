@@ -139,11 +139,8 @@ class Pembelianpenerimaan extends Model
 
             
             /*
-                FIFO
+                FIFO (Barang Masuk)
             */
-                //Matikan FIFO dulu
-            /*
-            
             foreach ($dataDetail as $detail) {
                 $stokfifo = new StokFifoService();
                 $idstokfifo = DB::select('SELECT create_idstokfifo() AS id')[0]->id;
@@ -162,7 +159,6 @@ class Pembelianpenerimaan extends Model
                     'Penerimaan PO dengan No Faktur ' . $data['nofaktur'] . ' dan nama supplier ' . $namasupplier
                 );
             }
-            */
 
 
             /*
@@ -308,6 +304,29 @@ class Pembelianpenerimaan extends Model
                 DB::table('barang')
                     ->where('idbarang', $rowDetail->idbarang)
                     ->update($dataStokBarang);
+            }
+
+            /*
+                FIFO (Hapus Layer)
+            */
+            $rsStokFifo = DB::table('stokfifo')
+                ->where('idtransaksi', $idpembelian)
+                ->where('jenistransaksi', 'Pembelian')
+                ->get();
+
+            foreach ($rsStokFifo as $fifo) {
+                // Cek apakah sudah ada yang keluar dari layer ini
+                $cekKeluar = DB::table('stokfifodetail')
+                    ->where('idstokfifo', $fifo->idstokfifo)
+                    ->count();
+
+                if ($cekKeluar > 0) {
+                    throw new \Exception("Data tidak dapat dihapus karena stok dari faktur ini sudah ada yang keluar!");
+                }
+
+                DB::table('stokfifo')
+                    ->where('idstokfifo', $fifo->idstokfifo)
+                    ->delete();
             }
 
 

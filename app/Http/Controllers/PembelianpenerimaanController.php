@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\App;
+use App\Helpers\PpnHelper;
 
 class PembelianpenerimaanController extends Controller
 {
@@ -224,59 +225,43 @@ class PembelianpenerimaanController extends Controller
         // $totalBiayaLainnya = $biayapengiriman;
 
         //Total harga beli detail tidak ambil dari total faktur karena total faktur potongan dan ditambah biaya pengiriman
-        // $totalSubTotalBeliDetail = array_sum(array_column($isidatatable, 'subtotalbeli'));
+        $totalSubTotalBeliDetail = array_sum(array_map(function($item) {
+            return (float) untitik($item['subtotalbeli']);
+        }, $isidatatable));
         
         $dataDetail = array();
+        $runningTotalPpn = 0;
         for ($i = 0; $i < count($isidatatable); $i++) {
             $subTotalBeli = untitik($isidatatable[$i]['subtotalbeli']);
             $hargaSatuan = untitik($isidatatable[$i]['hargasatuan']);
             $jumlahDiskon = untitik($isidatatable[$i]['jumlahdiskon']);
             $jumlahBeli = untitik($isidatatable[$i]['jumlahbeli']);
             
-            /*
-            MATIKAN PROPORSIONAL SEMENTARA
-
             // Proporsional Per 1 Item Barang
-            $rasioProporsi = $subTotalBeli / $totalSubTotalBeliDetail;
+            $rasioProporsi = ($totalSubTotalBeliDetail > 0) ? ($subTotalBeli / $totalSubTotalBeliDetail) : 0;
             
-            
-            $jumlahPotonganProporsional = $rasioProporsi * $totalpotongan;
-            $jumlahPpnProporsional = $rasioProporsi * $totalppn;
-            $biayaLainnyaProporsional = $rasioProporsi * $totalBiayaLainnya;
-            $hargaDpp = $hargaSatuan - $jumlahDiskon - $jumlahPpnProporsional - $jumlahPotonganProporsional;            
-            $hargaHpp = $hargaDpp + $biayaLainnyaProporsional;
+            // Hitung PPN Proporsional per item
+            // Jika ini item terakhir, gunakan sisa PPN untuk menghindari selisih pembulatan
+            if ($i == count($isidatatable) - 1) {
+                $jumlahPpnItem = $totalppn - $runningTotalPpn;
+            } else {
+                $jumlahPpnItem = PpnHelper::roundPPN($rasioProporsi * $totalppn);
+                $runningTotalPpn += $jumlahPpnItem;
+            }
+
+            $jumlahPpnSatuan = ($jumlahBeli > 0) ? PpnHelper::roundPPN($jumlahPpnItem / $jumlahBeli) : 0;
+            $hargaDppSatuan = $hargaSatuan - $jumlahDiskon - $jumlahPpnSatuan;
 
             $dataDetail[] = array(
                 'idpembelian' => $idpembelian,
                 'iddetail' => $isidatatable[$i]['iddetail'],
                 'idbarang' => $isidatatable[$i]['idbarang'],
                 'jumlahbeli' => $jumlahBeli,
-                'hargasatuan' => untitik($isidatatable[$i]['hargasatuan']),
-                'hargadpp' => $hargaDpp,
-                'jumlahppn' => $jumlahPpnProporsional,
+                'hargasatuan' => $hargaSatuan,
+                'hargadpp' => $hargaDppSatuan,
+                'jumlahppn' => $jumlahPpnSatuan,
                 'jumlahdiskon' => $jumlahDiskon,
-                'jumlahpotongan' => $jumlahPotonganProporsional,
-                'hargahpp' => $hargaHpp,
-                'subtotalbeli' => untitik($isidatatable[$i]['subtotalbeli']),
-                'jenisdiskon' => $isidatatable[$i]['jenisdiskon'],
-                'diskonpersen1' => $isidatatable[$i]['diskonpersen1'],
-                'diskonpersen2' => $isidatatable[$i]['diskonpersen2'],
-                'diskonpersen3' => $isidatatable[$i]['diskonpersen3']
-            );
-
-            */
-            
-
-            $dataDetail[] = array(
-                'idpembelian' => $idpembelian,
-                'iddetail' => $isidatatable[$i]['iddetail'],
-                'idbarang' => $isidatatable[$i]['idbarang'],
-                'jumlahbeli' => $jumlahBeli,
-                'hargasatuan' => untitik($isidatatable[$i]['hargasatuan']),
-                'hargadpp' => untitik($isidatatable[$i]['hargadpp']),
-                'jumlahppn' => untitik($isidatatable[$i]['jumlahppn']),
-                'jumlahdiskon' => untitik($isidatatable[$i]['jumlahdiskon']),
-                'subtotalbeli' => untitik($isidatatable[$i]['subtotalbeli']),
+                'subtotalbeli' => $subTotalBeli,
                 'jenisdiskon' => $isidatatable[$i]['jenisdiskon'],
                 'diskonpersen1' => $isidatatable[$i]['diskonpersen1'],
                 'diskonpersen2' => $isidatatable[$i]['diskonpersen2'],

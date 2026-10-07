@@ -8,6 +8,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\App;
 use App\Models\Barang;
+use App\Helpers\StokFifoService;
 
 class Returpembelian extends Model
 {
@@ -72,7 +73,11 @@ class Returpembelian extends Model
             DB::table('returpembelian')->insert($data);
             DB::table('returpembeliandetail')->insert($dataDetail);
 
+            $stokFifo = new StokFifoService();
             foreach ($dataDetail as $detail) {
+                // FIFO Keluar (Retur Pembelian mengurangi layer FIFO pembelian)
+                $stokFifo->barangKeluar($detail['idbarang'], $idreturpembelian, 'Retur Pembelian', $detail['jumlahretur']);
+
                 $stokawal = Barang::getRiwayatStokAkhir($detail['idbarang']);
                 $stokmasuk = 0;
                 $stokkeluar = $detail['jumlahretur'];
@@ -132,6 +137,9 @@ class Returpembelian extends Model
             $detailOld = DB::table('returpembeliandetail')
                 ->where('idreturpembelian', $idreturpembelian)
                 ->get();
+
+            $stokFifo = new StokFifoService();
+            $stokFifo->batalBarangKeluar($idreturpembelian, 'Retur Pembelian');
 
             foreach ($detailOld as $rowDetail) {
                 $stokawal = Barang::getRiwayatStokAkhir($rowDetail->idbarang);

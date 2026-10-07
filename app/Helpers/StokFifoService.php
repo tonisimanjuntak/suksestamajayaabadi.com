@@ -11,6 +11,8 @@ class StokFifoService
      */
     public function barangMasuk($idstokfifo, $idbarang, $idtransaksi, $tgltransaksi, $jenistransaksi, $jumlah, $hargasatuan, $hargadpp = 0, $jumlahppn = 0, $jumlahdiskon = 0, $keterangan = null)
     {
+        // nilaihpp = hargadpp (cost after discount & PPN)
+        $nilaihpp = $hargadpp;
         $arrData = [
             'idstokfifo'     => $idstokfifo,
             'idbarang'       => $idbarang,
@@ -21,9 +23,12 @@ class StokFifoService
             'jumlahsisa'     => $jumlah,
             'hargasatuan'    => $hargasatuan,
             'hargadpp'       => $hargadpp,
+            'nilaihpp'       => $nilaihpp,
             'jumlahppn'      => $jumlahppn,
             'jumlahdiskon'   => $jumlahdiskon,
             'keterangan'     => $keterangan,
+            'inserted_date'  => now(),
+            'updated_date'   => now(),
         ];
 
         return DB::table('stokfifo')
@@ -62,32 +67,32 @@ class StokFifoService
                 }
 
                 $ambil    = min($layer->jumlahsisa, $sisaKebutuhan);
-                $subtotal = $ambil * $layer->hargasatuan;
+                $subtotal = $ambil * $layer->nilaihpp;
 
                 // Update sisa layer
                 DB::table('stokfifo')
                     ->where('idstokfifo', $layer->idstokfifo)
                     ->update([
-                        'jumlahsisa' => $layer->jumlahsisa - $ambil,
-                        'updated_at' => now(),
+                        'jumlahsisa'   => $layer->jumlahsisa - $ambil,
+                        'updated_date' => now(),
                     ]);
 
                 // Catat detail pemakaian
-                DB::table('stokfifo_detail')->insert([
+                DB::table('stokfifodetail')->insert([
                     'idstokfifo'     => $layer->idstokfifo,
                     'tglkeluar'      => now(),
                     'idtransaksi'    => $idtransaksi,
                     'jenistransaksi' => $jenistransaksi,
                     'jumlahkeluar'   => $ambil,
-                    'hargasatuan'    => $layer->hargasatuan,
+                    'hargasatuan'    => $layer->nilaihpp,
                     'subtotal'       => $subtotal,
-                    'created_at'     => now(),
+                    'inserted_date'  => now(),
                 ]);
 
                 $hasilHPP[] = [
                     'idstokfifo'   => $layer->idstokfifo,
                     'jumlahkeluar' => $ambil,
-                    'hargasatuan'  => $layer->hargasatuan,
+                    'hargasatuan'  => $layer->nilaihpp,
                     'subtotal'     => $subtotal,
                 ];
 
@@ -100,5 +105,59 @@ class StokFifoService
         });
 
         return $hasilHPP;
+    }
+
+    /**
+     * Batalkan/hapus barang keluar (mengembalikan jumlahsisa ke layer fifo)
+     */
+    public function batalBarangKeluar($idtransaksi, $jenistransaksi)
+    {
+        $details = DB::table('stokfifodetail')
+            ->where('idtransaksi', $idtransaksi)
+            ->where('jenistransaksi', $jenistransaksi)
+            ->get();
+
+        foreach ($details as $detail) {
+            // Kembalikan jumlahsisa ke stokfifo
+            $layer = DB::table('stokfifo')->where('idstokfifo', $detail->idstokfifo)->first();
+            if ($layer) {
+                DB::table('stokfifo')
+                    ->where('idstokfifo', $detail->idstokfifo)
+                    ->update([
+                        'jumlahsisa'   => $layer->jumlahsisa + $detail->jumlahkeluar,
+                        'updated_date' => now(),
+                    ]);
+            }
+        }
+
+        DB::table('stokfifodetail')
+            ->where('idtransaksi', $idtransaksi)
+            ->where('jenistransaksi', $jenistransaksi)
+            ->delete();
+    }
+
+    /**
+     * Hapus barang masuk (layer fifo) jika belum terpakai
+     */
+    public function hapusBarangMasuk($idtransaksi, $jenistransaksi)
+    {
+        $layers = DB::table('stokfifo')
+            ->where('idtransaksi', $idtransaksi)
+            ->where('jenistransaksi', $jenistransaksi)
+            ->get();
+
+        foreach ($layers as $layer) {
+            $cekKeluar = DB::table('stokfifodetail')
+                ->where('idstokfifo', $layer->idstokfifo)
+                ->count();
+
+            if ($cekKeluar > 0 || $layer->jumlahsisa < $layer->jumlahmasuk) {
+                throw new \Exception("Data tidak dapat dihapus karena stok dari transaksi ini sudah ada yang keluar/terpakai!");
+            }
+
+            DB::table('stokfifo')
+                ->where('idstokfifo', $layer->idstokfifo)
+                ->delete();
+        }
     }
 }

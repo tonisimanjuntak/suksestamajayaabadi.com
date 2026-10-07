@@ -8,6 +8,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\App;
 use App\Models\Barang;
+use App\Helpers\StokFifoService;
 
 class Penjualan extends Model
 {
@@ -88,7 +89,11 @@ class Penjualan extends Model
 
             // jika pengaturan stok dari penjualan
             if (session('stok_penjualan_dari_surat_jalan') != '1') {
+                $stokFifo = new StokFifoService();
                 foreach ($dataDetail as $detail) {
+                    // FIFO Keluar
+                    $stokFifo->barangKeluar($detail['idbarang'], $idpenjualan, 'Penjualan', $detail['jumlahjual']);
+
                     $stokawal = Barang::getRiwayatStokAkhir($detail['idbarang']);
                     $stokmasuk = 0;
                     $stokkeluar = $detail['jumlahjual'];
@@ -180,6 +185,9 @@ class Penjualan extends Model
 
             // jika pengaturan stok dari penjualan
             if (session('stok_penjualan_dari_surat_jalan') != '1') {
+                $stokFifo = new StokFifoService();
+                $stokFifo->batalBarangKeluar($idpenjualan, 'Penjualan');
+
                 /*
                     INFO : 
                     karena ini update data maka 
@@ -227,6 +235,9 @@ class Penjualan extends Model
 
 
                 foreach ($dataDetail as $detail) {
+                    // FIFO Keluar
+                    $stokFifo->barangKeluar($detail['idbarang'], $idpenjualan, 'Penjualan', $detail['jumlahjual']);
+
                     $stokawal = $stokakhir;
                     $stokmasuk = 0;
                     $stokkeluar = $detail['jumlahjual'];
@@ -393,6 +404,9 @@ class Penjualan extends Model
 
             // jika pengaturan stok dari penjualan
             if (session('stok_penjualan_dari_surat_jalan') != '1') {
+                $stokFifo = new StokFifoService();
+                $stokFifo->batalBarangKeluar($idpenjualan, 'Penjualan');
+
                 foreach ($detailOld as $rowDetail) {
                     $stokawal = Barang::getRiwayatStokAkhir($rowDetail->idbarang);
                     $stokmasuk = $rowDetail->jumlahjual;

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
 use App\Models\App;
 use App\Models\Barang;
+use App\Helpers\StokFifoService;
 
 class Returpenjualan extends Model
 {
@@ -44,7 +45,22 @@ class Returpenjualan extends Model
             DB::table('returpenjualan')->insert($data);
             DB::table('returpenjualandetail')->insert($dataDetail);
 
+            $stokFifo = new StokFifoService();
             foreach ($dataDetail as $detail) {
+                // FIFO Masuk
+                $idstokfifo = DB::select('SELECT create_idstokfifo() AS id')[0]->id;
+                $stokFifo->barangMasuk(
+                    $idstokfifo,
+                    $detail['idbarang'],
+                    $idreturpenjualan,
+                    $data['tglretur'],
+                    'Retur Penjualan',
+                    $detail['jumlahretur'],
+                    $detail['hargaretur'],
+                    0, 0, 0,
+                    'Retur Penjualan'
+                );
+
                 $stokawal = Barang::getRiwayatStokAkhir($detail['idbarang']);
                 $stokmasuk = $detail['jumlahretur'];
                 $stokkeluar = 0;
@@ -102,6 +118,9 @@ class Returpenjualan extends Model
             $detailOld = DB::table('returpenjualandetail')
                 ->where('idreturpenjualan', $idreturpenjualan)
                 ->get();
+
+            $stokFifo = new StokFifoService();
+            $stokFifo->hapusBarangMasuk($idreturpenjualan, 'Retur Penjualan');
 
             foreach ($detailOld as $rowDetail) {
                 $stokawal = Barang::getRiwayatStokAkhir($rowDetail->idbarang);

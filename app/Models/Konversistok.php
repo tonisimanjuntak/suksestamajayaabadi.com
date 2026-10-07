@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
 use App\Models\App;
 use App\Models\Barang;
+use App\Helpers\StokFifoService;
 
 class Konversistok extends Model
 {
@@ -43,9 +44,15 @@ class Konversistok extends Model
             DB::beginTransaction();
             DB::table('konversistok')->insert($data);
 
+            $stokFifo = new StokFifoService();
+
             /**
              * UPDATE BARANG ASAL
             **/
+            $hasilHPP = $stokFifo->barangKeluar($data['idbarangasal'], $data['idkonversi'], 'Konversi Stok', $data['jlhbarangasal']);
+            $totalBiayaAsal = array_sum(array_column($hasilHPP, 'subtotal'));
+            $hppBarangTujuan = $data['jlhbarangtujuan'] > 0 ? ($totalBiayaAsal / $data['jlhbarangtujuan']) : 0;
+
             $stokawal = Barang::getRiwayatStokAkhir($data['idbarangasal']);
             $stokmasuk = 0;
             $stokkeluar = $data['jlhbarangasal'];
@@ -82,6 +89,19 @@ class Konversistok extends Model
             /**
              * UPDATE BARANG TUJUAN
             **/
+            $idstokfifo = DB::select('SELECT create_idstokfifo() AS id')[0]->id;
+            $stokFifo->barangMasuk(
+                $idstokfifo,
+                $data['idbarangtujuan'],
+                $data['idkonversi'],
+                $data['tglkonversi'],
+                'Konversi Stok',
+                $data['jlhbarangtujuan'],
+                $hppBarangTujuan,
+                0, 0, 0,
+                'Konversi Stok Barang'
+            );
+
             $stokawal = Barang::getRiwayatStokAkhir($data['idbarangtujuan']);
             $stokmasuk = $data['jlhbarangtujuan'];
             $stokkeluar = 0;
@@ -131,6 +151,11 @@ class Konversistok extends Model
     public function hapusData($idkonversi, $rsKonversi)
     {
         try {
+            DB::beginTransaction();
+
+            $stokFifo = new StokFifoService();
+            $stokFifo->hapusBarangMasuk($idkonversi, 'Konversi Stok');
+            $stokFifo->batalBarangKeluar($idkonversi, 'Konversi Stok');
 
             DB::table('konversistok')
                 ->where('idkonversi', $idkonversi)

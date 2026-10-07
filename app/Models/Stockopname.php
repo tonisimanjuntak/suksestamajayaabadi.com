@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
 use App\Models\App;
 use App\Models\Barang;
+use App\Helpers\StokFifoService;
 
 class Stockopname extends Model
 {
@@ -44,8 +45,29 @@ class Stockopname extends Model
             DB::table('stockopname')->insert($data);
             DB::table('stockopnamedetail')->insert($dataDetail);
 
+            $stokFifo = new StokFifoService();
 
             foreach ($dataDetail as $detail) {
+                $selisih = $detail['stockopname'] - $detail['stocksystem'];
+
+                if ($selisih > 0) {
+                    // Surplus: Masuk FIFO
+                    $idstokfifo = DB::select('SELECT create_idstokfifo() AS id')[0]->id;
+                    $stokFifo->barangMasuk(
+                        $idstokfifo,
+                        $detail['idbarang'],
+                        $idstockopname,
+                        $data['tglstockopname'],
+                        'Stok Opname',
+                        $selisih,
+                        0, // Harga 0 atau bisa ambil dari rata-rata
+                        0, 0, 0,
+                        'Stok Opname (Surplus)'
+                    );
+                } elseif ($selisih < 0) {
+                    // Defisit: Keluar FIFO
+                    $stokFifo->barangKeluar($detail['idbarang'], $idstockopname, 'Stok Opname', abs($selisih));
+                }
 
                 $stokawal = $detail['stocksystem'];
                 $stokmasuk = ($detail['stockopname'] > $detail['stocksystem']) ? $detail['stockopname'] - $detail['stocksystem'] : 0;
