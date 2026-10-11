@@ -23,6 +23,7 @@ INSERT INTO menus (idmenus, menus, parent, urlmenus, iconmenus, urut, levels, st
 ('M023', 'Stock Opname', 'M003', 'stockopname', 'far fa-circle', 160, 1, 'Aktif', 'Lihat, Tambah, Edit, Hapus'),
 ('MB02', 'Penyesuaian Stok', 'M003', 'penyesuaianstok', 'far fa-circle', 161, 1, 'Aktif', 'Lihat, Tambah, Edit, Hapus'),
 ('M024', 'Laporan Persediaan', 'M003', 'lappersediaan', 'far fa-circle', 170, 1, 'Aktif', 'Lihat'),
+('MB05', 'Laporan Stok Fifo', 'M003', 'lapstokfifo', 'far fa-circle', 171, 1, 'Aktif', 'Lihat'),
 
 ('M004', 'Sales', NULL, NULL, 'fas fa-universal-access', 180, 0, 'Aktif', ''),
 ('M025', 'Data Sales', 'M004', 'sales', 'far fa-circle', 190, 1, 'Aktif', 'Lihat, Tambah, Edit, Hapus'),

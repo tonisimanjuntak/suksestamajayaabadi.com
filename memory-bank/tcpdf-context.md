@@ -60,6 +60,7 @@ Total terdapat **32 metode cetak** di 26 controller aktif yang memanfaatkan TCPD
 | Laporan Penjualan Rekap | `/lappenjualan/cetak/{jenisCetakan}` | `LappenjualanController@cetak` | `resources/views/lappenjualan/cetakbysales.blade.php` / `cetakbytgl.blade.php` | A4 Landscape | Aktif |
 | Laporan Penjualan Rincian | `/lappenjualandetail/cetak/{jenisCetakan}` | `LappenjualandetailController@cetak` | `resources/views/lappenjualandetail/cetakbysales.blade.php` / `cetakbytgl.blade.php` | A4 Landscape | Aktif |
 | Laporan Persediaan Stok Barang | `/lappersediaan/cetak/{jenisCetakan}/{tglriwayat}/{idkategori}` | `LappersediaanController@cetak` | `resources/views/lappersediaan/cetak.blade.php` | A4 Landscape | Aktif |
+| Laporan Stok FIFO | `/lapstokfifo/cetak/{jenisCetakan}` | `LapstokfifoController@cetak` | `resources/views/lapstokfifo/cetak.blade.php` | A4 Landscape | Aktif |
 | Laporan Persediaan Stok (Old) | *TBD (Tanpa Route)* | `LappersediaanController_Old@cetak` | `resources/views/lappersediaan/cetak.blade.php` | A4 Landscape | Legacy (Unrouted) |
 | Laporan Rekap Saldo Hutang | `/laprekaphutang/cetak/{jenisCetakan}` | `LaprekaphutangController@cetak` | `resources/views/laprekaphutang/cetak.blade.php` | A4 Landscape | Aktif |
 | Laporan Rekap Saldo Piutang | `/laprekappiutang/cetak/{jenisCetakan}` | `LaprekappiutangController@cetak` | `resources/views/laprekappiutang/cetak.blade.php` | A4 Landscape | Aktif |

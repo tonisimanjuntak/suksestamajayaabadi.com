@@ -37,6 +37,7 @@ use App\Http\Controllers\LappenjualanController;
 use App\Http\Controllers\LappenjualandetailController;
 use App\Http\Controllers\LappersediaanController;
 use App\Http\Controllers\KartustokbarangController;
+use App\Http\Controllers\LapstokfifoController;
 use App\Http\Controllers\LapneracasaldoController;
 use App\Http\Controllers\LappenagihansalesController;
 use App\Http\Controllers\LappenerimaanController;
@@ -630,6 +631,12 @@ Route::middleware(['check.menu.access'])->group(function () {
             Route::get('kartustokbarang/cetak/{jenisCetakan}/{idkategori}/{tglwal}/{tglakhir}', 'cetak');
             Route::get('kartustokbarang/cetak2/{idkategori}', 'cetak2');
             Route::get('kartustokbarang/listdata', 'listdata')->name('kartustokbarang.listdata');
+        });
+
+        Route::controller(LapstokfifoController::class)->group(function () {
+            Route::get('lapstokfifo', 'index');
+            Route::get('lapstokfifo/cetak/{jenisCetakan}', 'cetak');
+            Route::get('lapstokfifo/listdata', 'listdata')->name('lapstokfifo.listdata');
         });
 
         Route::controller(LappengeluaranController::class)->group(function () {
