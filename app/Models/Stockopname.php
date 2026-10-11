@@ -51,7 +51,34 @@ class Stockopname extends Model
                 $selisih = $detail['stockopname'] - $detail['stocksystem'];
 
                 if ($selisih > 0) {
-                    // Surplus: Masuk FIFO
+                    // Surplus: Masuk FIFO (ambil harga/HPP dari pembelian terakhir)
+                    $lastLayer = DB::table('stokfifo')
+                        ->where('idbarang', $detail['idbarang'])
+                        ->where('jenistransaksi', 'Pembelian')
+                        ->where('nilaihpp', '>', 0)
+                        ->orderBy('tglmasuk', 'desc')
+                        ->orderBy('idstokfifo', 'desc')
+                        ->first();
+
+                    if (!$lastLayer) {
+                        $lastLayer = DB::table('stokfifo')
+                            ->where('idbarang', $detail['idbarang'])
+                            ->where('nilaihpp', '>', 0)
+                            ->orderBy('tglmasuk', 'desc')
+                            ->orderBy('idstokfifo', 'desc')
+                            ->first();
+                    }
+
+                    $hargaBeli = $lastLayer ? (float) $lastLayer->hargasatuan : 0;
+                    $nilaiHpp  = $lastLayer ? (float) $lastLayer->nilaihpp : 0;
+
+                    // Fallback ke master barang jika belum ada riwayat pembelian di stokfifo
+                    if ($nilaiHpp <= 0) {
+                        $rowBarang = DB::table('barang')->where('idbarang', $detail['idbarang'])->first();
+                        $hargaBeli = $rowBarang ? (float) $rowBarang->hargabeli : 0;
+                        $nilaiHpp  = ($rowBarang && $rowBarang->hpp > 0) ? (float) $rowBarang->hpp : $hargaBeli;
+                    }
+
                     $idstokfifo = DB::select('SELECT create_idstokfifo() AS id')[0]->id;
                     $stokFifo->barangMasuk(
                         $idstokfifo,
@@ -60,8 +87,10 @@ class Stockopname extends Model
                         $data['tglstockopname'],
                         'Stok Opname',
                         $selisih,
-                        0, // Harga 0 atau bisa ambil dari rata-rata
-                        0, 0, 0,
+                        $hargaBeli,
+                        $nilaiHpp,
+                        0,
+                        0,
                         'Stok Opname (Surplus)'
                     );
                 } elseif ($selisih < 0) {
