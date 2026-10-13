@@ -169,4 +169,17 @@ class LapstokfifoController extends Controller
             $pdf->Output('Laporan_Stok_FIFO.pdf', 'I');
         }
     }
+
+    public function reset(Request $request)
+    {
+        if (session('idpengguna') !== '9999999999') {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Anda tidak memiliki hak akses untuk mereset stok FIFO.',
+            ], 403);
+        }
+
+        $result = $this->model->resetStokFifo();
+        return response()->json($result);
+    }
 }

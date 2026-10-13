@@ -637,6 +637,7 @@ Route::middleware(['check.menu.access'])->group(function () {
             Route::get('lapstokfifo', 'index');
             Route::get('lapstokfifo/cetak/{jenisCetakan}', 'cetak');
             Route::get('lapstokfifo/listdata', 'listdata')->name('lapstokfifo.listdata');
+            Route::post('lapstokfifo/reset', 'reset')->name('lapstokfifo.reset');
         });
 
         Route::controller(LappengeluaranController::class)->group(function () {

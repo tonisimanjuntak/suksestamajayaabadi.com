@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
 use App\Models\App;
+use App\Helpers\StokFifoService;
 
 class Suratjalan extends Model
 {
@@ -65,6 +66,7 @@ class Suratjalan extends Model
 
             // jika pengaturan stok dari penjualan
             if (session('stok_penjualan_dari_surat_jalan') == '1') {
+                $stokFifo = new StokFifoService();
                 foreach ($dataDetail as $rowDetail) {
                     $idpenjualan = $rowDetail['idpenjualan'];
 
@@ -80,6 +82,9 @@ class Suratjalan extends Model
                         ->get();
 
                     foreach ($rsDetailPenjualan as $rowDetailPenjualan) {
+                        // FIFO Keluar
+                        $stokFifo->barangKeluar($rowDetailPenjualan->idbarang, $idsuratjalan, 'Surat Jalan', $rowDetailPenjualan->jumlahjual);
+
                         $stokawal = Barang::getRiwayatStokAkhir($rowDetailPenjualan->idbarang);
                         $stokmasuk = 0;
                         $stokkeluar = $rowDetailPenjualan->jumlahjual;
@@ -175,9 +180,9 @@ class Suratjalan extends Model
 
             // jika pengaturan stok dari penjualan
             if (session('stok_penjualan_dari_surat_jalan') == '1') {
+                $stokFifo = new StokFifoService();
+                $stokFifo->batalBarangKeluar($idsuratjalan, 'Surat Jalan');
 
-
-                
                 //karena update data kembalikan stok barang ke stok semula
                 $rsDetailSuratJalanOld = DB::table('suratjalandetail')
                     ->where('idsuratjalan', $idsuratjalan)
@@ -248,6 +253,9 @@ class Suratjalan extends Model
                         ->get();
 
                     foreach ($rsDetailPenjualan as $rowDetailPenjualan) {
+                        // FIFO Keluar
+                        $stokFifo->barangKeluar($rowDetailPenjualan->idbarang, $idsuratjalan, 'Surat Jalan', $rowDetailPenjualan->jumlahjual);
+
                         $stokawal = Barang::getRiwayatStokAkhir($rowDetailPenjualan->idbarang);
                         $stokmasuk = 0;
                         $stokkeluar = $rowDetailPenjualan->jumlahjual;
@@ -348,6 +356,8 @@ class Suratjalan extends Model
 
             // jika pengaturan stok dari penjualan
             if (session('stok_penjualan_dari_surat_jalan') == '1') {
+                $stokFifo = new StokFifoService();
+                $stokFifo->batalBarangKeluar($idsuratjalan, 'Surat Jalan');
 
                 //kembalikan stok barang ke stok semula
                 $rsDetailSuratJalanOld = DB::table('suratjalandetail')

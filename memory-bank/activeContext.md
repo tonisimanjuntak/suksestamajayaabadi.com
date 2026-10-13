@@ -18,8 +18,12 @@ Tanggal: 2026-10-09
 - `main`
 
 ## File yang Sedang Disentuh
-- `memory-bank/` (`projectbrief.md`, `productContext.md`, `techContext.md`, `systemPatterns.md`, `progress.md`, `activeContext.md`).
-- Tidak ada file kode aplikasi yang sedang mengalami uncommitted changes di working tree.
+- `app/Models/Lapstokfifo.php`: Method `resetStokFifo()` untuk kalkulasi ulang layer FIFO secara transactional & chunked.
+- `app/Http/Controllers/LapstokfifoController.php`: Method `reset()` dan proteksi session `idpengguna == '9999999999'`.
+- `routes/web.php`: Route `POST lapstokfifo/reset`.
+- `resources/views/lapstokfifo/index.blade.php`: Tombol reset di bawah datatable + konfirmasi SweetAlert.
+- `app/Models/Suratjalan.php`: Integrasi alur pengeluaran FIFO dari surat jalan.
+- `memory-bank/` (`progress.md`, `activeContext.md`).
 
 ## Langkah Berikutnya
 1. Melakukan pengujian end-to-end kalkulasi HPP FIFO pada transaksi penjualan dan retur di lingkungan pengujian/lokal.

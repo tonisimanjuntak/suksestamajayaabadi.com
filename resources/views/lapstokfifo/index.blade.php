@@ -104,6 +104,14 @@
                                         </table>
                                     </div>
                                 </div>
+
+                                @if(session('idpengguna') == '9999999999')
+                                <div class="col-12 mt-3">
+                                    <button type="button" class="btn btn-warning font-weight-bold" id="btnResetStokFifo">
+                                        <i class="fas fa-sync-alt mr-1"></i> Reset Stok FIFO
+                                    </button>
+                                </div>
+                                @endif
                             </div>
 
                         </div>
@@ -251,6 +259,46 @@
         $('#btnCetakPdf').click(function() {
             cetak('pdf');
         });
+
+        @if(session('idpengguna') == '9999999999')
+        $('#btnResetStokFifo').click(function() {
+            swal({
+                title: "Konfirmasi",
+                text: "Apakah anda yakin akan mereset tabel stokfifo?",
+                icon: "warning",
+                buttons: ["Batal", "Ya"],
+                dangerMode: true,
+            }).then((willReset) => {
+                if (willReset) {
+                    var $btn = $('#btnResetStokFifo');
+                    $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Sedang Memproses Reset...');
+
+                    $.ajax({
+                        url: "{{ route('lapstokfifo.reset') }}",
+                        type: 'POST',
+                        data: {
+                            _token: "{{ csrf_token() }}"
+                        },
+                        success: function(response) {
+                            $btn.prop('disabled', false).html('<i class="fas fa-sync-alt mr-1"></i> Reset Stok FIFO');
+                            if (response.status === 'success') {
+                                swal("Berhasil", response.message, "success").then(() => {
+                                    table.ajax.reload();
+                                });
+                            } else {
+                                swal("Gagal", response.message, "error");
+                            }
+                        },
+                        error: function(xhr) {
+                            $btn.prop('disabled', false).html('<i class="fas fa-sync-alt mr-1"></i> Reset Stok FIFO');
+                            var msg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Terjadi kesalahan saat mereset stok FIFO.';
+                            swal("Gagal", msg, "error");
+                        }
+                    });
+                }
+            });
+        });
+        @endif
     });
 
     function cetak(jenis) {

@@ -43,6 +43,7 @@ Bukti implementasi terverifikasi dari routes di `routes/web.php` dan 60 controll
    - Konversi Satuan Stok Besar ke Kecil (`KonversistokController`).
    - Kartu Riwayat Stok Barang (`KartustokbarangController`).
    - Laporan Layer Persediaan Stok FIFO (`LapstokfifoController`).
+   - Fitur Reset & Replay Stok FIFO kronologis via `Lapstokfifo::resetStokFifo()` khusus admin `idpengguna = 9999999999`.
 7. **Bonus Sales**:
    - Perhitungan Bonus Penjualan & Bonus Penagihan (`BonussalesController`).
 8. **Pelaporan & Cetak Dokumen (TCPDF)**:
