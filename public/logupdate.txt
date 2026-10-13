@@ -147,3 +147,6 @@
 [2026-10-12] [update] Update Stockopname.php
 [2026-10-12] [feature] Add Lapstokfifo
 [2026-10-13] [feature] Data awal isi stokfifo
+[2026-10-13] [update] Update semua transaksi insert nilai hpp ke ke riwayat stok untuk mendapatkan nilai hpp di riwayat stok
+[2026-10-13] [feature] Tambah laporan hpp untuk melihat nilai hpp barang
+[2026-10-13] [update] Update home, agar lebih informtif
