@@ -1092,7 +1092,7 @@
     </script>
 
 
-    //cek riwayat update
+    
     <script>
         var STORAGE_LOG_KEY = 'logupdate';
 

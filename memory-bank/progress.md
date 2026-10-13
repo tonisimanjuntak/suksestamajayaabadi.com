@@ -50,8 +50,9 @@ Bukti implementasi terverifikasi dari routes di `routes/web.php` dan 60 controll
 8. **Pelaporan & Cetak Dokumen (TCPDF)**:
    - 19+ modul laporan operasional dan keuangan (Buku Besar, Neraca Saldo, Laba Rugi, Rekap Hutang/Piutang, Persediaan, Pembelian, Penjualan).
    - Laporan HPP Barang (`LaphppbarangController`, `Laphppbarang`, menu `MB06`): Kolom Kode Barang, Nama Barang, Kuantitas (stok akhir), Nilai Total Biaya (stok akhir * nilaihpp), Biaya Rata-rata (nilaihpp) dari baris riwayatstok terakhir <= tanggal laporan, filter kategori, ekspor Excel dan cetak PDF via TCPDF.
-9. **Audit Trail**:
+9. **Audit Trail & Dashboard**:
    - Pencatatan seluruh operasi data pengguna ke tabel `riwayataktifitas` (`App::riwayatAktifitas`).
+   - Dashboard Operasional Modern (`HomeController`, `Home`, `resources/views/home.blade.php`): KPI Cards (Penjualan, Pembelian, Piutang, Hutang), tren grafik tahunan & donat cara bayar (Chart.js 2.9.4), widget monitoring (stok mendekati batas minimum, piutang jatuh tempo, top konsumen omset tertinggi), dan live feed riwayat aktivitas asinkron.
 
 ---
 

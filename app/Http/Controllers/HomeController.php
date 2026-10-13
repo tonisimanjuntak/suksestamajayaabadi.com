@@ -116,11 +116,13 @@ class HomeController extends Controller
 
     public function getInfoBox(Request $request)
     {
+        $ringkasan = $this->model->getRingkasanInfoBox();
         $data = array(
-            'totalPembelian' => $this->model->getTotalPembelian(),
-            'totalPenjualan' => $this->model->getTotalPenjualan(),
-            'totalUtang' => $this->model->getTotalUtang(),
-            'totalPiutang' => $this->model->getTotalPiutang(),
+            'totalPembelian' => $ringkasan['pembelian_hari_ini_total'],
+            'totalPenjualan' => $ringkasan['penjualan_hari_ini_total'],
+            'totalUtang'     => $ringkasan['hutang_sisa'],
+            'totalPiutang'   => $ringkasan['piutang_sisa'],
+            'detail'         => $ringkasan,
         );
         return response()->json($data);
     }
@@ -167,7 +169,39 @@ class HomeController extends Controller
 
         $totalSemuaPembelian = $rsGrafikPembelian[0]->bulan01 + $rsGrafikPembelian[0]->bulan02 + $rsGrafikPembelian[0]->bulan03 + $rsGrafikPembelian[0]->bulan04 + $rsGrafikPembelian[0]->bulan05 + $rsGrafikPembelian[0]->bulan06 + $rsGrafikPembelian[0]->bulan07 + $rsGrafikPembelian[0]->bulan08 + $rsGrafikPembelian[0]->bulan09 + $rsGrafikPembelian[0]->bulan10 + $rsGrafikPembelian[0]->bulan11 + $rsGrafikPembelian[0]->bulan12;
 
-        return response()->json(array('arrDeskripsi' => $arrDeskripsi, 'arrTotalPenjualan' => $arrTotalPenjualan, 'totalSemuaPenjualan' => $totalSemuaPenjualan, 'arrTotalPembelian' => $arrTotalPembelian, 'totalSemuaPembelian' => $totalSemuaPembelian));
+        $rsCaraBayar = $this->model->getInfoCaraBayar();
+        $arrCaraBayarLabels = [];
+        $arrCaraBayarData = [];
+        $arrCaraBayarTotal = [];
+        foreach ($rsCaraBayar as $cb) {
+            $arrCaraBayarLabels[] = $cb->carabayar;
+            $arrCaraBayarData[] = (int) $cb->jml;
+            $arrCaraBayarTotal[] = (float) $cb->total;
+        }
+
+        return response()->json(array(
+            'arrDeskripsi'        => $arrDeskripsi,
+            'arrTotalPenjualan'   => $arrTotalPenjualan,
+            'totalSemuaPenjualan' => $totalSemuaPenjualan,
+            'arrTotalPembelian'   => $arrTotalPembelian,
+            'totalSemuaPembelian' => $totalSemuaPembelian,
+            'caraBayarLabels'     => $arrCaraBayarLabels,
+            'caraBayarData'       => $arrCaraBayarData,
+            'caraBayarTotal'      => $arrCaraBayarTotal,
+        ));
+    }
+
+    public function getWidgetData()
+    {
+        $stokKritis = $this->model->getStokKritis(5);
+        $piutangJatuhTempo = $this->model->getPiutangJatuhTempo(5);
+        $topKonsumen = $this->model->getTopKonsumen(5);
+
+        return response()->json([
+            'stokKritis'        => $stokKritis,
+            'piutangJatuhTempo' => $piutangJatuhTempo,
+            'topKonsumen'       => $topKonsumen,
+        ]);
     }
 
     public function loadRiwayatAktifitas(Request $request)
