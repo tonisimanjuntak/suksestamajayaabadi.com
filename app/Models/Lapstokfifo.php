@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\App;
+use App\Helpers\PpnHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
@@ -89,26 +90,68 @@ class Lapstokfifo extends Model
                 $tgl = date('Y-m-d', strtotime($tgl));
                 $details = DB::table('pembeliandetail')->where('idpembelian', $p->idpembelian)->get();
 
-                foreach ($details as $d) {
-                    if ((float)$d->jumlahbeli <= 0) {
+                $totalSubTotalBeliDetail = $details->sum(function ($item) {
+                    return (float)$item->subtotalbeli;
+                });
+
+                $totalppn = (float)$p->totalppn;
+                $runningTotalPpn = 0;
+                $count = count($details);
+
+                for ($i = 0; $i < $count; $i++) {
+                    $d = $details[$i];
+                    $jumlahBeli = (float)$d->jumlahbeli;
+                    if ($jumlahBeli <= 0) {
                         continue;
                     }
-                    $hpp = (float)$d->hargadpp;
-                    if ($hpp <= 0) {
-                        $calc = (float)$d->hargasatuan - (float)$d->jumlahdiskon - (float)$d->jumlahppn;
-                        $hpp = $calc > 0 ? $calc : (float)$d->hargasatuan;
+
+                    $subTotalBeli = (float)$d->subtotalbeli;
+                    $hargaSatuan = (float)$d->hargasatuan;
+                    $jumlahDiskon = (float)$d->jumlahdiskon;
+
+                    if ($totalppn > 0) {
+                        // Proporsional Per 1 Item Barang
+                        $rasioProporsi = ($totalSubTotalBeliDetail > 0) ? ($subTotalBeli / $totalSubTotalBeliDetail) : 0;
+
+                        // Jika item terakhir, gunakan sisa PPN untuk hindari selisih pembulatan
+                        if ($i == $count - 1) {
+                            $jumlahPpnItem = $totalppn - $runningTotalPpn;
+                        } else {
+                            $jumlahPpnItem = PpnHelper::roundPPN($rasioProporsi * $totalppn);
+                            $runningTotalPpn += $jumlahPpnItem;
+                        }
+
+                        $jumlahPpnSatuan = ($jumlahBeli > 0) ? PpnHelper::roundPPN($jumlahPpnItem / $jumlahBeli) : 0;
+                        $hargaDppSatuan = $hargaSatuan - $jumlahDiskon - $jumlahPpnSatuan;
+                    } else {
+                        $jumlahPpnSatuan = 0;
+                        $hargaDppSatuan = $hargaSatuan - $jumlahDiskon;
                     }
+
+                    // Sinkronkan ke pembeliandetail jika nilai di database masih kosong/0
+                    if ((float)$d->hargadpp == 0 && (float)$d->jumlahppn == 0) {
+                        DB::table('pembeliandetail')
+                            ->where('id', $d->id)
+                            ->update([
+                                'hargadpp'  => $hargaDppSatuan,
+                                'jumlahppn' => $jumlahPpnSatuan,
+                            ]);
+                    }
+
+                    // Nilai HPP FIFO menggunakan DPP setelah diskon & PPN
+                    $hpp = $hargaDppSatuan > 0 ? $hargaDppSatuan : $hargaSatuan;
+
                     $events[] = [
                         'tanggal'        => $tgl,
                         'tipe'           => 'MASUK',
                         'jenistransaksi' => 'Pembelian',
                         'idtransaksi'    => $p->idpembelian,
                         'idbarang'       => $d->idbarang,
-                        'jumlah'         => (float)$d->jumlahbeli,
-                        'hargasatuan'    => (float)$d->hargasatuan,
-                        'hargadpp'       => (float)$d->hargadpp,
-                        'jumlahppn'      => (float)$d->jumlahppn,
-                        'jumlahdiskon'   => (float)$d->jumlahdiskon,
+                        'jumlah'         => $jumlahBeli,
+                        'hargasatuan'    => $hargaSatuan,
+                        'hargadpp'       => $hargaDppSatuan,
+                        'jumlahppn'      => $jumlahPpnSatuan,
+                        'jumlahdiskon'   => $jumlahDiskon,
                         'nilaihpp'       => $hpp,
                         'keterangan'     => 'Penerimaan PO dengan No Faktur ' . ($p->nofaktur ?? '-') . ' dan nama supplier ' . ($p->namasupplier ?? '-'),
                     ];

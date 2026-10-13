@@ -18,12 +18,15 @@ Tanggal: 2026-10-09
 - `main`
 
 ## File yang Sedang Disentuh
-- `app/Models/Lapstokfifo.php`: Method `resetStokFifo()` untuk kalkulasi ulang layer FIFO secara transactional & chunked.
+- `app/Models/Lapstokfifo.php`: Method `resetStokFifo()` untuk kalkulasi ulang layer FIFO secara transactional & chunked dengan perhitungan PPN proporsional menggunakan `PpnHelper::roundPPN`.
 - `app/Http/Controllers/LapstokfifoController.php`: Method `reset()` dan proteksi session `idpengguna == '9999999999'`.
 - `routes/web.php`: Route `POST lapstokfifo/reset`.
 - `resources/views/lapstokfifo/index.blade.php`: Tombol reset di bawah datatable + konfirmasi SweetAlert.
 - `app/Models/Suratjalan.php`: Integrasi alur pengeluaran FIFO dari surat jalan.
 - `memory-bank/` (`progress.md`, `activeContext.md`).
+- `app/Models/Barang.php`: Helper method `getNilaiHppRataRataFifo($idbarang)` dan `getNilaiHppRiwayatTerakhir($idbarang)`.
+- Model transaksi (`Penjualan.php`, `Pembelianpenerimaan.php`, `Returpembelian.php`, `Returpenjualan.php`, `Konversistok.php`, `Stockopname.php`, `Penyesuaianstok.php`, `Suratjalan.php`): Pencatatan field `nilaihpp` saat insert ke tabel `riwayatstok`.
+- `db/db.sql`: Sinkronisasi definisi kolom `nilaihpp` di tabel `riwayatstok` dan view `v_riwayatstok`.
 
 ## Langkah Berikutnya
 1. Melakukan pengujian end-to-end kalkulasi HPP FIFO pada transaksi penjualan dan retur di lingkungan pengujian/lokal.

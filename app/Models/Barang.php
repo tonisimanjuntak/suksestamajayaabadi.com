@@ -98,6 +98,30 @@ class Barang extends Model
         return $stokAkhir ?? 0;
     }
 
+    public static function getNilaiHppRataRataFifo($idbarang)
+    {
+        $avgHpp = DB::table('stokfifo')
+            ->where('idbarang', $idbarang)
+            ->where('jumlahsisa', '!=', 0)
+            ->avg('nilaihpp');
+
+        if ($avgHpp !== null) {
+            return round($avgHpp, 2);
+        }
+
+        return self::getNilaiHppRiwayatTerakhir($idbarang);
+    }
+
+    public static function getNilaiHppRiwayatTerakhir($idbarang)
+    {
+        $nilaiHpp = DB::table('riwayatstok')
+            ->where('idbarang', $idbarang)
+            ->orderBy('idriwayat', 'desc')
+            ->value('nilaihpp');
+
+        return $nilaiHpp ?? 0;
+    }
+
     public static function getStatusAktif()
     {
         return DB::table('v_barang')

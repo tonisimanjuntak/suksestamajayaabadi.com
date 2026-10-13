@@ -64,6 +64,7 @@ class Penyesuaianstok extends Model
                     'stokakhir' => $stokakhir,
                     'hargasebelumdiskon' => null,
                     'hargasetelahdiskon' => null,
+                    'nilaihpp' => Barang::getNilaiHppRataRataFifo($detail['idbarang']),
                     'deskripsi' => 'Penyesuaian Stok',
                     'idpengguna' => session()->get('idpengguna'),
                     'namapengguna' => session()->get('namapengguna'),

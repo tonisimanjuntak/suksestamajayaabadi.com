@@ -92,13 +92,33 @@ class Pembelianpenerimaan extends Model
             }
 
             /*
-                Update Stok Barang
+                Update Stok Barang & FIFO
             */
             $idsupplier = $data['idsupplier'];
             $rowSupplier = Supplier::find($idsupplier);
             $namasupplier = $rowSupplier->namasupplier;
 
             foreach ($dataDetail as $detail) {
+                /*
+                    FIFO (Barang Masuk)
+                */
+                $stokfifo = new StokFifoService();
+                $idstokfifo = DB::select('SELECT create_idstokfifo() AS id')[0]->id;
+
+                $stokfifo->barangMasuk(
+                    $idstokfifo,
+                    $detail['idbarang'],
+                    $idpembelian,
+                    $data['tglfaktur'],
+                    'Pembelian',
+                    $detail['jumlahbeli'],
+                    $detail['hargasatuan'],
+                    $detail['hargadpp'],
+                    $detail['jumlahppn'],
+                    $detail['jumlahdiskon'],
+                    'Penerimaan PO dengan No Faktur ' . $data['nofaktur'] . ' dan nama supplier ' . $namasupplier
+                );
+
                 $stokawal = Barang::getRiwayatStokAkhir($detail['idbarang']);
                 $stokmasuk = $detail['jumlahbeli'];
                 $stokkeluar = 0;
@@ -119,6 +139,7 @@ class Pembelianpenerimaan extends Model
                     'jumlahppn' => $detail['jumlahppn'],
                     'jumlahdiskon' => $detail['jumlahdiskon'],
                     'subtotal' => $detail['subtotalbeli'],
+                    'nilaihpp' => Barang::getNilaiHppRataRataFifo($detail['idbarang']),
                     'deskripsi' => 'Penerimaan PO dengan No Faktur ' . $data['nofaktur']. ' dan nama supplier ' . $namasupplier,
                     'idpengguna' => session()->get('idpengguna'),
                     'namapengguna' => session()->get('namapengguna'),
@@ -133,31 +154,6 @@ class Pembelianpenerimaan extends Model
                 DB::table('barang')
                     ->where('idbarang', $detail['idbarang'])
                     ->update($dataStokBarang);
-            }
-
-            
-
-            
-            /*
-                FIFO (Barang Masuk)
-            */
-            foreach ($dataDetail as $detail) {
-                $stokfifo = new StokFifoService();
-                $idstokfifo = DB::select('SELECT create_idstokfifo() AS id')[0]->id;
-
-                $stokfifo->barangMasuk(
-                    $idstokfifo,
-                    $detail['idbarang'],
-                    $idpembelian,
-                    $data['tglfaktur'],
-                    'Pembelian',
-                    $detail['jumlahbeli'],
-                    $detail['hargasatuan'],
-                    $detail['hargadpp'],
-                    $detail['jumlahppn'],
-                    $detail['jumlahdiskon'],
-                    'Penerimaan PO dengan No Faktur ' . $data['nofaktur'] . ' dan nama supplier ' . $namasupplier
-                );
             }
 
 
@@ -290,6 +286,7 @@ class Pembelianpenerimaan extends Model
                     'stokakhir' => $stokakhir,
                     'hargasebelumdiskon' => $rowDetail->hargasatuan,
                     'hargasetelahdiskon' => $rowDetail->hargasatuan - $rowDetail->jumlahdiskon,
+                    'nilaihpp' => Barang::getNilaiHppRiwayatTerakhir($rowDetail->idbarang),
                     'deskripsi' => 'Hapus Penerimaan PO dengan No. Faktur ' . $nofaktur . ' dan Supplier ' . $namasupplier,
                     'idpengguna' => session()->get('idpengguna'),
                     'namapengguna' => session()->get('namapengguna'),

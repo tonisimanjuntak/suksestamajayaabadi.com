@@ -137,3 +137,13 @@
 
 [2026-09-20] [customize] Master Barang - tolong yg kategori barang di unlock aja ya. Biar kami bisa ubah sendiri
 
+
+[2026-09-23] [update] Update ppnproporsional
+[2026-09-24] [update] Update Pembelian Penerimaan
+[2026-10-07] [update] Update stokfifoservice untuk menghitung nilai hpp
+[2026-10-08] [update] Update db.sql
+[2026-10-09] [feature] Add agent copilot instruction
+[2026-10-09] [feature] Add memory-bank helpers template dan tcpdf
+[2026-10-12] [update] Update Stockopname.php
+[2026-10-12] [feature] Add Lapstokfifo
+[2026-10-13] [feature] Data awal isi stokfifo

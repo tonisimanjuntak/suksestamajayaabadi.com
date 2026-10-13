@@ -70,6 +70,7 @@ class Konversistok extends Model
                 'stokakhir' => $stokakhir,
                 'hargasebelumdiskon' => null,
                 'hargasetelahdiskon' => null,
+                'nilaihpp' => Barang::getNilaiHppRataRataFifo($data['idbarangasal']),
                 'deskripsi' => 'Konversi Stok Barang',
                 'idpengguna' => session()->get('idpengguna'),
                 'namapengguna' => session()->get('namapengguna'),
@@ -98,7 +99,9 @@ class Konversistok extends Model
                 'Konversi Stok',
                 $data['jlhbarangtujuan'],
                 $hppBarangTujuan,
-                0, 0, 0,
+                $hppBarangTujuan,
+                0,
+                0,
                 'Konversi Stok Barang'
             );
 
@@ -119,6 +122,7 @@ class Konversistok extends Model
                 'stokakhir' => $stokakhir,
                 'hargasebelumdiskon' => null,
                 'hargasetelahdiskon' => null,
+                'nilaihpp' => Barang::getNilaiHppRataRataFifo($data['idbarangtujuan']),
                 'deskripsi' => 'Konversi Stok Barang',
                 'idpengguna' => session()->get('idpengguna'),
                 'namapengguna' => session()->get('namapengguna'),
@@ -182,6 +186,7 @@ class Konversistok extends Model
                 'stokakhir' => $stokakhir,
                 'hargasebelumdiskon' => null,
                 'hargasetelahdiskon' => null,
+                'nilaihpp' => Barang::getNilaiHppRiwayatTerakhir($rsKonversi->idbarangasal),
                 'deskripsi' => 'Hapus Konversi Stok Barang',
                 'idpengguna' => session()->get('idpengguna'),
                 'namapengguna' => session()->get('namapengguna'),
@@ -219,6 +224,7 @@ class Konversistok extends Model
                 'stokakhir' => $stokakhir,
                 'hargasebelumdiskon' => null,
                 'hargasetelahdiskon' => null,
+                'nilaihpp' => Barang::getNilaiHppRiwayatTerakhir($rsKonversi->idbarangtujuan),
                 'deskripsi' => 'Hapus Konversi Stok Barang',
                 'idpengguna' => session()->get('idpengguna'),
                 'namapengguna' => session()->get('namapengguna'),

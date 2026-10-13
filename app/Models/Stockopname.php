@@ -115,6 +115,7 @@ class Stockopname extends Model
                     'stokakhir' => $stokakhir,
                     'hargasebelumdiskon' => null,
                     'hargasetelahdiskon' => null,
+                    'nilaihpp' => Barang::getNilaiHppRataRataFifo($detail['idbarang']),
                     'deskripsi' => 'Stock Opname',
                     'idpengguna' => session()->get('idpengguna'),
                     'namapengguna' => session()->get('namapengguna'),

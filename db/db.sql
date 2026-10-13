@@ -1504,6 +1504,7 @@ CREATE TABLE `riwayatstok` (
   `jumlahppn` decimal(18,0) DEFAULT NULL,
   `jumlahdiskon` decimal(18,0) DEFAULT NULL,
   `subtotal` decimal(18,0) DEFAULT NULL,
+  `nilaihpp` decimal(18,0) DEFAULT '0',
   PRIMARY KEY (`idriwayat`),
   KEY `idbarang` (`idbarang`),
   KEY `idtransaksi` (`idtransaksi`),
@@ -4409,6 +4410,7 @@ DROP TABLE IF EXISTS `v_riwayatstok`;
  `jumlahppn` decimal(18,0) ,
  `jumlahdiskon` decimal(18,0) ,
  `subtotal` decimal(18,0) ,
+ `nilaihpp` decimal(18,0) ,
  `namabarang` varchar(100) ,
  `kdbarang` char(15) 
 )*/;
@@ -5114,7 +5116,7 @@ DROP TABLE IF EXISTS `v_suratjalandetail`;
 /*!50001 DROP TABLE IF EXISTS `v_riwayatstok` */;
 /*!50001 DROP VIEW IF EXISTS `v_riwayatstok` */;
 
-/*!50001 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_riwayatstok` AS select `riwayatstok`.`idriwayat` AS `idriwayat`,`riwayatstok`.`tglriwayat` AS `tglriwayat`,`riwayatstok`.`idtransaksi` AS `idtransaksi`,`riwayatstok`.`tgltransaksi` AS `tgltransaksi`,`riwayatstok`.`idbarang` AS `idbarang`,`riwayatstok`.`stokawal` AS `stokawal`,`riwayatstok`.`stokmasuk` AS `stokmasuk`,`riwayatstok`.`stokkeluar` AS `stokkeluar`,`riwayatstok`.`stokakhir` AS `stokakhir`,`riwayatstok`.`hargasebelumdiskon` AS `hargasebelumdiskon`,`riwayatstok`.`hargasetelahdiskon` AS `hargasetelahdiskon`,`riwayatstok`.`deskripsi` AS `deskripsi`,`riwayatstok`.`idpengguna` AS `idpengguna`,`riwayatstok`.`namapengguna` AS `namapengguna`,`riwayatstok`.`jenistransaksi` AS `jenistransaksi`,`riwayatstok`.`hargasatuan` AS `hargasatuan`,`riwayatstok`.`hargadpp` AS `hargadpp`,`riwayatstok`.`jumlahppn` AS `jumlahppn`,`riwayatstok`.`jumlahdiskon` AS `jumlahdiskon`,`riwayatstok`.`subtotal` AS `subtotal`,`barang`.`namabarang` AS `namabarang`,`barang`.`kdbarang` AS `kdbarang` from (`riwayatstok` join `barang` on((`riwayatstok`.`idbarang` = `barang`.`idbarang`))) */;
+/*!50001 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_riwayatstok` AS select `riwayatstok`.`idriwayat` AS `idriwayat`,`riwayatstok`.`tglriwayat` AS `tglriwayat`,`riwayatstok`.`idtransaksi` AS `idtransaksi`,`riwayatstok`.`tgltransaksi` AS `tgltransaksi`,`riwayatstok`.`idbarang` AS `idbarang`,`riwayatstok`.`stokawal` AS `stokawal`,`riwayatstok`.`stokmasuk` AS `stokmasuk`,`riwayatstok`.`stokkeluar` AS `stokkeluar`,`riwayatstok`.`stokakhir` AS `stokakhir`,`riwayatstok`.`hargasebelumdiskon` AS `hargasebelumdiskon`,`riwayatstok`.`hargasetelahdiskon` AS `hargasetelahdiskon`,`riwayatstok`.`deskripsi` AS `deskripsi`,`riwayatstok`.`idpengguna` AS `idpengguna`,`riwayatstok`.`namapengguna` AS `namapengguna`,`riwayatstok`.`jenistransaksi` AS `jenistransaksi`,`riwayatstok`.`hargasatuan` AS `hargasatuan`,`riwayatstok`.`hargadpp` AS `hargadpp`,`riwayatstok`.`jumlahppn` AS `jumlahppn`,`riwayatstok`.`jumlahdiskon` AS `jumlahdiskon`,`riwayatstok`.`subtotal` AS `subtotal`,`riwayatstok`.`nilaihpp` AS `nilaihpp`,`barang`.`namabarang` AS `namabarang`,`barang`.`kdbarang` AS `kdbarang` from (`riwayatstok` join `barang` on((`riwayatstok`.`idbarang` = `barang`.`idbarang`))) */;
 
 /*View structure for view v_saldoawal */
 

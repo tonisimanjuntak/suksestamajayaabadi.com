@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
 use App\Models\App;
+use App\Models\Barang;
 use App\Helpers\StokFifoService;
 
 class Suratjalan extends Model
@@ -105,6 +106,7 @@ class Suratjalan extends Model
                             'jumlahppn' => $rowDetailPenjualan->jumlahppn,
                             'jumlahdiskon' => $rowDetailPenjualan->jumlahdiskon,
                             'subtotal' => $rowDetailPenjualan->subtotaljual,
+                            'nilaihpp' => Barang::getNilaiHppRataRataFifo($rowDetailPenjualan->idbarang),
                             'deskripsi' => 'Tambah data surat jalan ' . $idsuratjalan . ' dengan No. Invoice ' . $noinvoice . ' untuk konsumen ' . $namakonsumen,
                             'idpengguna' => session()->get('idpengguna'),
                             'namapengguna' => session()->get('namapengguna'),
@@ -222,6 +224,7 @@ class Suratjalan extends Model
                             'jumlahppn' => $rowDetailPenjualan->jumlahppn,
                             'jumlahdiskon' => $rowDetailPenjualan->jumlahdiskon,
                             'subtotal' => $rowDetailPenjualan->subtotaljual,
+                            'nilaihpp' => Barang::getNilaiHppRiwayatTerakhir($rowDetailPenjualan->idbarang),
                             'deskripsi' => 'Update data surat jalan No. ' . $data['idsuratjalan'] . ' dengan No. Invoice ' . $noinvoice . ' untuk konsumen ' . $namakonsumen,
                             'idpengguna' => session()->get('idpengguna'),
                             'namapengguna' => session()->get('namapengguna'),
@@ -276,6 +279,7 @@ class Suratjalan extends Model
                             'jumlahppn' => $rowDetailPenjualan->jumlahppn,
                             'jumlahdiskon' => $rowDetailPenjualan->jumlahdiskon,
                             'subtotal' => $rowDetailPenjualan->subtotaljual,
+                            'nilaihpp' => Barang::getNilaiHppRataRataFifo($rowDetailPenjualan->idbarang),
                             'deskripsi' => 'Update data surat jalan No. ' . $data['idsuratjalan'] . ' dengan No. Invoice ' . $noinvoice . ' untuk konsumen ' . $namakonsumen,
                             'idpengguna' => session()->get('idpengguna'),
                             'namapengguna' => session()->get('namapengguna'),
@@ -395,6 +399,7 @@ class Suratjalan extends Model
                             'jumlahppn' => $rowDetailPenjualan->jumlahppn,
                             'jumlahdiskon' => $rowDetailPenjualan->jumlahdiskon,
                             'subtotal' => $rowDetailPenjualan->subtotaljual,
+                            'nilaihpp' => Barang::getNilaiHppRiwayatTerakhir($rowDetailPenjualan->idbarang),
                             'deskripsi' => 'Hapus data surat jalan No Invoice. ' . $noinvoice . ' untuk konsumen ' . $namakonsumen,
                             'idpengguna' => session()->get('idpengguna'),
                             'namapengguna' => session()->get('namapengguna'),
