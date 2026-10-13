@@ -544,4 +544,81 @@ class Lapstokfifo extends Model
             return ['status' => 'error', 'message' => 'Terjadi kesalahan: ' . $e->getMessage()];
         }
     }
+
+    /**
+     * Update nilaihpp di riwayatstok:
+     * 1. Ambil dari stokfifo dengan tglmasuk <= tglriwayat kartustok (limit 1 terakhir)
+     * 2. Jika tidak ada di stokfifo atau nilaihpp = 0:
+     *    ambil dari stokfifo dengan tglmasuk > tglriwayat (tanggal terdekat)
+     * 3. Jika nilaihpp = 0 atau null:
+     *    ambil dari tabel barang.hargabeli
+     */
+    public function updateHppKartuStok($idbarang = null)
+    {
+        set_time_limit(300);
+        ini_set('memory_limit', '512M');
+
+        try {
+            DB::beginTransaction();
+
+            $params = [];
+            $whereBarang = '';
+
+            if (!empty($idbarang) && $idbarang !== '-') {
+                $whereBarang = 'WHERE rs.idbarang = ?';
+                $params[] = $idbarang;
+            }
+
+            $sql = "
+                UPDATE riwayatstok rs
+                SET rs.nilaihpp = COALESCE(
+                    NULLIF((
+                        SELECT sf.nilaihpp
+                        FROM stokfifo sf
+                        WHERE sf.idbarang = rs.idbarang
+                          AND sf.tglmasuk <= DATE(rs.tglriwayat)
+                        ORDER BY sf.tglmasuk DESC, sf.idstokfifo DESC
+                        LIMIT 1
+                    ), 0),
+                    NULLIF((
+                        SELECT sf.nilaihpp
+                        FROM stokfifo sf
+                        WHERE sf.idbarang = rs.idbarang
+                          AND sf.tglmasuk > DATE(rs.tglriwayat)
+                        ORDER BY sf.tglmasuk ASC, sf.idstokfifo ASC
+                        LIMIT 1
+                    ), 0),
+                    (
+                        SELECT b.hargabeli
+                        FROM barang b
+                        WHERE b.idbarang = rs.idbarang
+                    ),
+                    0
+                )
+                {$whereBarang}
+            ";
+
+            $affected = DB::update($sql, $params);
+
+            (new App)->riwayatAktifitas([
+                'idbarang'          => $idbarang ?? 'Semua',
+                'jumlah_diperbarui' => $affected,
+                'pesan'             => 'Pembaruan HPP kartu stok dari stok FIFO/master barang berhasil'
+            ], 'riwayatstok', 'updateHppKartuStok');
+
+            DB::commit();
+
+            return [
+                'status'  => 'success',
+                'message' => 'HPP Kartu Stok berhasil diperbarui. Sebanyak ' . number_format($affected, 0, ',', '.') . ' data riwayat stok diperbarui.'
+            ];
+
+        } catch (QueryException $e) {
+            DB::rollBack();
+            return ['status' => 'error', 'message' => 'Query error: ' . $e->getMessage()];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return ['status' => 'error', 'message' => 'Terjadi kesalahan: ' . $e->getMessage()];
+        }
+    }
 }

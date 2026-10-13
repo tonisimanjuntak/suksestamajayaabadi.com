@@ -36,6 +36,7 @@ use App\Http\Controllers\LappembelianController;
 use App\Http\Controllers\LappenjualanController;
 use App\Http\Controllers\LappenjualandetailController;
 use App\Http\Controllers\LappersediaanController;
+use App\Http\Controllers\LaphppbarangController;
 use App\Http\Controllers\KartustokbarangController;
 use App\Http\Controllers\LapstokfifoController;
 use App\Http\Controllers\LapneracasaldoController;
@@ -624,6 +625,12 @@ Route::middleware(['check.menu.access'])->group(function () {
             Route::get('lappersediaan/listdata', 'listdata')->name('lappersediaan.listdata');
         });
 
+        Route::controller(LaphppbarangController::class)->group(function () {
+            Route::get('laphppbarang', 'index');
+            Route::get('laphppbarang/cetak/{jenisCetakan}/{tglriwayat}/{idkategori}', 'cetak');
+            Route::get('laphppbarang/listdata', 'listdata')->name('laphppbarang.listdata');
+        });
+
 
         Route::controller(KartustokbarangController::class)->group(function () {
             Route::get('kartustokbarang', 'index');
@@ -638,6 +645,7 @@ Route::middleware(['check.menu.access'])->group(function () {
             Route::get('lapstokfifo/cetak/{jenisCetakan}', 'cetak');
             Route::get('lapstokfifo/listdata', 'listdata')->name('lapstokfifo.listdata');
             Route::post('lapstokfifo/reset', 'reset')->name('lapstokfifo.reset');
+            Route::post('lapstokfifo/hppkartustok', 'hppkartustok')->name('lapstokfifo.hppkartustok');
         });
 
         Route::controller(LappengeluaranController::class)->group(function () {

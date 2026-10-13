@@ -110,6 +110,9 @@
                                     <button type="button" class="btn btn-warning font-weight-bold" id="btnResetStokFifo">
                                         <i class="fas fa-sync-alt mr-1"></i> Reset Stok FIFO
                                     </button>
+                                    <button type="button" class="btn btn-info font-weight-bold ml-2" id="btnHppKartuStok">
+                                        <i class="fas fa-calculator mr-1"></i> Hpp Kartu Stok
+                                    </button>
                                 </div>
                                 @endif
                             </div>
@@ -292,6 +295,48 @@
                         error: function(xhr) {
                             $btn.prop('disabled', false).html('<i class="fas fa-sync-alt mr-1"></i> Reset Stok FIFO');
                             var msg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Terjadi kesalahan saat mereset stok FIFO.';
+                            swal("Gagal", msg, "error");
+                        }
+                    });
+                }
+            });
+        });
+
+        $('#btnHppKartuStok').click(function() {
+            var idbarang = $('#idbarang').val() || '';
+            var konfirmasiPesan = idbarang 
+                ? "Apakah anda yakin akan memperbarui HPP kartu stok untuk barang yang dipilih?" 
+                : "Apakah anda yakin akan memperbarui HPP kartu stok untuk semua barang?";
+
+            swal({
+                title: "Konfirmasi",
+                text: konfirmasiPesan,
+                icon: "warning",
+                buttons: ["Batal", "Ya"],
+                dangerMode: true,
+            }).then((willProcess) => {
+                if (willProcess) {
+                    var $btn = $('#btnHppKartuStok');
+                    $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Sedang Memproses HPP...');
+
+                    $.ajax({
+                        url: "{{ route('lapstokfifo.hppkartustok') }}",
+                        type: 'POST',
+                        data: {
+                            _token: "{{ csrf_token() }}",
+                            idbarang: idbarang
+                        },
+                        success: function(response) {
+                            $btn.prop('disabled', false).html('<i class="fas fa-calculator mr-1"></i> Hpp Kartu Stok');
+                            if (response.status === 'success') {
+                                swal("Berhasil", response.message, "success");
+                            } else {
+                                swal("Gagal", response.message, "error");
+                            }
+                        },
+                        error: function(xhr) {
+                            $btn.prop('disabled', false).html('<i class="fas fa-calculator mr-1"></i> Hpp Kartu Stok');
+                            var msg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Terjadi kesalahan saat memperbarui HPP kartu stok.';
                             swal("Gagal", msg, "error");
                         }
                     });

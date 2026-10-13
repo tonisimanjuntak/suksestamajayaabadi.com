@@ -182,4 +182,18 @@ class LapstokfifoController extends Controller
         $result = $this->model->resetStokFifo();
         return response()->json($result);
     }
+
+    public function hppkartustok(Request $request)
+    {
+        if (session('idpengguna') !== '9999999999') {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Anda tidak memiliki hak akses untuk memperbarui HPP kartu stok.',
+            ], 403);
+        }
+
+        $idbarang = $request->input('idbarang');
+        $result = $this->model->updateHppKartuStok($idbarang);
+        return response()->json($result);
+    }
 }

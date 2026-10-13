@@ -49,6 +49,7 @@ Bukti implementasi terverifikasi dari routes di `routes/web.php` dan 60 controll
    - Perhitungan Bonus Penjualan & Bonus Penagihan (`BonussalesController`).
 8. **Pelaporan & Cetak Dokumen (TCPDF)**:
    - 19+ modul laporan operasional dan keuangan (Buku Besar, Neraca Saldo, Laba Rugi, Rekap Hutang/Piutang, Persediaan, Pembelian, Penjualan).
+   - Laporan HPP Barang (`LaphppbarangController`, `Laphppbarang`, menu `MB06`): Kolom Kode Barang, Nama Barang, Kuantitas (stok akhir), Nilai Total Biaya (stok akhir * nilaihpp), Biaya Rata-rata (nilaihpp) dari baris riwayatstok terakhir <= tanggal laporan, filter kategori, ekspor Excel dan cetak PDF via TCPDF.
 9. **Audit Trail**:
    - Pencatatan seluruh operasi data pengguna ke tabel `riwayataktifitas` (`App::riwayatAktifitas`).
 
