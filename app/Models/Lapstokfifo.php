@@ -175,12 +175,13 @@ class Lapstokfifo extends Model
                         'idtransaksi'    => $rj->idreturpenjualan,
                         'idbarang'       => $d->idbarang,
                         'jumlah'         => (float)$d->jumlahretur,
-                        'hargasatuan'    => (float)$d->hargaretur,
+                        'hargasatuan'    => 0,
                         'hargadpp'       => 0,
                         'jumlahppn'      => 0,
                         'jumlahdiskon'   => 0,
-                        'nilaihpp'       => (float)$d->hargaretur,
+                        'nilaihpp'       => 0,
                         'keterangan'     => 'Retur Penjualan ' . $rj->idreturpenjualan,
+                        'needs_pricing'  => true,
                     ];
                 }
             }
@@ -205,7 +206,7 @@ class Lapstokfifo extends Model
                                 'idbarang'       => $d->idbarang,
                                 'jumlah'         => (float)$d->stockopname,
                                 'hargasatuan'    => $hpp,
-                                'hargadpp'       => 0,
+                                'hargadpp'       => $hpp,
                                 'jumlahppn'      => 0,
                                 'jumlahdiskon'   => 0,
                                 'nilaihpp'       => $hpp,
@@ -215,8 +216,6 @@ class Lapstokfifo extends Model
                     } else {
                         $selisih = (float)$d->stockopname - (float)$d->stocksystem;
                         if ($selisih > 0) {
-                            $b = $barangList->get($d->idbarang);
-                            $hpp = $b ? ((float)$b->hpp > 0 ? (float)$b->hpp : (float)$b->hargabeli) : 0;
                             $events[] = [
                                 'tanggal'        => $tgl,
                                 'tipe'           => 'MASUK',
@@ -224,12 +223,13 @@ class Lapstokfifo extends Model
                                 'idtransaksi'    => $so->idstockopname,
                                 'idbarang'       => $d->idbarang,
                                 'jumlah'         => $selisih,
-                                'hargasatuan'    => $hpp,
+                                'hargasatuan'    => 0,
                                 'hargadpp'       => 0,
                                 'jumlahppn'      => 0,
                                 'jumlahdiskon'   => 0,
-                                'nilaihpp'       => $hpp,
+                                'nilaihpp'       => 0,
                                 'keterangan'     => 'Stok Opname (Surplus) ' . $so->idstockopname,
+                                'needs_pricing'  => true,
                             ];
                         } elseif ($selisih < 0) {
                             $events[] = [
@@ -365,11 +365,28 @@ class Lapstokfifo extends Model
             $stokFifoInserts = [];
             $stokFifoDetailInserts = [];
             $activeLayers = [];
+            $lastLayerPerBarang = [];
+            $lastPembelianLayerPerBarang = [];
 
             foreach ($events as $ev) {
                 $idbarang = $ev['idbarang'];
 
                 if ($ev['tipe'] === 'MASUK') {
+                    if (!empty($ev['needs_pricing'])) {
+                        // Ambil dari layer pembelian terakhir atau layer fifo terakhir
+                        $last = $lastPembelianLayerPerBarang[$idbarang] ?? $lastLayerPerBarang[$idbarang] ?? null;
+                        if ($last && (float)$last['nilaihpp'] > 0) {
+                            $ev['hargasatuan'] = (float)$last['hargasatuan'];
+                            $ev['hargadpp']    = (float)$last['hargadpp'] > 0 ? (float)$last['hargadpp'] : (float)$last['nilaihpp'];
+                            $ev['nilaihpp']    = (float)$last['nilaihpp'];
+                        } else {
+                            $b = $barangList->get($idbarang);
+                            $ev['hargasatuan'] = $b ? (float)$b->hargabeli : 0;
+                            $ev['hargadpp']    = $ev['hargasatuan'];
+                            $ev['nilaihpp']    = ($b && (float)$b->hpp > 0) ? (float)$b->hpp : $ev['hargasatuan'];
+                        }
+                    }
+
                     $idstokfifo = $generateId($ev['tanggal']);
                     $layer = [
                         'idstokfifo'     => $idstokfifo,
@@ -395,6 +412,22 @@ class Lapstokfifo extends Model
                         'nilaihpp'   => $ev['nilaihpp'],
                         'tglmasuk'   => $ev['tanggal'],
                     ];
+
+                    // Catat riwayat layer terakhir per barang
+                    if ($ev['jenistransaksi'] === 'Pembelian' && (float)$ev['nilaihpp'] > 0) {
+                        $lastPembelianLayerPerBarang[$idbarang] = [
+                            'hargasatuan' => $ev['hargasatuan'],
+                            'hargadpp'    => $ev['hargadpp'],
+                            'nilaihpp'    => $ev['nilaihpp'],
+                        ];
+                    }
+                    if ((float)$ev['nilaihpp'] > 0) {
+                        $lastLayerPerBarang[$idbarang] = [
+                            'hargasatuan' => $ev['hargasatuan'],
+                            'hargadpp'    => $ev['hargadpp'],
+                            'nilaihpp'    => $ev['nilaihpp'],
+                        ];
+                    }
                 } else {
                     // KELUAR
                     $sisaKebutuhan = $ev['jumlah'];
@@ -434,8 +467,17 @@ class Lapstokfifo extends Model
 
                     // Jika stok layer habis / kurang dari kebutuhan keluar, buat penyesuaian otomatis
                     if ($sisaKebutuhan > 0) {
-                        $b = $barangList->get($idbarang);
-                        $fallbackHpp = $b ? ((float)$b->hpp > 0 ? (float)$b->hpp : (float)$b->hargabeli) : 0;
+                        $last = $lastPembelianLayerPerBarang[$idbarang] ?? $lastLayerPerBarang[$idbarang] ?? null;
+                        if ($last && (float)$last['nilaihpp'] > 0) {
+                            $fallbackHarga = (float)$last['hargasatuan'];
+                            $fallbackDpp   = (float)$last['hargadpp'] > 0 ? (float)$last['hargadpp'] : (float)$last['nilaihpp'];
+                            $fallbackHpp   = (float)$last['nilaihpp'];
+                        } else {
+                            $b = $barangList->get($idbarang);
+                            $fallbackHarga = $b ? (float)$b->hargabeli : 0;
+                            $fallbackDpp   = $fallbackHarga;
+                            $fallbackHpp   = ($b && (float)$b->hpp > 0) ? (float)$b->hpp : $fallbackHarga;
+                        }
                         $adjId = $generateId($ev['tanggal']);
 
                         $adjLayer = [
@@ -445,8 +487,8 @@ class Lapstokfifo extends Model
                             'idbarang'       => $idbarang,
                             'jumlahmasuk'    => $sisaKebutuhan,
                             'jumlahsisa'     => 0,
-                            'hargasatuan'    => $fallbackHpp,
-                            'hargadpp'       => 0,
+                            'hargasatuan'    => $fallbackHarga,
+                            'hargadpp'       => $fallbackDpp,
                             'jumlahppn'      => 0,
                             'jumlahdiskon'   => 0,
                             'nilaihpp'       => $fallbackHpp,
@@ -486,7 +528,7 @@ class Lapstokfifo extends Model
                             'jumlahmasuk'    => (float)$ks->jlhbarangtujuan,
                             'jumlahsisa'     => (float)$ks->jlhbarangtujuan,
                             'hargasatuan'    => $hppTujuan,
-                            'hargadpp'       => 0,
+                            'hargadpp'       => $hppTujuan,
                             'jumlahppn'      => 0,
                             'jumlahdiskon'   => 0,
                             'nilaihpp'       => $hppTujuan,
@@ -502,6 +544,14 @@ class Lapstokfifo extends Model
                             'nilaihpp'   => $hppTujuan,
                             'tglmasuk'   => $ks->tglkonversi,
                         ];
+
+                        if ($hppTujuan > 0) {
+                            $lastLayerPerBarang[$ks->idbarangtujuan] = [
+                                'hargasatuan' => $hppTujuan,
+                                'hargadpp'    => $hppTujuan,
+                                'nilaihpp'    => $hppTujuan,
+                            ];
+                        }
                     }
                 }
             }

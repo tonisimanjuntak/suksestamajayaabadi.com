@@ -150,3 +150,8 @@
 [2026-10-13] [update] Update semua transaksi insert nilai hpp ke ke riwayat stok untuk mendapatkan nilai hpp di riwayat stok
 [2026-10-13] [feature] Tambah laporan hpp untuk melihat nilai hpp barang
 [2026-10-13] [update] Update home, agar lebih informtif
+
+[2026-10-14] [bugfix] Stok FIFO Service - Fix perhitungan HPP otomatis dari stokfifo terakhir atau master barang
+[2026-10-14] [update] Laporan Stok FIFO - Perbaikan perhitungan layer stok dan optimasi query
+[2026-10-14] [bugfix] Retur Penjualan & Stock Opname - Fix pencatatan HPP dengan auto-pricing
+[2026-10-14] [feature] Skill addUpdateLog - Hybrid approach untuk catat committed dan uncommitted changes

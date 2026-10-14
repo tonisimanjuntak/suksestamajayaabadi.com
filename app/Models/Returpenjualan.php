@@ -47,6 +47,36 @@ class Returpenjualan extends Model
 
             $stokFifo = new StokFifoService();
             foreach ($dataDetail as $detail) {
+                // Ambil harga dari layer FIFO terakhir
+                $lastLayer = DB::table('stokfifo')
+                    ->where('idbarang', $detail['idbarang'])
+                    ->where('jenistransaksi', 'Pembelian')
+                    ->where('nilaihpp', '>', 0)
+                    ->orderBy('tglmasuk', 'desc')
+                    ->orderBy('idstokfifo', 'desc')
+                    ->first();
+
+                if (!$lastLayer) {
+                    $lastLayer = DB::table('stokfifo')
+                        ->where('idbarang', $detail['idbarang'])
+                        ->where('nilaihpp', '>', 0)
+                        ->orderBy('tglmasuk', 'desc')
+                        ->orderBy('idstokfifo', 'desc')
+                        ->first();
+                }
+
+                $hargaBeli = $lastLayer ? (float) $lastLayer->hargasatuan : 0;
+                $hargaDpp  = $lastLayer ? (float) $lastLayer->hargadpp : 0;
+                $nilaiHpp  = $lastLayer ? (float) $lastLayer->nilaihpp : 0;
+
+                // Fallback ke master barang jika masih nol
+                if ($nilaiHpp <= 0) {
+                    $rowBarang = DB::table('barang')->where('idbarang', $detail['idbarang'])->first();
+                    $hargaBeli = $rowBarang ? (float) $rowBarang->hargabeli : 0;
+                    $hargaDpp  = $hargaBeli;
+                    $nilaiHpp  = ($rowBarang && $rowBarang->hpp > 0) ? (float) $rowBarang->hpp : $hargaBeli;
+                }
+
                 // FIFO Masuk
                 $idstokfifo = DB::select('SELECT create_idstokfifo() AS id')[0]->id;
                 $stokFifo->barangMasuk(
@@ -56,8 +86,9 @@ class Returpenjualan extends Model
                     $data['tglretur'],
                     'Retur Penjualan',
                     $detail['jumlahretur'],
-                    $detail['hargaretur'],
-                    0, 0, 0,
+                    $hargaBeli,
+                    $hargaDpp > 0 ? $hargaDpp : $nilaiHpp,
+                    0, 0,
                     'Retur Penjualan'
                 );
 

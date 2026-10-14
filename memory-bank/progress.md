@@ -118,6 +118,7 @@ Berdasarkan riwayat pemeliharaan pada `public/logupdate.txt` dan git log (penguj
 ## Yang Belum Diuji
 
 - Integritas layer `stokfifo` pada skenario pembatalan transaksi penjualan multi-layer yang stoknya sudah digunakan transaksi berikutnya.
+- Valuasi layer `stokfifo` dan `stokfifodetail` via reset kronologis serta sinkronisasi harga `Retur Penjualan` dan `Stok Opname` ke layer sebelumnya / master barang (Selesai diuji 2026-10-09).
 - Nilai HPP pada laporan laba rugi dari transaksi baru pasca-commit `3d23966`.
 - Ketahanan transaksi konkuren multi-user di kasir/admin penjualan.
 - Regresi endpoint jika PHP versi dinaikkan ke PHP 8.3+.

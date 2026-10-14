@@ -13,6 +13,32 @@ class StokFifoService
     {
         // nilaihpp = hargadpp (cost after discount & PPN)
         $nilaihpp = $hargadpp;
+
+        // Jika nilaihpp <= 0, ambil nilaihpp terakhir dari stokfifo atau dari barang
+        if (empty($nilaihpp) || $nilaihpp <= 0) {
+            $lastHpp = DB::table('stokfifo')
+                ->where('idbarang', $idbarang)
+                ->where('nilaihpp', '>', 0)
+                ->orderBy('tglmasuk', 'desc')
+                ->orderBy('idstokfifo', 'desc')
+                ->value('nilaihpp');
+
+            if ($lastHpp && $lastHpp > 0) {
+                $nilaihpp = (float) $lastHpp;
+            } elseif (!empty($hargasatuan) && $hargasatuan > 0) {
+                $nilaihpp = (float) $hargasatuan;
+            } else {
+                $barang = DB::table('barang')->where('idbarang', $idbarang)->first();
+                if ($barang) {
+                    $nilaihpp = ($barang->hpp > 0) ? (float) $barang->hpp : (float) $barang->hargabeli;
+                }
+            }
+
+            if (empty($hargadpp) || $hargadpp <= 0) {
+                $hargadpp = $nilaihpp;
+            }
+        }
+
         $arrData = [
             'idstokfifo'     => $idstokfifo,
             'idbarang'       => $idbarang,

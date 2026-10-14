@@ -24,7 +24,9 @@ Tanggal: 2026-10-09
 - `resources/views/laphppbarang/index.blade.php`: View antarmuka DataTables Laporan HPP Barang.
 - `resources/views/laphppbarang/cetak.blade.php`: Template cetak PDF (TCPDF) & Excel Laporan HPP Barang.
 - `routes/web.php`: Pendaftaran routing `laphppbarang`.
-- `app/Models/Lapstokfifo.php`: Method `resetStokFifo()` untuk kalkulasi ulang layer FIFO kronologis, serta method `updateHppKartuStok($idbarang)` dengan logika fallback bertingkat (stokfifo <= tglriwayat -> stokfifo > tglriwayat terdekat -> barang.hargabeli).
+- `app/Models/Returpenjualan.php`: Penentuan `hargasatuan`, `hargadpp`, dan `nilaihpp` saat barang masuk FIFO mengambil layer terakhir `stokfifo` (fallback `barang.hargabeli`).
+- `app/Models/Stockopname.php`: Sinkronisasi penentuan `hargadpp` dan `nilaihpp` saat surplus barang masuk FIFO dari layer terakhir (fallback `barang.hargabeli`).
+- `app/Models/Lapstokfifo.php`: Method `resetStokFifo()` untuk kalkulasi ulang layer FIFO kronologis dengan kalkulasi PPN proporsional, serta pricing dinamis untuk Retur Penjualan dan Stok Opname Surplus berbasis layer sebelumnya.
 - `app/Http/Controllers/LapstokfifoController.php`: Method `reset()` dan `hppkartustok()`, proteksi session `idpengguna == '9999999999'`.
 - `routes/web.php`: Route `POST lapstokfifo/reset` dan `POST lapstokfifo/hppkartustok`.
 - `resources/views/lapstokfifo/index.blade.php`: Tombol Reset Stok FIFO & Tombol Hpp Kartu Stok di bawah datatable + konfirmasi SweetAlert & AJAX handler.

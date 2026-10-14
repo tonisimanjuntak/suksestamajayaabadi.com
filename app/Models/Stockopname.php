@@ -70,12 +70,14 @@ class Stockopname extends Model
                     }
 
                     $hargaBeli = $lastLayer ? (float) $lastLayer->hargasatuan : 0;
+                    $hargaDpp  = $lastLayer ? (float) $lastLayer->hargadpp : 0;
                     $nilaiHpp  = $lastLayer ? (float) $lastLayer->nilaihpp : 0;
 
                     // Fallback ke master barang jika belum ada riwayat pembelian di stokfifo
                     if ($nilaiHpp <= 0) {
                         $rowBarang = DB::table('barang')->where('idbarang', $detail['idbarang'])->first();
                         $hargaBeli = $rowBarang ? (float) $rowBarang->hargabeli : 0;
+                        $hargaDpp  = $hargaBeli;
                         $nilaiHpp  = ($rowBarang && $rowBarang->hpp > 0) ? (float) $rowBarang->hpp : $hargaBeli;
                     }
 
@@ -88,7 +90,7 @@ class Stockopname extends Model
                         'Stok Opname',
                         $selisih,
                         $hargaBeli,
-                        $nilaiHpp,
+                        $hargaDpp > 0 ? $hargaDpp : $nilaiHpp,
                         0,
                         0,
                         'Stok Opname (Surplus)'
