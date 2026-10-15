@@ -1,10 +1,10 @@
 # Active Context
-Tanggal: 2026-10-09
+Tanggal: 2026-10-15
 
 ## Fokus Saat Ini
-1. **Modernisasi Tampilan Dashboard (Home)**: Pembaruan antarmuka Home agar lebih informatif, modern, dan ringan. Dilengkapi metrik KPI operasional (penjualan, pembelian, piutang, hutang), visualisasi tren tahunan & donat cara bayar (Chart.js 2.9.4), widget pemantauan stok minimum, piutang jatuh tempo, top konsumen, serta live feed riwayat aktivitas yang optimal (asinkron AJAX & background polling).
-2. **Penyusunan Dokumentasi Memory Bank**: Membangun dokumentasi arsitektur, teknis, dan bisnis sistem secara menyeluruh di dalam direktori `memory-bank/` (`projectbrief.md`, `techContext.md`, `systemPatterns.md`, dan `activeContext.md`) untuk mendukung pemeliharaan berkelanjutan.
-3. **Stabilisasi Fitur FIFO & HPP**: Memastikan integrasi perhitungan HPP barang menggunakan metode FIFO (`StokFifoService`) dan skema database `stokfifo` berjalan selaras di seluruh modul transaksi (Penjualan, Pembelian/Penerimaan, Retur, Konversi Stok, dan Stock Opname).
+1. **Multi-Dashboard Pengguna**: Pengalihan otomatis halaman dashboard berdasarkan konfigurasi pengguna (`halamandashboard` = 'Dashboard Admin', 'Dashboard Sales', 'Dashboard Kosong').
+2. **Dashboard Sales**: Halaman khusus sales (`homesales.blade.php`) dengan informasi Top Penjualan Sales (Bulan Ini, Bulan Kemarin, Tahun Ini) dan Top 5 Piutang Lewat Jatuh Tempo berbasis persentase, serta 5 transaksi penagihan terbaru tanpa kolom status dan link menu cepat.
+3. **Dokumentasi & Log Update**: Pembaruan berkala riwayat update di `public/logupdate.txt` dan sinkronisasi berkas `memory-bank/`.
 
 ## Perubahan Terbaru (dari git log)
 - `a81b099` (2026-10-08): *Update db.sql* — Pembaruan dump skema database MySQL terkait tabel dan fungsi transaksi.

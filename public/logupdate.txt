@@ -155,3 +155,7 @@
 [2026-10-14] [update] Laporan Stok FIFO - Perbaikan perhitungan layer stok dan optimasi query
 [2026-10-14] [bugfix] Retur Penjualan & Stock Opname - Fix pencatatan HPP dengan auto-pricing
 [2026-10-14] [feature] Skill addUpdateLog - Hybrid approach untuk catat committed dan uncommitted changes
+
+[2026-10-15] [feature] Multi-Dashboard - Pengalihan halaman home otomatis (Dashboard Admin, Dashboard Sales, Dashboard Kosong) sesuai preferensi pengguna
+[2026-10-15] [customize] Master Pengguna - Tambah pilihan konfigurasi Halaman Dashboard pada form pengguna dan simpan ke session login
+[2026-10-15] [feature] Dashboard Sales - Tampilan home khusus sales dengan informasi Top Penjualan Sales, Top 5 Piutang Jatuh Tempo (bobot persentase), dan Penagihan Terbaru

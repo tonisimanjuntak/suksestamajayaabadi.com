@@ -23,7 +23,17 @@ class HomeController extends Controller
         // dd(session('user_menus'));
 
         $data['menu'] = 'home';
-        return view('home', $data);
+
+        $halamandashboard = session('halamandashboard', 'Dashboard Kosong');
+
+        switch ($halamandashboard) {
+            case 'Dashboard Admin':
+                return view('home', $data);
+            case 'Dashboard Sales':
+                return view('homesales', $data);
+            default:
+                return view('homekosong', $data);
+        }
     }
 
     public function lihatRiwayatAktifitas()
@@ -202,6 +212,128 @@ class HomeController extends Controller
             'piutangJatuhTempo' => $piutangJatuhTempo,
             'topKonsumen'       => $topKonsumen,
         ]);
+    }
+
+    public function getSalesData(Request $request)
+    {
+        $penagihanTerbaru = \Illuminate\Support\Facades\DB::table('v_penagihan')
+            ->orderBy('tglpenagihan', 'desc')
+            ->limit(5)
+            ->get();
+
+        $namaBulanIndo = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret',
+            4 => 'April', 5 => 'Mei', 6 => 'Juni',
+            7 => 'Juli', 8 => 'Agustus', 9 => 'September',
+            10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+
+        $now = \Carbon\Carbon::now();
+        $bulanIni = (int) $now->format('m');
+        $tahunIni = (int) $now->format('Y');
+
+        $subMonth = (clone $now)->subMonth();
+        $bulanKemarin = (int) $subMonth->format('m');
+        $tahunKemarin = (int) $subMonth->format('Y');
+
+        $topSalesBulanIni = $this->getTopSalesBobot($bulanIni, $tahunIni, 5);
+        $topSalesBulanKemarin = $this->getTopSalesBobot($bulanKemarin, $tahunKemarin, 5);
+        $topSalesTahunIni = $this->getTopSalesBobot(null, $tahunIni, 5);
+
+        $topKonsumenJatuhTempo = $this->getTopKonsumenPiutangJatuhTempo(5);
+
+        return response()->json([
+            'penagihanTerbaru'      => $penagihanTerbaru,
+            'topSalesBulanIni'      => $topSalesBulanIni,
+            'topSalesBulanKemarin'  => $topSalesBulanKemarin,
+            'topSalesTahunIni'      => $topSalesTahunIni,
+            'topKonsumenJatuhTempo' => $topKonsumenJatuhTempo,
+            'periodeBulanIni'       => $namaBulanIndo[$bulanIni] . ' ' . $tahunIni,
+            'periodeBulanKemarin'   => $namaBulanIndo[$bulanKemarin] . ' ' . $tahunKemarin,
+            'periodeTahunIni'       => 'Tahun ' . $tahunIni,
+        ]);
+    }
+
+    private function getTopKonsumenPiutangJatuhTempo($limit = 5)
+    {
+        $totalOverdue = (float) \Illuminate\Support\Facades\DB::table('piutang')
+            ->whereNull('tgllunas')
+            ->whereRaw('(totaldebet - totalkredit) > 0')
+            ->whereRaw('tgljatuhtempo < CURDATE()')
+            ->selectRaw('SUM(totaldebet - totalkredit) as total')
+            ->value('total');
+
+        $items = \Illuminate\Support\Facades\DB::table('piutang as p')
+            ->leftJoin('konsumen as k', 'p.idkonsumen', '=', 'k.idkonsumen')
+            ->whereNull('p.tgllunas')
+            ->whereRaw('(p.totaldebet - p.totalkredit) > 0')
+            ->whereRaw('p.tgljatuhtempo < CURDATE()')
+            ->selectRaw("
+                p.idkonsumen,
+                COALESCE(k.namakonsumen, p.idkonsumen) as namakonsumen,
+                COALESCE(SUM(p.totaldebet - p.totalkredit), 0) as sisa_piutang,
+                COUNT(*) as jml_nota
+            ")
+            ->groupBy('p.idkonsumen', 'k.namakonsumen')
+            ->orderByDesc('sisa_piutang')
+            ->limit($limit)
+            ->get();
+
+        return $items->map(function ($item, $index) use ($totalOverdue) {
+            $persen = $totalOverdue > 0 ? round(($item->sisa_piutang / $totalOverdue) * 100, 1) : 0;
+            return [
+                'ranking'          => $index + 1,
+                'idkonsumen'       => $item->idkonsumen,
+                'namakonsumen'     => $item->namakonsumen,
+                'persen'           => $persen,
+                'persen_label'     => number_format($persen, 1, ',', '.') . '%',
+                'jml_nota'         => $item->jml_nota,
+            ];
+        });
+    }
+
+    private function getTopSalesBobot($bulan = null, $tahun = null, $limit = 5)
+    {
+        $queryTotal = \Illuminate\Support\Facades\DB::table('v_penjualan');
+        if ($tahun) {
+            $queryTotal->whereYear('tglinvoice', $tahun);
+        }
+        if ($bulan) {
+            $queryTotal->whereMonth('tglinvoice', $bulan);
+        }
+        $grandTotal = (float) $queryTotal->sum('totalinvoice');
+
+        $query = \Illuminate\Support\Facades\DB::table('v_penjualan')
+            ->selectRaw("
+                idsales,
+                COALESCE(namasales, 'Tanpa Sales') as namasales,
+                COALESCE(SUM(totalinvoice), 0) as total,
+                COUNT(*) as jumlah_transaksi
+            ");
+
+        if ($tahun) {
+            $query->whereYear('tglinvoice', $tahun);
+        }
+        if ($bulan) {
+            $query->whereMonth('tglinvoice', $bulan);
+        }
+
+        $sales = $query->groupBy('idsales', 'namasales')
+            ->orderByDesc('total')
+            ->limit($limit)
+            ->get();
+
+        return $sales->map(function ($item, $index) use ($grandTotal) {
+            $persen = $grandTotal > 0 ? round(($item->total / $grandTotal) * 100, 1) : 0;
+            return [
+                'ranking'          => $index + 1,
+                'idsales'          => $item->idsales,
+                'namasales'        => $item->namasales,
+                'persen'           => $persen,
+                'persen_label'     => number_format($persen, 1, ',', '.') . '%',
+                'jumlah_transaksi' => $item->jumlah_transaksi,
+            ];
+        });
     }
 
     public function loadRiwayatAktifitas(Request $request)

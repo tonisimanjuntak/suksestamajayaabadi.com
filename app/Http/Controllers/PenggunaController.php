@@ -67,7 +67,7 @@ class PenggunaController extends Controller
     public function listdata(Request $request)
     {
         // Query dasar
-        $query = Pengguna::select(['idpengguna', 'namapengguna', 'namaotorisasi', 'lastlogin', 'statusaktif', 'jeniskelamin', 'notelppengguna', 'emailpengguna', 'fotopengguna', 'username']);
+        $query = Pengguna::select(['idpengguna', 'namapengguna', 'namaotorisasi', 'lastlogin', 'statusaktif', 'jeniskelamin', 'notelppengguna', 'emailpengguna', 'fotopengguna', 'username', 'halamandashboard']);
 
         $query->where('idpengguna', '!=', '9999999999');
 
@@ -183,6 +183,7 @@ class PenggunaController extends Controller
         $inserted_date = date('Y-m-d H:i:s');
         $updated_date = date('Y-m-d H:i:s');
         $statusaktif = $request->get('statusaktif');
+        $halamandashboard = $request->get('halamandashboard', 'Dashboard Kosong');
 
         $uploads = Uploads::startUpload('uploads/pengguna', $fotopengguna, $fotopengguna_lama, 200);
         if ($uploads['status'] == 'success') {
@@ -212,6 +213,7 @@ class PenggunaController extends Controller
                 'username' => $username,
                 'password' => bcrypt($password),
                 'idotorisasi' => $idotorisasi,
+                'halamandashboard' => $halamandashboard,
                 'inserted_date' => $inserted_date,
                 'updated_date' => $updated_date,
                 'statusaktif' => 'Aktif',
@@ -236,6 +238,7 @@ class PenggunaController extends Controller
                     'username' => $username,
                     'password' => bcrypt($password),
                     'idotorisasi' => $idotorisasi,
+                    'halamandashboard' => $halamandashboard,
                     'updated_date' => $updated_date,
                     'statusaktif' => $statusaktif,
                 );
@@ -249,6 +252,7 @@ class PenggunaController extends Controller
                     'fotopengguna' => $file_name,
                     'username' => $username,
                     'idotorisasi' => $idotorisasi,
+                    'halamandashboard' => $halamandashboard,
                     'updated_date' => $updated_date,
                     'statusaktif' => $statusaktif,
                 );

@@ -82,6 +82,16 @@
                                     </div>
                                     <div class="col-md-6 required">
                                         <div class="form-group">
+                                            <label for="halamandashboard">Halaman Dashboard</label>
+                                            <select name="halamandashboard" id="halamandashboard" class="form-control select2">
+                                                <option value="Dashboard Admin">Dashboard Admin</option>
+                                                <option value="Dashboard Sales">Dashboard Sales</option>
+                                                <option value="Dashboard Kosong" selected>Dashboard Kosong</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 required">
+                                        <div class="form-group">
                                             <label for="username">Username</label>
                                             <input type="text" name="username" id="username" class="form-control"
                                                 placeholder="Username">
@@ -187,6 +197,9 @@
 
                     addSelectOption('idotorisasi', response['idotorisasi'], response['namaotorisasi']);
                     $('#idotorisasi').val(response['idotorisasi']).trigger('change');
+                    if (response['halamandashboard']) {
+                        $('#halamandashboard').val(response['halamandashboard']).trigger('change');
+                    }
                     $('#fotopengguna_lama').val(response['fotopengguna']);
                     console.log("src", "{{ url('uploads/pengguna') }}" + "/" + response['fotopengguna']);
                     $('#imgProfil').attr("src", "{{ url('uploads/pengguna') }}" + "/" + response['fotopengguna']);
@@ -243,6 +256,13 @@
                         validators: {
                             notEmpty: {
                                 message: 'nama otorisasi tidak boleh kosong'
+                            },
+                        }
+                    },
+                    halamandashboard: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Halaman dashboard tidak boleh kosong'
                             },
                         }
                     },

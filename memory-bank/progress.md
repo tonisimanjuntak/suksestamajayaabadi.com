@@ -134,4 +134,4 @@ Berdasarkan riwayat pemeliharaan pada `public/logupdate.txt` dan git log (penguj
 | **2026-05** | Penambahan Satuan Barang, Penyesuaian Stok Cepat, Konversi Stok Satuan, dan Cetakan Buku Piutang. |
 | **2026-07** | Modul Nota & Laporan Retur Penjualan, validasi penguncian Surat Jalan, dan log notifikasi update. |
 | **2026-09** | Penerapan PPN Proporsional per baris dan pembuatan tabel layer persediaan `stokfifo`. |
-| **2026-10** | Implementasi kalkulasi HPP otomatis pada `StokFifoService` dan penyusunan dokumentasi Memory Bank. |
+| **2026-10** | Implementasi kalkulasi HPP otomatis pada `StokFifoService`, dokumentasi Memory Bank, dan Multi-Dashboard Pengguna (Admin, Sales, Kosong). |

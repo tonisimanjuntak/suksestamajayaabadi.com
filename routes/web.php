@@ -85,6 +85,7 @@ Route::controller(HomeController::class)->group(function () {
     Route::get('home/getInfoBox', 'getInfoBox');
     Route::get('home/getInfoGrafikPenjualan', 'getInfoGrafikPenjualan');    
     Route::get('home/getWidgetData', 'getWidgetData');
+    Route::get('home/getSalesData', 'getSalesData');
     Route::get('home/loadRiwayatAktifitas', 'loadRiwayatAktifitas');    
     Route::get('home/listdatariwayataktifitas', 'listdatariwayataktifitas')->name('home.listdatariwayataktifitas');
     Route::get('home/cetakriwayataktifitas/{tglawal}/{tglakhir}/{idpengguna}', 'cetakriwayataktifitas');            

@@ -41,6 +41,7 @@ class LoginController extends Controller
             Session::put('namapengguna', $user->namapengguna);
             Session::put('idotorisasi', $user->idotorisasi);
             Session::put('username', $user->username);
+            Session::put('halamandashboard', $user->halamandashboard ?? 'Dashboard Kosong');
 
             if (!empty($user->fotopengguna)) {
                 $fotopengguna = asset('uploads/pengguna/' . $user->fotopengguna);
