@@ -305,6 +305,7 @@ class Pembelianpenerimaan extends Model
 
             /*
                 FIFO (Hapus Layer)
+                (tidak menggunakan StokFifoService karena harus dicek dulu apakah ada yang keluar dari layer ini atau tidak)
             */
             $rsStokFifo = DB::table('stokfifo')
                 ->where('idtransaksi', $idpembelian)

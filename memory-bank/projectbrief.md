@@ -125,6 +125,31 @@ Perusahaan distribusi memerlukan sistem terpadu untuk mengelola:
 7. **Apakah ada kebutuhan API untuk integrasi dengan sistem lain?**
    Tidak ada kebutuhan integrasi API eksternal.
 
+## Transaksi yang Mempengaruhi Stok
+
+### Pengaturan Khusus Penjualan: `stok_penjualan_dari_surat_jalan = 1`
+Sistem ini beroperasi dengan opsi setting `stok_penjualan_dari_surat_jalan = 1`.
+- **Transaksi Penjualan (Invoice)**: **TIDAK** memotong stok barang maupun layer FIFO.
+- **Transaksi Surat Jalan**: **MEMOTONG** stok barang fisik (`riwayatstok`) dan mengonsumsi layer FIFO (`stokfifodetail`) saat surat jalan disimpan/dikeluarkan. Jika surat jalan dihapus/dibatalkan, stok dan layer FIFO dikembalikan.
+
+### 1. Transaksi Penambahan Stok (Barang Masuk)
+| Transaksi | Modul / Model | Dampak `riwayatstok` | Dampak `stokfifo` (FIFO) | Keterangan |
+|-----------|---------------|----------------------|--------------------------|------------|
+| **Penerimaan Pembelian** | `Pembelianpenerimaan` | `stokmasuk > 0`, jenis `'Pembelian'` | `barangMasuk()`, jenis `'Pembelian'` | Menambah stok fisik dan membentuk layer HPP FIFO baru dari supplier. |
+| **Retur Penjualan** | `Returpenjualan` | `stokmasuk > 0`, jenis `'Retur Penjualan'` | `barangMasuk()`, jenis `'Retur Penjualan'` | Barang dikembalikan konsumen masuk kembali ke stok. |
+| **Konversi Stok (Tujuan)** | `Konversistok` | `stokmasuk > 0`, jenis `'Konversi Stok'` | `barangMasuk()`, jenis `'Konversi Stok'` | Menambah stok barang hasil konversi/repacking. |
+| **Stock Opname (Surplus)** | `Stockopname` | `stokmasuk > 0`, jenis `'Stock Opname'` | `barangMasuk()`, jenis `'Stok Opname'` | Terjadi saat stok fisik > stok sistem (`selisih > 0`). |
+| **Penyesuaian Stok (Surplus)** | `Penyesuaianstok` | `stokmasuk > 0`, jenis `'Stock Opname'` | `barangMasuk()`, jenis `'Stok Opname'` | Koreksi stok penyesuaian saat fisik > sistem (`selisih > 0`). |
+
+### 2. Transaksi Pengurangan Stok (Barang Keluar)
+| Transaksi | Modul / Model | Dampak `riwayatstok` | Dampak `stokfifodetail` (FIFO) | Keterangan |
+|-----------|---------------|----------------------|--------------------------------|------------|
+| **Surat Jalan** | `Suratjalan` | `stokkeluar > 0`, jenis `'Penjualan'` | `barangKeluar()`, jenis `'Surat Jalan'` | Pemotongan stok aktual barang keluar untuk pesanan penjualan (`stok_penjualan_dari_surat_jalan = 1`). |
+| **Retur Pembelian** | `Returpembelian` | `stokkeluar > 0`, jenis `'Retur Pembelian'` | `barangKeluar()`, jenis `'Retur Pembelian'` | Mengurangi stok barang yang dikembalikan ke supplier. |
+| **Konversi Stok (Asal)** | `Konversistok` | `stokkeluar > 0`, jenis `'Konversi Stok'` | `barangKeluar()`, jenis `'Konversi Stok'` | Mengurangi stok barang bahan baku yang dikonversi. |
+| **Stock Opname (Defisit)** | `Stockopname` | `stokkeluar > 0`, jenis `'Stock Opname'` | `barangKeluar()`, jenis `'Stok Opname'` | Terjadi saat stok fisik < stok sistem (`selisih < 0`). |
+| **Penyesuaian Stok (Defisit)** | `Penyesuaianstok` | `stokkeluar > 0`, jenis `'Stock Opname'` | `barangKeluar()`, jenis `'Stok Opname'` | Koreksi stok penyesuaian saat fisik < sistem (`selisih < 0`). |
+
 ## Riwayat Perubahan
 
 | Tanggal | Perubahan | Oleh |
@@ -132,3 +157,4 @@ Perusahaan distribusi memerlukan sistem terpadu untuk mengelola:
 | 2026-10-09 | Dokumen awal dibuat berdasarkan analisis kode sumber | AI Assistant |
 | 2026-10-09 | Jawaban pertanyaan terbuka diformat ulang menjadi "Keputusan & Klarifikasi" | AI Assistant |
 | 2026-10-09 | Klarifikasi peran `IDOTORISASIKASIR` (deprecated, diganti `pengguna_menus`) dirapikan | AI Assistant |
+| 2026-10-20 | Tambah dokumentasi alur & transaksi yang mempengaruhi stok (setting stok_penjualan_dari_surat_jalan = 1) | AI Assistant |

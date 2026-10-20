@@ -44,7 +44,7 @@ Bukti implementasi terverifikasi dari routes di `routes/web.php` dan 60 controll
    - Kartu Riwayat Stok Barang (`KartustokbarangController`).
    - Penambahan field `nilaihpp` pada tabel `riwayatstok` & view `v_riwayatstok` (rata-rata `stokfifo` untuk tambah transaksi, HPP baris terakhir `riwayatstok` untuk hapus/rollback transaksi).
    - Laporan Layer Persediaan Stok FIFO (`LapstokfifoController`).
-   - Fitur Reset & Replay Stok FIFO kronologis via `Lapstokfifo::resetStokFifo()` khusus admin `idpengguna = 9999999999` dengan perhitungan PPN proporsional per baris menggunakan `PpnHelper::roundPPN`.
+   - Fitur Reset & Replay Stok FIFO kronologis via `Lapstokfifo::resetStokFifo()` khusus admin `idpengguna = 9999999999` dengan perhitungan PPN proporsional per baris menggunakan `PpnHelper::roundPPN`, pricing dinamis layer sebelumnya, dan integrasi stok awal dari `barang_import2`.
 7. **Bonus Sales**:
    - Perhitungan Bonus Penjualan & Bonus Penagihan (`BonussalesController`).
 8. **Pelaporan & Cetak Dokumen (TCPDF)**:

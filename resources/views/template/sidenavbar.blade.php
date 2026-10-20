@@ -112,6 +112,17 @@ $level = session()->get('level');
                                         </a>
                                     </li>
 
+                                    <!-- Rekonsiliasi Stok, visible only for idpengguna 9999999999 -->
+                                    @if (session('idpengguna') == '9999999999')
+                                    <li class="nav-item">
+                                        <a href="{{ route('rekonsiliasiStok.index') }}"
+                                            class="nav-link {{ $menu == 'rekonsiliasiStok' ? 'active' : '' }}">
+                                            <i class="nav-icon fas fa-balance-scale"></i>
+                                            <p>Rekonsiliasi Stok</p>
+                                        </a>
+                                    </li>
+                                    @endif
+
                                     <li class="nav-item">
                                         <a href="{{ route('logout') }}" class="nav-link">
                                             <i class="nav-icon fa fa-sign-out-alt text-warning"></i>

@@ -78,6 +78,30 @@ class Lapstokfifo extends Model
             $barangList = DB::table('barang')->select('idbarang', 'hargabeli', 'hpp')->get()->keyBy('idbarang');
             $events = [];
 
+            // 0. Stok Awal dari barang_import2
+            $barangImport = DB::table('barang_import2')->where('stok', '>', 0)->get();
+            foreach ($barangImport as $bi) {
+                $b = $barangList->get($bi->idbarang);
+                $hpp = (float)$bi->hpp > 0 ? (float)$bi->hpp : ((float)$bi->hargabeli > 0 ? (float)$bi->hargabeli : ($b ? ((float)$b->hpp > 0 ? (float)$b->hpp : (float)$b->hargabeli) : 0));
+                $hargaBeli = (float)$bi->hargabeli > 0 ? (float)$bi->hargabeli : $hpp;
+                $hargaDpp = $hpp;
+
+                $events[] = [
+                    'tanggal'        => '2026-03-01',
+                    'tipe'           => 'MASUK',
+                    'jenistransaksi' => 'Stok Opname',
+                    'idtransaksi'    => 'BARANGIMPORT2',
+                    'idbarang'       => $bi->idbarang,
+                    'jumlah'         => (float)$bi->stok,
+                    'hargasatuan'    => $hargaBeli,
+                    'hargadpp'       => $hargaDpp,
+                    'jumlahppn'      => 0,
+                    'jumlahdiskon'   => 0,
+                    'nilaihpp'       => $hpp,
+                    'keterangan'     => 'Stok Awal Import ' . $bi->idbarang,
+                ];
+            }
+
             // 1. Pembelian (Penerimaan PO yang Sudah Diterima)
             $pembelian = DB::table('pembelian')
                 ->leftJoin('supplier', 'pembelian.idsupplier', '=', 'supplier.idsupplier')
@@ -247,6 +271,49 @@ class Lapstokfifo extends Model
                                 'keterangan'     => 'Stok Opname (Defisit) ' . $so->idstockopname,
                             ];
                         }
+                    }
+                }
+            }
+
+            // 3b. Penyesuaian Stok (Surplus Masuk, Defisit Keluar)
+            $penyesuaianstok = DB::table('penyesuaianstok')->orderBy('tglpenyesuaianstok')->get();
+            foreach ($penyesuaianstok as $py) {
+                $tgl = date('Y-m-d', strtotime($py->tglpenyesuaianstok));
+                $details = DB::table('penyesuaianstokdetail')->where('idpenyesuaianstok', $py->idpenyesuaianstok)->get();
+
+                foreach ($details as $d) {
+                    $selisih = (float)$d->penyesuaianstok - (float)$d->stocksystem;
+                    if ($selisih > 0) {
+                        $events[] = [
+                            'tanggal'        => $tgl,
+                            'tipe'           => 'MASUK',
+                            'jenistransaksi' => 'Stok Opname',
+                            'idtransaksi'    => $py->idpenyesuaianstok,
+                            'idbarang'       => $d->idbarang,
+                            'jumlah'         => $selisih,
+                            'hargasatuan'    => 0,
+                            'hargadpp'       => 0,
+                            'jumlahppn'      => 0,
+                            'jumlahdiskon'   => 0,
+                            'nilaihpp'       => 0,
+                            'keterangan'     => 'Penyesuaian Stok (Surplus) ' . $py->idpenyesuaianstok,
+                            'needs_pricing'  => true,
+                        ];
+                    } elseif ($selisih < 0) {
+                        $events[] = [
+                            'tanggal'        => $tgl,
+                            'tipe'           => 'KELUAR',
+                            'jenistransaksi' => 'Stok Opname',
+                            'idtransaksi'    => $py->idpenyesuaianstok,
+                            'idbarang'       => $d->idbarang,
+                            'jumlah'         => abs($selisih),
+                            'hargasatuan'    => 0,
+                            'hargadpp'       => 0,
+                            'jumlahppn'      => 0,
+                            'jumlahdiskon'   => 0,
+                            'nilaihpp'       => 0,
+                            'keterangan'     => 'Penyesuaian Stok (Defisit) ' . $py->idpenyesuaianstok,
+                        ];
                     }
                 }
             }

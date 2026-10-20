@@ -39,6 +39,7 @@ use App\Http\Controllers\LappersediaanController;
 use App\Http\Controllers\LaphppbarangController;
 use App\Http\Controllers\KartustokbarangController;
 use App\Http\Controllers\LapstokfifoController;
+use App\Http\Controllers\RekonsiliasiStokController;
 use App\Http\Controllers\LapneracasaldoController;
 use App\Http\Controllers\LappenagihansalesController;
 use App\Http\Controllers\LappenerimaanController;
@@ -93,6 +94,15 @@ Route::controller(HomeController::class)->group(function () {
 
 Route::controller(RiwayatupdateController::class)->group(function () {
     Route::get('riwayatupdate', 'index')->name('riwayatupdate');
+});
+
+Route::controller(RekonsiliasiStokController::class)->group(function () {
+    Route::get('rekonsiliasistok', 'index')->name('rekonsiliasiStok.index');
+    Route::post('rekonsiliasistok/hitungselisih', 'hitungSelisih')->name('rekonsiliasiStok.hitungSelisih');
+    Route::post('rekonsiliasistok/identifikasi', 'identifikasiTransaksi')->name('rekonsiliasiStok.identifikasiTransaksi');
+    Route::post('rekonsiliasistok/insertlayer', 'insertLayerFifo')->name('rekonsiliasiStok.insertLayerFifo');
+    Route::post('rekonsiliasistok/keluarlayer', 'keluarLayerFifo')->name('rekonsiliasiStok.keluarLayerFifo');
+    Route::post('rekonsiliasistok/hapuslayer', 'hapusLayerFifo')->name('rekonsiliasiStok.hapusLayerFifo');
 });
 
 Route::controller(LoginController::class)->group(function () {
