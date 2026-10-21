@@ -97,6 +97,7 @@ class Pembelianpenerimaan extends Model
             $idsupplier = $data['idsupplier'];
             $rowSupplier = Supplier::find($idsupplier);
             $namasupplier = $rowSupplier->namasupplier;
+            $tglPenerimaan = $data['tglditerima'] ?? $data['tglfaktur'];
 
             foreach ($dataDetail as $detail) {
                 /*
@@ -109,7 +110,7 @@ class Pembelianpenerimaan extends Model
                     $idstokfifo,
                     $detail['idbarang'],
                     $idpembelian,
-                    $data['tglfaktur'],
+                    $tglPenerimaan,
                     'Pembelian',
                     $detail['jumlahbeli'],
                     $detail['hargasatuan'],
@@ -128,7 +129,7 @@ class Pembelianpenerimaan extends Model
                 $riwayatstok = array(
                     'tglriwayat' => date('Y-m-d H:i:s'),
                     'idtransaksi' => $idpembelian,
-                    'tgltransaksi' => $data['tglfaktur'],
+                    'tgltransaksi' => $tglPenerimaan,
                     'idbarang' => $detail['idbarang'],
                     'stokawal' => $stokawal,
                     'stokmasuk' => $stokmasuk,

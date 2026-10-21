@@ -110,7 +110,7 @@ class Lapstokfifo extends Model
                 ->get();
 
             foreach ($pembelian as $p) {
-                $tgl = $p->tglfaktur ?? $p->tglditerima ?? $p->tgl_po ?? date('Y-m-d', strtotime($p->inserted_date));
+                $tgl = $p->tglditerima ?? $p->tglfaktur ?? $p->tgl_po ?? date('Y-m-d', strtotime($p->inserted_date));
                 $tgl = date('Y-m-d', strtotime($tgl));
                 $details = DB::table('pembeliandetail')->where('idpembelian', $p->idpembelian)->get();
 
@@ -400,18 +400,22 @@ class Lapstokfifo extends Model
                 }
             }
 
-            // Urutkan berdasarkan tanggal transaksi
+            // Urutkan: SEMUA MASUK terlebih dahulu (urut tanggal), baru SEMUA KELUAR (urut tanggal)
             usort($events, function ($a, $b) {
+                if ($a['tipe'] !== $b['tipe']) {
+                    return ($a['tipe'] === 'MASUK') ? -1 : 1;
+                }
+
                 $cmp = strcmp($a['tanggal'], $b['tanggal']);
                 if ($cmp !== 0) {
                     return $cmp;
                 }
 
-                if ($a['tipe'] === 'MASUK' && $b['tipe'] === 'KELUAR') {
-                    return -1;
-                }
-                if ($a['tipe'] === 'KELUAR' && $b['tipe'] === 'MASUK') {
-                    return 1;
+                // Jika sama-sama KELUAR pada tanggal yang sama, dahulukan Konversi Asal agar layer Tujuan siap
+                $aKonversi = !empty($a['is_konversi_asal']) ? 1 : 0;
+                $bKonversi = !empty($b['is_konversi_asal']) ? 1 : 0;
+                if ($aKonversi !== $bKonversi) {
+                    return ($aKonversi > $bKonversi) ? -1 : 1;
                 }
 
                 return strcmp($a['idtransaksi'], $b['idtransaksi']);
@@ -618,6 +622,64 @@ class Lapstokfifo extends Model
                                 'hargadpp'    => $hppTujuan,
                                 'nilaihpp'    => $hppTujuan,
                             ];
+                        }
+                    }
+                }
+            }
+
+            // Sinkronkan sisa layer FIFO dengan stok akhir fisik riwayatstok
+            $stokAkhirRiwayat = DB::table('riwayatstok as r1')
+                ->join(DB::raw('(SELECT idbarang, MAX(idriwayat) as max_id FROM riwayatstok GROUP BY idbarang) as r2'), function ($join) {
+                    $join->on('r1.idbarang', '=', 'r2.idbarang')
+                        ->on('r1.idriwayat', '=', 'r2.max_id');
+                })
+                ->pluck('r1.stokakhir', 'r1.idbarang');
+
+            foreach ($stokAkhirRiwayat as $idbarang => $stokFisik) {
+                $stokFisik = (float)$stokFisik;
+                $totalSisaFifo = isset($activeLayers[$idbarang]) ? array_sum(array_column($activeLayers[$idbarang], 'jumlahsisa')) : 0;
+                $selisih = $stokFisik - $totalSisaFifo;
+
+                if (abs($selisih) > 0.0001) {
+                    if ($selisih > 0) {
+                        $adjId = $generateId(date('Y-m-d'));
+                        $last = $lastPembelianLayerPerBarang[$idbarang] ?? $lastLayerPerBarang[$idbarang] ?? null;
+                        $b = $barangList->get($idbarang);
+                        $hpp = $last ? (float)$last['nilaihpp'] : (($b && (float)$b->hpp > 0) ? (float)$b->hpp : ($b ? (float)$b->hargabeli : 0));
+
+                        $stokFifoInserts[$adjId] = [
+                            'idstokfifo'     => $adjId,
+                            'idtransaksi'    => 'REKON-MASUK',
+                            'tglmasuk'       => date('Y-m-d'),
+                            'idbarang'       => $idbarang,
+                            'jumlahmasuk'    => $selisih,
+                            'jumlahsisa'     => $selisih,
+                            'hargasatuan'    => $hpp,
+                            'hargadpp'       => $hpp,
+                            'jumlahppn'      => 0,
+                            'jumlahdiskon'   => 0,
+                            'nilaihpp'       => $hpp,
+                            'keterangan'     => 'Penyesuaian Saldo Akhir FIFO (Sinkronisasi Fisik)',
+                            'jenistransaksi' => 'Stok Opname',
+                            'inserted_date'  => now(),
+                            'updated_date'   => now(),
+                        ];
+                    } else {
+                        $sisaKurang = abs($selisih);
+                        if (isset($activeLayers[$idbarang])) {
+                            foreach ($activeLayers[$idbarang] as &$lRef) {
+                                if ($sisaKurang <= 0) {
+                                    break;
+                                }
+                                if ($lRef['jumlahsisa'] <= 0) {
+                                    continue;
+                                }
+                                $potong = min($lRef['jumlahsisa'], $sisaKurang);
+                                $lRef['jumlahsisa'] -= $potong;
+                                $stokFifoInserts[$lRef['idstokfifo']]['jumlahsisa'] -= $potong;
+                                $sisaKurang -= $potong;
+                            }
+                            unset($lRef);
                         }
                     }
                 }
