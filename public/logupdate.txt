@@ -159,3 +159,7 @@
 [2026-10-15] [feature] Multi-Dashboard - Pengalihan halaman home otomatis (Dashboard Admin, Dashboard Sales, Dashboard Kosong) sesuai preferensi pengguna
 [2026-10-15] [customize] Master Pengguna - Tambah pilihan konfigurasi Halaman Dashboard pada form pengguna dan simpan ke session login
 [2026-10-15] [feature] Dashboard Sales - Tampilan home khusus sales dengan informasi Top Penjualan Sales, Top 5 Piutang Jatuh Tempo (bobot persentase), dan Penagihan Terbaru
+[2026-10-15] [update] Update db.sql
+
+[2026-10-20] [feature] Rekonsiliasi Stok - Tambah modul rekonsiliasi stok dan integrasi penyesuaian stok ke stok FIFO
+[2026-10-21] [bugfix] Stok FIFO - Ambil tanggal transaksi dari tanggal penerimaan bukan tanggal faktur
