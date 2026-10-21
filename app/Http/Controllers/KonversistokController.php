@@ -182,6 +182,12 @@ class KonversistokController extends Controller
             return redirect('/konversistok')->with('other', 'Data tidak ditemukan!');
         }
 
+        if (App::isPosting($rsKonversi->tglkonversi)) {
+            $bulan = bulan(date('m', strtotime($rsKonversi->tglkonversi)));
+            $tahun = date('Y', strtotime($rsKonversi->tglkonversi));
+            return redirect('/konversistok')->with('other', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
+        }
+
         $hapus = $this->model->hapusData($idkonversi, $rsKonversi);
         if ($hapus['status'] == 'success') {
             return redirect('/konversistok')->with('success', $hapus['message']);

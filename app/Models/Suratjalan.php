@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
 use App\Models\App;
 use App\Models\Barang;
+use App\Models\Hutangekspedisi;
 use App\Helpers\StokFifoService;
 
 class Suratjalan extends Model
@@ -148,6 +149,9 @@ class Suratjalan extends Model
 
             DB::beginTransaction();
 
+            if (Hutangekspedisi::hutangEkspedisiSudahDibayar($idsuratjalan, 'Penjualan')) {
+                throw new \Exception('Hutang ekspedisi untuk surat jalan ini sudah ada pembayaran sehingga tidak dapat diubah!');
+            }
 
             //hapus hutang ekspedisi jika ada
             $rsHutangEkspedisi = DB::table('hutangekspedisi')
@@ -336,6 +340,9 @@ class Suratjalan extends Model
 
             DB::beginTransaction();
 
+            if (Hutangekspedisi::hutangEkspedisiSudahDibayar($idsuratjalan, 'Penjualan')) {
+                throw new \Exception('Hutang ekspedisi untuk surat jalan ini sudah ada pembayaran sehingga tidak dapat dihapus!');
+            }
 
             //hapus hutang ekspedisi jika ada
             $rsHutangEkspedisi = DB::table('hutangekspedisi')

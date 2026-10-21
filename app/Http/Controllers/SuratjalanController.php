@@ -11,6 +11,7 @@ use App\Models\App;
 use App\Models\Bank;
 use App\Models\Konsumen;
 use App\Models\Sales;
+use App\Models\Hutangekspedisi;
 use TCPDF;
 
 class SuratjalanController extends Controller
@@ -45,8 +46,18 @@ class SuratjalanController extends Controller
             return redirect('/suratjalan')->with('other', 'Data tidak ditemukan!');
         }
 
+        if (App::isPosting($rsPenjualan->tglsuratjalan)) {
+            $bulan = bulan(date('m', strtotime($rsPenjualan->tglsuratjalan)));
+            $tahun = date('Y', strtotime($rsPenjualan->tglsuratjalan));
+            return redirect('/suratjalan')->with('other', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
+        }
+
         if ($this->model->sudahAdaPenagihan($idsuratjalan)) {
             return redirect('/suratjalan')->with('other', 'Tidak bisa diubah lagi! Karena sudah ada penagihan sales!');
+        }
+
+        if (Hutangekspedisi::hutangEkspedisiSudahDibayar($idsuratjalan, 'Penjualan')) {
+            return redirect('/suratjalan')->with('other', 'Hutang ekspedisi untuk surat jalan ini sudah ada pembayaran sehingga tidak dapat diubah!');
         }
 
         $data['menu'] = 'suratjalan';
@@ -172,6 +183,12 @@ class SuratjalanController extends Controller
         $inserted_date = date('Y-m-d H:i:s');
         $updated_date = date('Y-m-d H:i:s');
 
+        if (App::isPosting($tglsuratjalan)) {
+            $bulan = bulan(date('m', strtotime($tglsuratjalan)));
+            $tahun = date('Y', strtotime($tglsuratjalan));
+            return response()->json(array("msg" => "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!"));
+        }
+
         //periksa stok barang jika tidak mencukupi
         $periksaStok = $this->model->checkStokBarang($isidatatable);
         if (!$periksaStok['lanjut']) {
@@ -221,6 +238,14 @@ class SuratjalanController extends Controller
 
             $simpan = $this->model->simpanData($data, $dataDetail, $dataDetailRincian, $idsuratjalan);
         } else {
+
+            if ($this->model->sudahAdaPenagihan($idsuratjalan)) {
+                return response()->json(array('msg' => 'Surat Jalan sudah dibuatkan penagihan sehingga tidak dapat diubah lagi!'));
+            }
+
+            if (Hutangekspedisi::hutangEkspedisiSudahDibayar($idsuratjalan, 'Penjualan')) {
+                return response()->json(array('msg' => 'Hutang ekspedisi untuk surat jalan ini sudah ada pembayaran sehingga tidak dapat diubah!'));
+            }
 
             $dataDetail = array();
             for ($i = 0; $i < count($isidatatable); $i++) {
@@ -272,8 +297,18 @@ class SuratjalanController extends Controller
             return redirect('/suratjalan')->with('other', 'Data tidak ditemukan!');
         }
 
+        if (App::isPosting($rsSuratJalan->tglsuratjalan)) {
+            $bulan = bulan(date('m', strtotime($rsSuratJalan->tglsuratjalan)));
+            $tahun = date('Y', strtotime($rsSuratJalan->tglsuratjalan));
+            return redirect('/suratjalan')->with('other', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
+        }
+
         if ($this->model->sudahAdaPenagihan($idsuratjalan)) {
             return redirect('/suratjalan')->with('other', 'Tidak bisa dihapus lagi! Karena sudah ada penagihan sales!');
+        }
+
+        if (Hutangekspedisi::hutangEkspedisiSudahDibayar($idsuratjalan, 'Penjualan')) {
+            return redirect('/suratjalan')->with('other', 'Hutang ekspedisi untuk surat jalan ini sudah ada pembayaran sehingga tidak dapat dihapus!');
         }
 
         $hapus = $this->model->hapusData($idsuratjalan, $rsSuratJalan);

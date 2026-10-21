@@ -366,6 +366,14 @@ class PenjualanController extends Controller
                 return response()->json(array('msg' => 'Piutang untuk invoice ini sudah dilakukan pembayaran sehingga tidak dapat diubah lagi!'));
             }
 
+            if (Suratjalan::sudahAdaSuratJalan($idpenjualan)) {
+                return response()->json(array('msg' => 'Penjualan sudah diterbitkan surat jalan sehingga tidak dapat diubah lagi!'));
+            }
+
+            if (Returpenjualan::penjualanSudahDiRetur($idpenjualan)) {
+                return response()->json(array('msg' => 'Penjualan sudah pernah diretur sehingga tidak dapat diubah lagi!'));
+            }
+
             $totalSubTotalJualDetail = array_sum(array_map(function($item) {
                 return (float) untitik($item['subtotaljual']);
             }, $isidatatable));

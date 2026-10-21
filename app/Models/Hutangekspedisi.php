@@ -106,4 +106,22 @@ class Hutangekspedisi extends Model
     {
         return DB::select('SELECT create_idhutangekspedisi() AS id')[0]->id;
     }
+
+    public static function hutangEkspedisiSudahDibayar($idtransaksi, $jenissumber = 'Penjualan')
+    {
+        $rsHutang = DB::table('hutangekspedisi')
+            ->where('idtransaksi', $idtransaksi)
+            ->where('jenissumber', $jenissumber)
+            ->first();
+
+        if (!$rsHutang || $rsHutang->kredit <= 0) {
+            return false;
+        }
+
+        $idekspedisi = $rsHutang->idekspedisi;
+        $totalKredit = DB::table('hutangekspedisi')->where('idekspedisi', $idekspedisi)->sum('kredit');
+        $totalDebet = DB::table('hutangekspedisi')->where('idekspedisi', $idekspedisi)->sum('debet');
+
+        return ($totalKredit - $rsHutang->kredit) < $totalDebet;
+    }
 }

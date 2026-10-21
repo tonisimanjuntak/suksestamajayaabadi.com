@@ -163,3 +163,6 @@
 
 [2026-10-20] [feature] Rekonsiliasi Stok - Tambah modul rekonsiliasi stok dan integrasi penyesuaian stok ke stok FIFO
 [2026-10-21] [bugfix] Stok FIFO - Ambil tanggal transaksi dari tanggal penerimaan bukan tanggal faktur
+[2026-10-21] [customize] Surat Jalan & Hutang Ekspedisi - Validasi proteksi edit dan hapus surat jalan jika hutang ekspedisi sudah ada pembayaran serta cek posting jurnal
+[2026-10-21] [customize] Penjualan & Pembelian - Tambah proteksi simpan/edit jika surat jalan sudah terbit, retur sudah ada, atau barang PO sudah diterima
+[2026-10-21] [customize] Konversi Stok - Tambah validasi posting jurnal pada hapus konversi stok

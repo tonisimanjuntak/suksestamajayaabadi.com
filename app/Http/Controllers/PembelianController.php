@@ -226,6 +226,11 @@ class PembelianController extends Controller
             $simpan = $this->model->simpanData($data, $dataDetail, $idpembelian);
         } else {
 
+            $rsPembelian = Pembelian::find($idpembelian);
+            if (!empty($rsPembelian) && $rsPembelian->statuspenerimaan == 'Sudah Diterima') {
+                return response()->json(array('msg' => 'Tidak boleh diubah karena order ini sudah ada penerimaan barang nya!'));
+            }
+
             //cek jika sudah dilakukan pembayaran hutang
             if (Hutang::hutangSudahDibayar($idpembelian)) {
                 return response()->json(array('msg' => 'Hutang untuk faktur ini sudah dilakukan pembayaran sehingga tidak dapat diubah lagi!'));
