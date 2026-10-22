@@ -313,7 +313,8 @@ function replwzero($value, $jumlahchar)
 
 function get_saldo_normal($kdakun)
 {
-    if (substr($kdakun, 0, 1) == '1' || substr($kdakun, 0, 1) == '5') {
+    $prefix = substr($kdakun, 0, 1);
+    if ($prefix == '1' || $prefix == '5' || $prefix == '6') {
         return 'D';
     } else {
         return 'K';

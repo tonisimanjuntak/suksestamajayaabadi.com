@@ -2,7 +2,8 @@
 Tanggal: 2026-10-15
 
 ## Fokus Saat Ini
-1. **Multi-Dashboard Pengguna**: Pengalihan otomatis halaman dashboard berdasarkan konfigurasi pengguna (`halamandashboard` = 'Dashboard Admin', 'Dashboard Sales', 'Dashboard Kosong').
+1. **Analisa & Penyesuaian Bagan Akun (COA)**: Standardisasi kode akun akuntansi 4 level untuk modul ERP (HPP, persediaan, kontra penjualan/pembelian, pajak, utang ekspedisi jangka pendek, dan beban operasional), serta perbaikan helper `get_saldo_normal`.
+2. **Multi-Dashboard Pengguna**: Pengalihan otomatis halaman dashboard berdasarkan konfigurasi pengguna (`halamandashboard` = 'Dashboard Admin', 'Dashboard Sales', 'Dashboard Kosong').
 2. **Dashboard Sales**: Halaman khusus sales (`homesales.blade.php`) dengan informasi Top Penjualan Sales (Bulan Ini, Bulan Kemarin, Tahun Ini) dan Top 5 Piutang Lewat Jatuh Tempo berbasis persentase, serta 5 transaksi penagihan terbaru tanpa kolom status dan link menu cepat.
 3. **Dokumentasi & Log Update**: Pembaruan berkala riwayat update di `public/logupdate.txt` dan sinkronisasi berkas `memory-bank/`.
 
