@@ -40,6 +40,7 @@ use App\Http\Controllers\LaphppbarangController;
 use App\Http\Controllers\KartustokbarangController;
 use App\Http\Controllers\LapstokfifoController;
 use App\Http\Controllers\RekonsiliasiStokController;
+use App\Http\Controllers\PemeliharaansystemController;
 use App\Http\Controllers\LapneracasaldoController;
 use App\Http\Controllers\LappenagihansalesController;
 use App\Http\Controllers\LappenerimaanController;
@@ -103,6 +104,12 @@ Route::controller(RekonsiliasiStokController::class)->group(function () {
     Route::post('rekonsiliasistok/insertlayer', 'insertLayerFifo')->name('rekonsiliasiStok.insertLayerFifo');
     Route::post('rekonsiliasistok/keluarlayer', 'keluarLayerFifo')->name('rekonsiliasiStok.keluarLayerFifo');
     Route::post('rekonsiliasistok/hapuslayer', 'hapusLayerFifo')->name('rekonsiliasiStok.hapusLayerFifo');
+});
+
+Route::controller(PemeliharaansystemController::class)->group(function () {
+    Route::get('pemeliharaansystem', 'index')->name('pemeliharaansystem.index');
+    Route::post('pemeliharaansystem/cekstatus', 'cekStatus')->name('pemeliharaansystem.cekStatus');
+    Route::post('pemeliharaansystem/archiveriwayataktifitas', 'archiveRiwayatAktifitas')->name('pemeliharaansystem.archiveRiwayatAktifitas');
 });
 
 Route::controller(LoginController::class)->group(function () {

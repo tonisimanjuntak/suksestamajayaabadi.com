@@ -121,6 +121,13 @@ $level = session()->get('level');
                                             <p>Rekonsiliasi Stok</p>
                                         </a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('pemeliharaansystem.index') }}"
+                                            class="nav-link {{ $menu == 'pemeliharaansystem' ? 'active' : '' }}">
+                                            <i class="nav-icon fas fa-tools"></i>
+                                            <p>Pemeliharaan System</p>
+                                        </a>
+                                    </li>
                                     @endif
 
                                     <li class="nav-item">

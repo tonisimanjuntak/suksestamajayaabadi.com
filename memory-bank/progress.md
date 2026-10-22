@@ -47,7 +47,11 @@ Bukti implementasi terverifikasi dari routes di `routes/web.php` dan 60 controll
    - Penambahan field `nilaihpp` pada tabel `riwayatstok` & view `v_riwayatstok` (rata-rata `stokfifo` untuk tambah transaksi, HPP baris terakhir `riwayatstok` untuk hapus/rollback transaksi).
    - Laporan Layer Persediaan Stok FIFO (`LapstokfifoController`).
    - Fitur Reset & Replay Stok FIFO kronologis via `Lapstokfifo::resetStokFifo()` khusus admin `idpengguna = 9999999999` dengan perhitungan PPN proporsional per baris menggunakan `PpnHelper::roundPPN`, pricing dinamis layer sebelumnya, dan integrasi stok awal dari `barang_import2`.
-7. **Bonus Sales**:
+7. **Pemeliharaan System (System Maintenance)**:
+   - Modul khusus developer (`idpengguna = '9999999999'`) pada [PemeliharaansystemController.php](/e:/laragon/www/tonibackupfile/suksestamajayaabadi.com/app/Http/Controllers/PemeliharaansystemController.php) dan view [index.blade.php](/e:/laragon/www/tonibackupfile/suksestamajayaabadi.com/resources/views/pemeliharaansystem/index.blade.php).
+   - Fitur Arsip Riwayat Aktifitas: memindahkan data dari tabel `riwayataktifitas` ke `riwayataktifitas_archive` berdasarkan pilihan periode relatif (`< 1 bulan`, `< 2 bulan`, `< 3 bulan`, `< 6 bulan`, `< 12 bulan`).
+   - Pengecekan otomatis pra-arsip untuk mencegah duplikasi primary key `id`, penyalinan record yang belum diarsipkan, pembersihan data sumber yang telah terarsip dari tabel aktif, konfirmasi SweetAlert sebelum eksekusi, serta pencatatan audit log pemeliharaan.
+8. **Bonus Sales**:
    - Perhitungan Bonus Penjualan & Bonus Penagihan (`BonussalesController`).
 8. **Pelaporan & Cetak Dokumen (TCPDF)**:
    - 19+ modul laporan operasional dan keuangan (Buku Besar, Neraca Saldo, Laba Rugi, Rekap Hutang/Piutang, Persediaan, Pembelian, Penjualan).
