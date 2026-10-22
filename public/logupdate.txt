@@ -166,3 +166,7 @@
 [2026-10-21] [customize] Surat Jalan & Hutang Ekspedisi - Validasi proteksi edit dan hapus surat jalan jika hutang ekspedisi sudah ada pembayaran serta cek posting jurnal
 [2026-10-21] [customize] Penjualan & Pembelian - Tambah proteksi simpan/edit jika surat jalan sudah terbit, retur sudah ada, atau barang PO sudah diterima
 [2026-10-21] [customize] Konversi Stok - Tambah validasi posting jurnal pada hapus konversi stok
+[2026-10-22] [update] Update Posting jurnal ke pos masing-masing akun
+[2026-10-22] [update] Update kode akun
+[2026-10-22] [bugfix] StokFifoService - Batal barang keluar handle multiple jenistransaksi (Surat Jalan & Penjualan), yang mengakibatkan selisih stok fifo.
+[2026-10-22] [bugfix] Lapstokfifo resetStokFifo - ubah jenistransaksi ke Surat Jalan

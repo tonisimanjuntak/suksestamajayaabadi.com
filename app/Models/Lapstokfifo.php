@@ -335,7 +335,7 @@ class Lapstokfifo extends Model
                     $events[] = [
                         'tanggal'        => $tgl,
                         'tipe'           => 'KELUAR',
-                        'jenistransaksi' => 'Penjualan',
+                        'jenistransaksi' => 'Surat Jalan',
                         'idtransaksi'    => $sj->idsuratjalan,
                         'idbarang'       => $d->idbarang,
                         'jumlah'         => (float)$d->jumlahjual,

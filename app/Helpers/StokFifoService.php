@@ -138,9 +138,14 @@ class StokFifoService
      */
     public function batalBarangKeluar($idtransaksi, $jenistransaksi)
     {
+        $jenisList = is_array($jenistransaksi) ? $jenistransaksi : [$jenistransaksi];
+        if ($jenistransaksi === 'Surat Jalan' && !in_array('Penjualan', $jenisList)) {
+            $jenisList[] = 'Penjualan';
+        }
+
         $details = DB::table('stokfifodetail')
             ->where('idtransaksi', $idtransaksi)
-            ->where('jenistransaksi', $jenistransaksi)
+            ->whereIn('jenistransaksi', $jenisList)
             ->get();
 
         foreach ($details as $detail) {
@@ -158,7 +163,7 @@ class StokFifoService
 
         DB::table('stokfifodetail')
             ->where('idtransaksi', $idtransaksi)
-            ->where('jenistransaksi', $jenistransaksi)
+            ->whereIn('jenistransaksi', $jenisList)
             ->delete();
     }
 
