@@ -101,8 +101,15 @@ class PostingjurnalController extends Controller
 
     public function mulaiPosting(Request $request)
     {
-        $bulan = $request->get('bulan');
-        $tahun = $request->get('tahun');
+        $bulanRaw = (int) $request->get('bulan');
+        $tahunRaw = (int) $request->get('tahun');
+
+        if ($bulanRaw < 1 || $bulanRaw > 12 || $tahunRaw < 2000) {
+            return redirect('/postingjurnal')->with('fail', 'Bulan atau tahun tidak valid!');
+        }
+
+        $bulan = sprintf("%02d", $bulanRaw);
+        $tahun = sprintf("%04d", $tahunRaw);
 
         if ($this->model->sudahPosting($bulan, $tahun)) {
             return redirect('/postingjurnal')->with('other', "Jurnal bulan " . bulan($bulan) . " $tahun sudah di posting!");

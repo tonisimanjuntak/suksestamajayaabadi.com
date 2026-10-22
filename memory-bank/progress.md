@@ -35,7 +35,7 @@ Bukti implementasi terverifikasi dari routes di `routes/web.php` dan 60 controll
 5. **Kas, Bank, & Akuntansi**:
    - Penerimaan & Pengeluaran Kas/Bank (`PenerimaanController`, `PengeluaranController`).
    - Jurnal Umum Manual (`JurnalController`).
-   - Posting Jurnal Periode Bulanan (`PostingjurnalController`, `App::isPosting`).
+   - Posting Jurnal Periode Bulanan (`PostingjurnalController`, `Postingjurnal`): Pembaruan arsitektur posting transaksi (Penjualan, Pembelian, Retur, Piutang, Hutang, Penerimaan, Pengeluaran) ke tabel `jurnal` dan `jurnaldetail` dengan mapping akun Level 4 standar dagang, chunk batch 500 baris, format 15 digit `idjurnal`, isolasi `idposting`, serta verifikasi balance Debet == Kredit.
    - Saldo Awal Akun & Saldo Piutang (`SaldoawalController`, `SaldopiutangController`).
 6. **Persediaan & Stok**:
    - Stock Opname Fisik (`StockopnameController`).

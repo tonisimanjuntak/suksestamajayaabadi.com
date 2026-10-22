@@ -24,14 +24,52 @@ class Postingjurnal extends Model
     protected $hidden = [];
 
     var $App;
+    protected $akunSettings = [];
 
     public function __construct()
     {
         $this->App = new App;
     }
 
+    public function getKodeAkun($prefix, $default = null)
+    {
+        if (empty($this->akunSettings)) {
+            $settings = DB::table('settings')->where('prefix', 'like', 'akun_%')->get();
+            foreach ($settings as $s) {
+                $this->akunSettings[$s->prefix] = $s->values;
+            }
+        }
+
+        if (session()->has($prefix) && !empty(session($prefix))) {
+            return session($prefix);
+        }
+
+        if (isset($this->akunSettings[$prefix]) && !empty($this->akunSettings[$prefix])) {
+            return $this->akunSettings[$prefix];
+        }
+
+        return $default;
+    }
+
+    protected function getAkunKasBank($carabayar, $kdakunbank, $akunKasTunai, $akunDefaultNonKas = null)
+    {
+        if ($carabayar === 'Tunai') {
+            return $akunKasTunai;
+        }
+        if (!empty($kdakunbank)) {
+            return $kdakunbank;
+        }
+        if (!empty($akunDefaultNonKas)) {
+            return $akunDefaultNonKas;
+        }
+        return $akunKasTunai;
+    }
+
     public function sudahPosting($bulan, $tahun)
     {
+        $bulan = sprintf("%02d", (int)$bulan);
+        $tahun = sprintf("%04d", (int)$tahun);
+
         $jumlahPosting = DB::table('postingjurnal')
             ->where('bulan', $bulan)
             ->where('tahun', $tahun)
@@ -48,38 +86,61 @@ class Postingjurnal extends Model
         try {
             DB::beginTransaction();
 
-            $akun_barang_dagang = session('akun_barang_dagang');
-            $akun_pendapatan_penjualan = session('akun_pendapatan_penjualan');
-            $akun_utang_ppn = session('akun_utang_ppn');
-            $akun_beban_transportasi = session('akun_beban_transportasi');
-            $akun_pembelian = session('akun_pembelian');
+            $bulan = sprintf("%02d", (int)$bulan);
+            $tahun = sprintf("%04d", (int)$tahun);
+            $idposting = $bulan . $tahun;
+
+            $akun_kas_tunai = $this->getKodeAkun('akun_kas_tunai', '1.1.01.01');
+            $akun_piutang_usaha = $this->getKodeAkun('akun_piutang_usaha', '1.1.03.01');
+            $akun_ppn_masukan = $this->getKodeAkun('akun_ppn_masukan', '1.1.04.01');
+            $akun_utang_ppn = $this->getKodeAkun('akun_utang_ppn', '2.2.01.02');
+            $akun_utang_usaha = $this->getKodeAkun('akun_utang_usaha', '2.2.01.01');
+            $akun_pendapatan_penjualan = $this->getKodeAkun('akun_pendapatan_penjualan', '4.1.01.01');
+            $akun_retur_penjualan = $this->getKodeAkun('akun_retur_penjualan', '4.1.02.01');
+            $akun_beban_transportasi = $this->getKodeAkun('akun_beban_transportasi', '5.4.01.01');
+            $akun_pembelian = $this->getKodeAkun('akun_pembelian', '6.1.01.01');
+            $akun_retur_pembelian = $this->getKodeAkun('akun_retur_pembelian', '6.1.01.02');
 
             DB::table('jurnaldetail')
-                ->whereIn('idjurnal', function ($query) use ($bulan, $tahun) {
+                ->whereIn('idjurnal', function ($query) use ($idposting, $bulan, $tahun) {
                     $query->select('idjurnal')
                         ->from('jurnal')
-                        ->whereRaw("jenis <> 'Jurnal Penyesuaian' and jenis <> 'Saldo Awal'")
-                        ->whereMonth('tgljurnal', $bulan)
-                        ->whereYear('tgljurnal', $tahun);
+                        ->where('idposting', $idposting)
+                        ->orWhere(function ($q) use ($bulan, $tahun) {
+                            $q->whereMonth('tgljurnal', $bulan)
+                                ->whereYear('tgljurnal', $tahun)
+                                ->whereRaw("jenis <> 'Jurnal Penyesuaian' and jenis <> 'Saldo Awal'");
+                        });
                 })
                 ->delete();
 
             DB::table('jurnal')
-                ->whereRaw("jenis <> 'Jurnal Penyesuaian' and jenis <> 'Saldo Awal'")
-                ->whereMonth('tgljurnal', $bulan)
-                ->whereYear('tgljurnal', $tahun)
+                ->where('idposting', $idposting)
+                ->orWhere(function ($q) use ($bulan, $tahun) {
+                    $q->whereMonth('tgljurnal', $bulan)
+                        ->whereYear('tgljurnal', $tahun)
+                        ->whereRaw("jenis <> 'Jurnal Penyesuaian' and jenis <> 'Saldo Awal'");
+                })
                 ->delete();
 
+            DB::table('postingjurnal')
+                ->where('idposting', $idposting)
+                ->delete();
+
+            $idpengguna = session('idpengguna');
+            if (empty($idpengguna)) {
+                $idpengguna = DB::table('pengguna')->value('idpengguna') ?? 'USRASO0001';
+            }
+
             //insert Posting
-            $idposting = trim($bulan) . trim($tahun);
             $dataPosting = array(
                 'idposting' => $idposting,
-                'bulan' => trim($bulan),
-                'tahun' => trim($tahun),
+                'bulan' => $bulan,
+                'tahun' => $tahun,
                 'jumlahdebet' => 0,
                 'jumlahkredit' => 0,
                 'inserted_date' => date('Y-m-d H:i:s'),
-                'idpengguna' => session('idpengguna'),
+                'idpengguna' => $idpengguna,
             );
             DB::table('postingjurnal')->insert($dataPosting);
             $this->App->riwayatAktifitas($dataPosting, 'postingjurnal', 'simpanData');
@@ -88,7 +149,14 @@ class Postingjurnal extends Model
             $updated_date = date('Y-m-d H:i:s');
             $dataJurnal = array();
             $dataJurnalDetail = array();
-            $idjurnal = trim($tahun) . trim($bulan) . '000000000'; //dimulai dari nol
+
+            $maxId = DB::table('jurnal')
+                ->where('idjurnal', 'like', $tahun . $bulan . '%')
+                ->max('idjurnal');
+            $counterJurnal = 0;
+            if ($maxId && strlen($maxId) == 15) {
+                $counterJurnal = (int)substr($maxId, 6);
+            }
             $referensi_old = '';
 
 
@@ -98,30 +166,35 @@ class Postingjurnal extends Model
             $rsPenerimaan = DB::table('v_penerimaandetail_laporan')
                 ->whereMonth('tglpenerimaan', $bulan)
                 ->whereYear('tglpenerimaan', $tahun)
+                ->orderBy('tglpenerimaan', 'ASC')
+                ->orderBy('idpenerimaan', 'ASC')
                 ->get();
             if (count($rsPenerimaan) > 0) {
                 $urut = 1;
+                $currentIdJurnal = '';
                 foreach ($rsPenerimaan as $row) {
                     if ($referensi_old != $row->idpenerimaan) {
                         $urut = 1;
-                        $idjurnal++;
+                        $counterJurnal++;
+                        $currentIdJurnal = sprintf("%s%s%09d", $tahun, $bulan, $counterJurnal);
                         $dataJurnal[] = array(
-                            'idjurnal' => $idjurnal,
+                            'idjurnal' => $currentIdJurnal,
                             'tgljurnal' => $row->tglpenerimaan,
-                            'keterangan' => $row->keterangan,
+                            'keterangan' => $row->keterangan ?? 'Penerimaan Kas/Bank',
                             'totaldebet' => $row->totalpenerimaan,
                             'totalkredit' => $row->totalpenerimaan,
                             'referensi' => $row->idpenerimaan,
                             'jenis' => 'Penerimaan',
                             'inserted_date' => $inserted_date,
                             'updated_date' => $updated_date,
-                            'idpengguna' => session('idpengguna'),
+                            'idpengguna' => $idpengguna,
                             'idposting' => $idposting,
                         );
 
+                        $akunKasBank = $this->getAkunKasBank($row->carabayar, $row->kdakunbank, $akun_kas_tunai);
                         $dataJurnalDetail[] = array(
-                            'idjurnal' => $idjurnal,
-                            'kdakun' => ($row->carabayar == 'Tunai') ? session('akun_kas_tunai') : $row->kdakunbank,
+                            'idjurnal' => $currentIdJurnal,
+                            'kdakun' => $akunKasBank,
                             'debet' => $row->totalpenerimaan,
                             'kredit' => 0,
                             'urut' => $urut++,
@@ -129,8 +202,8 @@ class Postingjurnal extends Model
                     }
 
                     $dataJurnalDetail[] = array(
-                        'idjurnal' => $idjurnal,
-                        'kdakun' => $row->kdakun,
+                        'idjurnal' => $currentIdJurnal,
+                        'kdakun' => !empty($row->kdakun) ? $row->kdakun : $akun_kas_tunai,
                         'debet' => 0,
                         'kredit' => $row->jumlahpenerimaan,
                         'urut' => $urut++,
@@ -148,34 +221,32 @@ class Postingjurnal extends Model
                 ->whereMonth('tglinvoice', $bulan)
                 ->whereYear('tglinvoice', $tahun)
                 ->orderBy('tglinvoice', 'ASC')
+                ->orderBy('idpenjualan', 'ASC')
                 ->get();
             if (count($rsPenjualan) > 0) {
-                $urut = 1;
                 foreach ($rsPenjualan as $row) {
-
-
                     $urut = 1;
-                    $idjurnal++;
-
-
+                    $counterJurnal++;
+                    $currentIdJurnal = sprintf("%s%s%09d", $tahun, $bulan, $counterJurnal);
 
                     $dataJurnal[] = array(
-                        'idjurnal' => $idjurnal,
+                        'idjurnal' => $currentIdJurnal,
                         'tgljurnal' => $row->tglinvoice,
-                        'keterangan' => $row->keterangan,
+                        'keterangan' => !empty($row->keterangan) ? $row->keterangan : ('Penjualan No Invoice: ' . $row->noinvoice),
                         'totaldebet' => $row->totalinvoice,
                         'totalkredit' => $row->totalinvoice,
                         'referensi' => $row->idpenjualan,
                         'jenis' => 'Penjualan',
                         'inserted_date' => $inserted_date,
                         'updated_date' => $updated_date,
-                        'idpengguna' => session('idpengguna'),
+                        'idpengguna' => $idpengguna,
                         'idposting' => $idposting,
                     );
 
+                    $akunDebetPenjualan = $this->getAkunKasBank($row->carabayar, $row->kdakunbank, $akun_kas_tunai, $akun_piutang_usaha);
                     $dataJurnalDetail[] = array(
-                        'idjurnal' => $idjurnal,
-                        'kdakun' => ($row->carabayar == 'Tunai') ? session('akun_kas_tunai') : (($row->carabayar == 'Transfer') ? $row->kdakunbank : session('akun_piutang_usaha')),
+                        'idjurnal' => $currentIdJurnal,
+                        'kdakun' => $akunDebetPenjualan,
                         'debet' => $row->totalinvoice,
                         'kredit' => 0,
                         'urut' => $urut++,
@@ -183,7 +254,7 @@ class Postingjurnal extends Model
 
                     if ($row->totalppn > 0) {
                         $dataJurnalDetail[] = array(
-                            'idjurnal' => $idjurnal,
+                            'idjurnal' => $currentIdJurnal,
                             'kdakun' => $akun_utang_ppn,
                             'debet' => 0,
                             'kredit' => $row->totalppn,
@@ -193,7 +264,7 @@ class Postingjurnal extends Model
 
                     if ($row->biayapengiriman > 0) {
                         $dataJurnalDetail[] = array(
-                            'idjurnal' => $idjurnal,
+                            'idjurnal' => $currentIdJurnal,
                             'kdakun' => $akun_beban_transportasi,
                             'debet' => 0,
                             'kredit' => $row->biayapengiriman,
@@ -201,15 +272,14 @@ class Postingjurnal extends Model
                         );
                     }
 
+                    $pendapatanNetto = $row->totalinvoice - $row->totalppn - $row->biayapengiriman;
                     $dataJurnalDetail[] = array(
-                        'idjurnal' => $idjurnal,
+                        'idjurnal' => $currentIdJurnal,
                         'kdakun' => $akun_pendapatan_penjualan,
                         'debet' => 0,
-                        'kredit' => $row->totalinvoice - $row->totalppn - $row->biayapengiriman,
+                        'kredit' => $pendapatanNetto,
                         'urut' => $urut++,
                     );
-
-                    $referensi_old = $row->idpenjualan;
                 }
             }
 
@@ -221,46 +291,44 @@ class Postingjurnal extends Model
                 ->whereMonth('tglpiutang', $bulan)
                 ->whereYear('tglpiutang', $tahun)
                 ->orderBy('tglpiutang', 'ASC')
+                ->orderBy('idpiutangdetail', 'ASC')
                 ->get();
             if (count($rsPiutang) > 0) {
-                $urut = 1;
                 foreach ($rsPiutang as $row) {
+                    $urut = 1;
+                    $counterJurnal++;
+                    $currentIdJurnal = sprintf("%s%s%09d", $tahun, $bulan, $counterJurnal);
 
-                    if ($referensi_old != $row->idpiutangdetail) {
-                        $urut = 1;
-                        $idjurnal++;
-                        $dataJurnal[] = array(
-                            'idjurnal' => $idjurnal,
-                            'tgljurnal' => $row->tglpiutang,
-                            'keterangan' => 'Pembayaran Invoice: ' . $row->noinvoice . ', Tgl Invoice: ' . tgldmy($row->tglinvoice),
-                            'totaldebet' => $row->kredit,
-                            'totalkredit' => $row->kredit,
-                            'referensi' => $row->idpiutangdetail,
-                            'jenis' => 'Piutang',
-                            'inserted_date' => $inserted_date,
-                            'updated_date' => $updated_date,
-                            'idpengguna' => session('idpengguna'),
-                            'idposting' => $idposting,
-                        );
+                    $dataJurnal[] = array(
+                        'idjurnal' => $currentIdJurnal,
+                        'tgljurnal' => $row->tglpiutang,
+                        'keterangan' => 'Pembayaran Invoice: ' . $row->noinvoice . ', Tgl Invoice: ' . tgldmy($row->tglinvoice),
+                        'totaldebet' => $row->kredit,
+                        'totalkredit' => $row->kredit,
+                        'referensi' => $row->idpiutangdetail,
+                        'jenis' => 'Piutang',
+                        'inserted_date' => $inserted_date,
+                        'updated_date' => $updated_date,
+                        'idpengguna' => $idpengguna,
+                        'idposting' => $idposting,
+                    );
 
-                        $dataJurnalDetail[] = array(
-                            'idjurnal' => $idjurnal,
-                            'kdakun' => ($row->carabayar == 'Tunai') ? session('akun_kas_tunai') : $row->kdakunbank,
-                            'debet' => $row->kredit,
-                            'kredit' => 0,
-                            'urut' => $urut++,
-                        );
-                    }
+                    $akunKasBank = $this->getAkunKasBank($row->carabayar, $row->kdakunbank, $akun_kas_tunai);
+                    $dataJurnalDetail[] = array(
+                        'idjurnal' => $currentIdJurnal,
+                        'kdakun' => $akunKasBank,
+                        'debet' => $row->kredit,
+                        'kredit' => 0,
+                        'urut' => $urut++,
+                    );
 
                     $dataJurnalDetail[] = array(
-                        'idjurnal' => $idjurnal,
-                        'kdakun' => session('akun_piutang_usaha'),
+                        'idjurnal' => $currentIdJurnal,
+                        'kdakun' => $akun_piutang_usaha,
                         'debet' => 0,
                         'kredit' => $row->kredit,
                         'urut' => $urut++,
                     );
-
-                    $referensi_old = $row->idpiutangdetail;
                 }
             }
 
@@ -268,19 +336,20 @@ class Postingjurnal extends Model
             /*
                 Retur Penjualan
             */
-            $rsRetur = DB::table('v_returpenjualan')
+            $rsReturPenjualan = DB::table('v_returpenjualan')
                 ->whereMonth('tglretur', $bulan)
                 ->whereYear('tglretur', $tahun)
                 ->orderBy('tglretur', 'ASC')
+                ->orderBy('idreturpenjualan', 'ASC')
                 ->get();
-            if (count($rsRetur) > 0) {
-                $urut = 1;
-                foreach ($rsRetur as $row) {
-
+            if (count($rsReturPenjualan) > 0) {
+                foreach ($rsReturPenjualan as $row) {
                     $urut = 1;
-                    $idjurnal++;
+                    $counterJurnal++;
+                    $currentIdJurnal = sprintf("%s%s%09d", $tahun, $bulan, $counterJurnal);
+
                     $dataJurnal[] = array(
-                        'idjurnal' => $idjurnal,
+                        'idjurnal' => $currentIdJurnal,
                         'tgljurnal' => $row->tglretur,
                         'keterangan' => 'Retur Penjualan No.Invoice: ' . $row->noinvoice . ', Tgl.Invoice: ' . tgldmy($row->tglinvoice),
                         'totaldebet' => $row->totalretur,
@@ -289,24 +358,22 @@ class Postingjurnal extends Model
                         'jenis' => 'Retur Penjualan',
                         'inserted_date' => $inserted_date,
                         'updated_date' => $updated_date,
-                        'idpengguna' => session('idpengguna'),
+                        'idpengguna' => $idpengguna,
                         'idposting' => $idposting,
                     );
 
-
-
-
                     $dataJurnalDetail[] = array(
-                        'idjurnal' => $idjurnal,
-                        'kdakun' => $akun_pendapatan_penjualan,
+                        'idjurnal' => $currentIdJurnal,
+                        'kdakun' => $akun_retur_penjualan,
                         'debet' => $row->totalretur,
                         'kredit' => 0,
                         'urut' => $urut++,
                     );
 
+                    $akunKreditRetur = $this->getAkunKasBank($row->carabayar, $row->kdakunbank, $akun_kas_tunai, $akun_piutang_usaha);
                     $dataJurnalDetail[] = array(
-                        'idjurnal' => $idjurnal,
-                        'kdakun' => ($row->carabayar == 'Tunai') ? session('akun_kas_tunai') : $row->kdakunbank,
+                        'idjurnal' => $currentIdJurnal,
+                        'kdakun' => $akunKreditRetur,
                         'debet' => 0,
                         'kredit' => $row->totalretur,
                         'urut' => $urut++,
@@ -326,38 +393,61 @@ class Postingjurnal extends Model
                 ->whereMonth('tglfaktur', $bulan)
                 ->whereYear('tglfaktur', $tahun)
                 ->orderBy('tglfaktur', 'ASC')
+                ->orderBy('idpembelian', 'ASC')
                 ->get();
             if (count($rsPembelian) > 0) {
-                $urut = 1;
                 foreach ($rsPembelian as $row) {
-
                     $urut = 1;
-                    $idjurnal++;
+                    $counterJurnal++;
+                    $currentIdJurnal = sprintf("%s%s%09d", $tahun, $bulan, $counterJurnal);
+
                     $dataJurnal[] = array(
-                        'idjurnal' => $idjurnal,
+                        'idjurnal' => $currentIdJurnal,
                         'tgljurnal' => $row->tglfaktur,
-                        'keterangan' => $row->keterangan,
+                        'keterangan' => !empty($row->keterangan) ? $row->keterangan : ('Pembelian No Faktur: ' . $row->nofaktur),
                         'totaldebet' => $row->totalfaktur,
                         'totalkredit' => $row->totalfaktur,
                         'referensi' => $row->idpembelian,
                         'jenis' => 'Pembelian',
                         'inserted_date' => $inserted_date,
                         'updated_date' => $updated_date,
-                        'idpengguna' => session('idpengguna'),
+                        'idpengguna' => $idpengguna,
                         'idposting' => $idposting,
                     );
 
+                    $pembelianDpp = $row->totalfaktur - $row->totalppn - $row->biayapengiriman;
                     $dataJurnalDetail[] = array(
-                        'idjurnal' => $idjurnal,
+                        'idjurnal' => $currentIdJurnal,
                         'kdakun' => $akun_pembelian,
-                        'debet' => $row->totalfaktur,
+                        'debet' => $pembelianDpp,
                         'kredit' => 0,
                         'urut' => $urut++,
                     );
 
+                    if ($row->totalppn > 0) {
+                        $dataJurnalDetail[] = array(
+                            'idjurnal' => $currentIdJurnal,
+                            'kdakun' => $akun_ppn_masukan,
+                            'debet' => $row->totalppn,
+                            'kredit' => 0,
+                            'urut' => $urut++,
+                        );
+                    }
+
+                    if ($row->biayapengiriman > 0) {
+                        $dataJurnalDetail[] = array(
+                            'idjurnal' => $currentIdJurnal,
+                            'kdakun' => $akun_beban_transportasi,
+                            'debet' => $row->biayapengiriman,
+                            'kredit' => 0,
+                            'urut' => $urut++,
+                        );
+                    }
+
+                    $akunKreditPembelian = $this->getAkunKasBank($row->carabayar, $row->kdakunbank, $akun_kas_tunai, $akun_utang_usaha);
                     $dataJurnalDetail[] = array(
-                        'idjurnal' => $idjurnal,
-                        'kdakun' => ($row->carabayar == 'Tunai') ? session('akun_kas_tunai') : (($row->carabayar == 'Transfer') ? $row->kdakunbank : session('akun_utang_usaha')),
+                        'idjurnal' => $currentIdJurnal,
+                        'kdakun' => $akunKreditPembelian,
                         'debet' => 0,
                         'kredit' => $row->totalfaktur,
                         'urut' => 99,
@@ -376,15 +466,16 @@ class Postingjurnal extends Model
                 ->whereMonth('tglretur', $bulan)
                 ->whereYear('tglretur', $tahun)
                 ->orderBy('tglretur', 'ASC')
+                ->orderBy('idreturpembelian', 'ASC')
                 ->get();
             if (count($rsRetur) > 0) {
-                $urut = 1;
                 foreach ($rsRetur as $row) {
-
                     $urut = 1;
-                    $idjurnal++;
+                    $counterJurnal++;
+                    $currentIdJurnal = sprintf("%s%s%09d", $tahun, $bulan, $counterJurnal);
+
                     $dataJurnal[] = array(
-                        'idjurnal' => $idjurnal,
+                        'idjurnal' => $currentIdJurnal,
                         'tgljurnal' => $row->tglretur,
                         'keterangan' => 'Retur Pembelian No.Faktur: ' . $row->nofaktur . ', Tgl.Invoice: ' . tgldmy($row->tglfaktur),
                         'totaldebet' => $row->totalretur,
@@ -393,21 +484,22 @@ class Postingjurnal extends Model
                         'jenis' => 'Retur Pembelian',
                         'inserted_date' => $inserted_date,
                         'updated_date' => $updated_date,
-                        'idpengguna' => session('idpengguna'),
+                        'idpengguna' => $idpengguna,
                         'idposting' => $idposting,
                     );
 
+                    $akunDebetReturBeli = $this->getAkunKasBank($row->carabayar, $row->kdakunbank, $akun_kas_tunai, $akun_utang_usaha);
                     $dataJurnalDetail[] = array(
-                        'idjurnal' => $idjurnal,
-                        'kdakun' => ($row->carabayar == 'Tunai') ? session('akun_kas_tunai') : $row->kdakunbank,
+                        'idjurnal' => $currentIdJurnal,
+                        'kdakun' => $akunDebetReturBeli,
                         'debet' => $row->totalretur,
                         'kredit' => 0,
                         'urut' => $urut++,
                     );
 
                     $dataJurnalDetail[] = array(
-                        'idjurnal' => $idjurnal,
-                        'kdakun' => $akun_pembelian,
+                        'idjurnal' => $currentIdJurnal,
+                        'kdakun' => $akun_retur_pembelian,
                         'debet' => 0,
                         'kredit' => $row->totalretur,
                         'urut' => $urut++,
@@ -421,84 +513,81 @@ class Postingjurnal extends Model
             /*
                 Utang Non Pembelian
             */
-            $rsHutang = DB::table('v_hutangdetail_bahanjurnal_nonpembelian')
+            $rsHutangNonPembelian = DB::table('v_hutangdetail_bahanjurnal_nonpembelian')
                 ->whereMonth('tglhutang', $bulan)
                 ->whereYear('tglhutang', $tahun)
                 ->orderBy('tglhutang', 'ASC')
+                ->orderBy('idhutangdetail', 'ASC')
                 ->get();
-            if (count($rsHutang) > 0) {
-                $urut = 1;
-                foreach ($rsHutang as $row) {
+            if (count($rsHutangNonPembelian) > 0) {
+                foreach ($rsHutangNonPembelian as $row) {
+                    $urut = 1;
+                    $counterJurnal++;
+                    $currentIdJurnal = sprintf("%s%s%09d", $tahun, $bulan, $counterJurnal);
 
-                    if ($referensi_old != $row->idhutangdetail) {
-                        $urut = 1;
-                        $idjurnal++;
+                    if ($row->kredit != 0) { //utang bertambah
+                        $dataJurnal[] = array(
+                            'idjurnal' => $currentIdJurnal,
+                            'tgljurnal' => $row->tglhutang,
+                            'keterangan' => !empty($row->keterangan) ? $row->keterangan : ('Penambahan Hutang Id: ' . $row->idhutang),
+                            'totaldebet' => $row->kredit,
+                            'totalkredit' => $row->kredit,
+                            'referensi' => $row->idhutangdetail,
+                            'jenis' => 'Hutang',
+                            'inserted_date' => $inserted_date,
+                            'updated_date' => $updated_date,
+                            'idpengguna' => $idpengguna,
+                            'idposting' => $idposting,
+                        );
 
-                        if ($row->kredit != 0) { //utang bertambah
+                        $akunKasBank = $this->getAkunKasBank($row->carabayar, $row->kdakunbank, $akun_kas_tunai);
+                        $dataJurnalDetail[] = array(
+                            'idjurnal' => $currentIdJurnal,
+                            'kdakun' => $akunKasBank,
+                            'debet' => $row->kredit,
+                            'kredit' => 0,
+                            'urut' => $urut++,
+                        );
 
-                            $dataJurnal[] = array(
-                                'idjurnal' => $idjurnal,
-                                'tgljurnal' => $row->tglhutang,
-                                'keterangan' => $row->keterangan,
-                                'totaldebet' => $row->kredit,
-                                'totalkredit' => $row->kredit,
-                                'referensi' => $row->idhutangdetail,
-                                'jenis' => 'Hutang',
-                                'inserted_date' => $inserted_date,
-                                'updated_date' => $updated_date,
-                                'idpengguna' => session('idpengguna'),
-                                'idposting' => $idposting,
-                            );
+                        $dataJurnalDetail[] = array(
+                            'idjurnal' => $currentIdJurnal,
+                            'kdakun' => $akun_utang_usaha,
+                            'debet' => 0,
+                            'kredit' => $row->kredit,
+                            'urut' => 99,
+                        );
+                    } else { //pembayaran utang
+                        $dataJurnal[] = array(
+                            'idjurnal' => $currentIdJurnal,
+                            'tgljurnal' => $row->tglhutang,
+                            'keterangan' => 'Pembayaran hutang Id: ' . $row->idhutang,
+                            'totaldebet' => $row->debet,
+                            'totalkredit' => $row->debet,
+                            'referensi' => $row->idhutangdetail,
+                            'jenis' => 'Hutang',
+                            'inserted_date' => $inserted_date,
+                            'updated_date' => $updated_date,
+                            'idpengguna' => $idpengguna,
+                            'idposting' => $idposting,
+                        );
 
-                            $dataJurnalDetail[] = array(
-                                'idjurnal' => $idjurnal,
-                                'kdakun' => session('akun_kas_tunai'),
-                                'debet' => $row->kredit,
-                                'kredit' => 0,
-                                'urut' => $urut++,
-                            );
+                        $dataJurnalDetail[] = array(
+                            'idjurnal' => $currentIdJurnal,
+                            'kdakun' => $akun_utang_usaha,
+                            'debet' => $row->debet,
+                            'kredit' => 0,
+                            'urut' => $urut++,
+                        );
 
-                            $dataJurnalDetail[] = array(
-                                'idjurnal' => $idjurnal,
-                                'kdakun' => session('akun_utang_usaha'),
-                                'debet' => 0,
-                                'kredit' => $row->kredit,
-                                'urut' => 99,
-                            );
-                        } else { //pembayaran utang
-
-                            $dataJurnal[] = array(
-                                'idjurnal' => $idjurnal,
-                                'tgljurnal' => $row->tglhutang,
-                                'keterangan' => 'Pembayaran hutang Id : ' . $row->idhutang,
-                                'totaldebet' => $row->debet,
-                                'totalkredit' => $row->debet,
-                                'referensi' => $row->idhutangdetail,
-                                'jenis' => 'Hutang',
-                                'inserted_date' => $inserted_date,
-                                'updated_date' => $updated_date,
-                                'idpengguna' => session('idpengguna'),
-                                'idposting' => $idposting,
-                            );
-
-                            $dataJurnalDetail[] = array(
-                                'idjurnal' => $idjurnal,
-                                'kdakun' => ($row->carabayar == 'Tunai') ? session('akun_kas_tunai') : $row->kdakunbank,
-                                'debet' => 0,
-                                'kredit' => $row->debet,
-                                'urut' => 99,
-                            );
-
-                            $dataJurnalDetail[] = array(
-                                'idjurnal' => $idjurnal,
-                                'kdakun' => session('akun_utang_usaha'),
-                                'debet' => $row->debet,
-                                'kredit' => 0,
-                                'urut' => $urut++,
-                            );
-                        }
+                        $akunKasBank = $this->getAkunKasBank($row->carabayar, $row->kdakunbank, $akun_kas_tunai);
+                        $dataJurnalDetail[] = array(
+                            'idjurnal' => $currentIdJurnal,
+                            'kdakun' => $akunKasBank,
+                            'debet' => 0,
+                            'kredit' => $row->debet,
+                            'urut' => 99,
+                        );
                     }
-
 
                     $referensi_old = $row->idhutangdetail;
                 }
@@ -512,43 +601,43 @@ class Postingjurnal extends Model
                 ->whereMonth('tglhutang', $bulan)
                 ->whereYear('tglhutang', $tahun)
                 ->orderBy('tglhutang', 'ASC')
+                ->orderBy('idhutangdetail', 'ASC')
                 ->get();
             if (count($rsHutang) > 0) {
-                $urut = 1;
                 foreach ($rsHutang as $row) {
+                    $urut = 1;
+                    $counterJurnal++;
+                    $currentIdJurnal = sprintf("%s%s%09d", $tahun, $bulan, $counterJurnal);
 
-                    if ($referensi_old != $row->idhutangdetail) {
-                        $urut = 1;
-                        $idjurnal++;
-                        $dataJurnal[] = array(
-                            'idjurnal' => $idjurnal,
-                            'tgljurnal' => $row->tglhutang,
-                            'keterangan' => 'Pembayaran Faktur: ' . $row->nofaktur . ', Tgl Faktur: ' . tgldmy($row->tglfaktur),
-                            'totaldebet' => $row->debet,
-                            'totalkredit' => $row->debet,
-                            'referensi' => $row->idhutangdetail,
-                            'jenis' => 'Hutang',
-                            'inserted_date' => $inserted_date,
-                            'updated_date' => $updated_date,
-                            'idpengguna' => session('idpengguna'),
-                            'idposting' => $idposting,
-                        );
-
-                        $dataJurnalDetail[] = array(
-                            'idjurnal' => $idjurnal,
-                            'kdakun' => ($row->carabayar == 'Tunai') ? session('akun_kas_tunai') : $row->kdakunbank,
-                            'debet' => 0,
-                            'kredit' => $row->debet,
-                            'urut' => 99,
-                        );
-                    }
+                    $dataJurnal[] = array(
+                        'idjurnal' => $currentIdJurnal,
+                        'tgljurnal' => $row->tglhutang,
+                        'keterangan' => 'Pembayaran Faktur: ' . $row->nofaktur . ', Tgl Faktur: ' . tgldmy($row->tglfaktur),
+                        'totaldebet' => $row->debet,
+                        'totalkredit' => $row->debet,
+                        'referensi' => $row->idhutangdetail,
+                        'jenis' => 'Hutang',
+                        'inserted_date' => $inserted_date,
+                        'updated_date' => $updated_date,
+                        'idpengguna' => $idpengguna,
+                        'idposting' => $idposting,
+                    );
 
                     $dataJurnalDetail[] = array(
-                        'idjurnal' => $idjurnal,
-                        'kdakun' => session('akun_utang_usaha'),
+                        'idjurnal' => $currentIdJurnal,
+                        'kdakun' => $akun_utang_usaha,
                         'debet' => $row->debet,
                         'kredit' => 0,
                         'urut' => $urut++,
+                    );
+
+                    $akunKasBank = $this->getAkunKasBank($row->carabayar, $row->kdakunbank, $akun_kas_tunai);
+                    $dataJurnalDetail[] = array(
+                        'idjurnal' => $currentIdJurnal,
+                        'kdakun' => $akunKasBank,
+                        'debet' => 0,
+                        'kredit' => $row->debet,
+                        'urut' => 99,
                     );
 
                     $referensi_old = $row->idhutangdetail;
@@ -564,30 +653,36 @@ class Postingjurnal extends Model
             $rsPengeluaran = DB::table('v_pengeluarandetail_bahanjurnal')
                 ->whereMonth('tglpengeluaran', $bulan)
                 ->whereYear('tglpengeluaran', $tahun)
+                ->orderBy('tglpengeluaran', 'ASC')
+                ->orderBy('idpengeluaran', 'ASC')
                 ->get();
             if (count($rsPengeluaran) > 0) {
+                $referensi_old = '';
+                $currentIdJurnal = '';
                 $urut = 1;
                 foreach ($rsPengeluaran as $row) {
                     if ($referensi_old != $row->idpengeluaran) {
                         $urut = 1;
-                        $idjurnal++;
+                        $counterJurnal++;
+                        $currentIdJurnal = sprintf("%s%s%09d", $tahun, $bulan, $counterJurnal);
                         $dataJurnal[] = array(
-                            'idjurnal' => $idjurnal,
+                            'idjurnal' => $currentIdJurnal,
                             'tgljurnal' => $row->tglpengeluaran,
-                            'keterangan' => $row->keterangan,
+                            'keterangan' => !empty($row->keterangan) ? $row->keterangan : 'Pengeluaran Kas/Bank',
                             'totaldebet' => $row->totalpengeluaran,
                             'totalkredit' => $row->totalpengeluaran,
                             'referensi' => $row->idpengeluaran,
                             'jenis' => 'Pengeluaran',
                             'inserted_date' => $inserted_date,
                             'updated_date' => $updated_date,
-                            'idpengguna' => session('idpengguna'),
+                            'idpengguna' => $idpengguna,
                             'idposting' => $idposting,
                         );
 
+                        $akunKasBank = $this->getAkunKasBank($row->carabayar, $row->kdakunbank, $akun_kas_tunai);
                         $dataJurnalDetail[] = array(
-                            'idjurnal' => $idjurnal,
-                            'kdakun' => ($row->carabayar == 'Tunai') ? session('akun_kas_tunai') : $row->kdakunbank,
+                            'idjurnal' => $currentIdJurnal,
+                            'kdakun' => $akunKasBank,
                             'debet' => 0,
                             'kredit' => $row->totalpengeluaran,
                             'urut' => 99,
@@ -595,8 +690,8 @@ class Postingjurnal extends Model
                     }
 
                     $dataJurnalDetail[] = array(
-                        'idjurnal' => $idjurnal,
-                        'kdakun' => $row->kdakun,
+                        'idjurnal' => $currentIdJurnal,
+                        'kdakun' => !empty($row->kdakun) ? $row->kdakun : $akun_kas_tunai,
                         'debet' => $row->jumlahpengeluaran,
                         'kredit' => 0,
                         'urut' => $urut++,
@@ -606,30 +701,36 @@ class Postingjurnal extends Model
                 }
             }
 
-            DB::table('jurnal')->insert($dataJurnal);
-            DB::table('jurnaldetail')->insert($dataJurnalDetail);
+            if (!empty($dataJurnal)) {
+                foreach (array_chunk($dataJurnal, 500) as $chunkJurnal) {
+                    DB::table('jurnal')->insert($chunkJurnal);
+                }
+            }
 
+            if (!empty($dataJurnalDetail)) {
+                foreach (array_chunk($dataJurnalDetail, 500) as $chunkDetail) {
+                    DB::table('jurnaldetail')->insert($chunkDetail);
+                }
+            }
 
-            //update total posting
-            $total = DB::table('v_jurnaldetail')
-                ->selectRaw('SUM(debet) as debet, SUM(kredit) as kredit')
-                ->where('jenis', '<>', 'Jurnal Penyesuaian')
-                ->whereMonth('tgljurnal', $bulan)
-                ->whereYear('tgljurnal', $tahun)
-                ->first();
-            $totalDebet = (!empty($total->debet)) ? $total->debet : 0;
-            $totalKredit = (!empty($total->kredit)) ? $total->kredit : 0;
-            $dataPosting = array(
-                'jumlahdebet' => $totalDebet,
-                'jumlahkredit' => $totalKredit,
-            );
+            // Hitung total debet & kredit dari jurnal posting ini
+            $totalDebet = 0;
+            $totalKredit = 0;
+            foreach ($dataJurnal as $dj) {
+                $totalDebet += $dj['totaldebet'];
+                $totalKredit += $dj['totalkredit'];
+            }
+
             DB::table('postingjurnal')
                 ->where('idposting', $idposting)
-                ->update($dataPosting);
+                ->update(array(
+                    'jumlahdebet' => $totalDebet,
+                    'jumlahkredit' => $totalKredit,
+                ));
 
             DB::commit();
 
-            return ['status' => 'success', 'message' => 'Data berhasil disimpan'];
+            return ['status' => 'success', 'message' => "Posting jurnal bulan " . bulan($bulan) . " $tahun berhasil. Total transaksi diposting: " . count($dataJurnal)];
         } catch (QueryException $e) {
             DB::rollBack();
             return ['status' => 'error', 'message' => $e->getMessage()];
@@ -643,34 +744,34 @@ class Postingjurnal extends Model
     public function hapusData($idposting, $rsPosting)
     {
         try {
-            $bulan = $rsPosting->bulan;
-            $tahun = $rsPosting->tahun;
+            DB::beginTransaction();
 
             DB::table('jurnaldetail')
-                ->whereIn('idjurnal', function ($query) use ($bulan, $tahun) {
+                ->whereIn('idjurnal', function ($query) use ($idposting) {
                     $query->select('idjurnal')
                         ->from('jurnal')
-                        ->whereMonth('tgljurnal', $bulan)
-                        ->whereYear('tgljurnal', $tahun);
+                        ->where('idposting', $idposting);
                 })
                 ->delete();
 
             DB::table('jurnal')
-                ->whereMonth('tgljurnal', $bulan)
-                ->whereYear('tgljurnal', $tahun)
+                ->where('idposting', $idposting)
                 ->delete();
-
 
             DB::table('postingjurnal')
                 ->where('idposting', $idposting)
                 ->delete();
 
-            $this->App->riwayatAktifitas($rsPosting, 'sales', 'hapusData');
+            $this->App->riwayatAktifitas($rsPosting, 'postingjurnal', 'hapusData');
 
-            return ['status' => 'success', 'message' => "Data berhasil dihapus"];
+            DB::commit();
+
+            return ['status' => 'success', 'message' => "Data posting jurnal berhasil dihapus"];
         } catch (QueryException $e) {
+            DB::rollBack();
             return ['status' => 'error', 'message' => $e->getMessage()];
         } catch (\Exception $e) {
+            DB::rollBack();
             return ['status' => 'error', 'message' => 'Terjadi kesalahan: ' . $e->getMessage()];
         }
     }
