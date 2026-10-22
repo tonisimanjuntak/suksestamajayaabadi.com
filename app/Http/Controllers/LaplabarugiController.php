@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pengguna;
-use App\Models\Konsumen;
 use App\Models\Laplabarugi;
 use Illuminate\Http\Request;
 use TCPDF;
@@ -11,89 +9,84 @@ use TCPDF;
 class LaplabarugiController extends Controller
 {
     var $model;
-    var $konsumen;
-    var $pengguna;
 
     public function __construct()
     {
         $this->model = new Laplabarugi;
-        $this->konsumen = new Konsumen;
-        $this->pengguna = new Pengguna;
         $this->isLogin();
     }
 
     public function index()
     {
-        $data['rsKonsumen'] = $this->konsumen->all();
-        $data['rsPengguna'] = $this->pengguna->getPetugasGudang();
         $data['menu'] = 'laplabarugi';
         return view('laplabarugi.index', $data);
     }
 
-
-    public function cetak($tglawal, $tglakhir)
+    public function cetak($jenisCetakan, $tglawal, $tglakhir)
     {
-        /*
-            composer require tecnickcom/tcpdf
-        */
-        $totalPembelian = $this->model->getTotalPembelian($tglawal, $tglakhir);
-        $totalStockAdjustment = $this->model->getTotalStockAdjustment($tglawal, $tglakhir);
+        $rsLabaRugi = $this->model->getLaporanLabaRugi($tglawal, $tglakhir);
 
+        // Kelompokkan data per level hierarki
+        $pendapatan = []; // prefix 4
+        $hpp        = []; // prefix 6
+        $beban      = []; // prefix 5
 
-        $rsTemp = $this->model->getJurnalPenjualanByNamaJurnal($tglawal, $tglakhir, 'Penjualan');
-        $penjualan = $rsTemp[0]->kredit - $rsTemp[0]->debet;
+        foreach ($rsLabaRugi as $row) {
+            $prefix = substr($row->kdakun, 0, 1);
+            // Hitung saldo: Pendapatan=kredit-debet, HPP & Beban=debet-kredit
+            if ($prefix == '4') {
+                $row->saldo = $row->kredit - $row->debet;
+                $pendapatan[] = $row;
+            } elseif ($prefix == '6') {
+                $row->saldo = $row->debet - $row->kredit;
+                $hpp[] = $row;
+            } elseif ($prefix == '5') {
+                $row->saldo = $row->debet - $row->kredit;
+                $beban[] = $row;
+            }
+        }
 
+        // Hitung total per kelompok
+        $totalPendapatan = array_sum(array_column($pendapatan, 'saldo'));
+        $totalHPP        = array_sum(array_column($hpp, 'saldo'));
+        $totalBeban      = array_sum(array_column($beban, 'saldo'));
+        $labaKotor       = $totalPendapatan - $totalHPP;
+        $labaBersih      = $labaKotor - $totalBeban;
 
-        $rsTemp = $this->model->getJurnalPenjualanByNamaJurnal($tglawal, $tglakhir, 'Discount');
-        $penjualan_discount =  $rsTemp[0]->kredit - $rsTemp[0]->debet;
+        $data['tglawal']         = $tglawal;
+        $data['tglakhir']        = $tglakhir;
+        $data['pendapatan']      = $pendapatan;
+        $data['hpp']             = $hpp;
+        $data['beban']           = $beban;
+        $data['totalPendapatan'] = $totalPendapatan;
+        $data['totalHPP']        = $totalHPP;
+        $data['totalBeban']      = $totalBeban;
+        $data['labaKotor']       = $labaKotor;
+        $data['labaBersih']      = $labaBersih;
 
-        $rsTemp = $this->model->getJurnalAdjustmentByNamaJurnal($tglawal, $tglakhir, 'Stok Adjustment (Retur Penjualan)');
-        $penjualan_retur =  $rsTemp[0]->debet - $rsTemp[0]->kredit;
+        $view = view('laplabarugi.cetak', $data)->render();
 
-        $rsTemp = $this->model->getJurnalPembelianByNamaJurnal($tglawal, $tglakhir, 'Pembelian');
-        $pembelian =  $rsTemp[0]->debet - $rsTemp[0]->kredit;
-
-        $rsTemp = $this->model->getJurnalPembelianByNamaJurnal($tglawal, $tglakhir, 'Discount');
-        $pembelian_discount =  $rsTemp[0]->debet - $rsTemp[0]->kredit;
-
-        $rsTemp = $this->model->getJurnalAdjustmentByNamaJurnal($tglawal, $tglakhir, 'Stok Adjustment (Retur Pembelian)');
-        $pembelian_retur =  $rsTemp[0]->debet - $rsTemp[0]->kredit;
-
-        $data['tglawal'] = $tglawal;
-        $data['tglakhir'] = $tglakhir;
-        $data['penjualan'] = $penjualan;
-        $data['penjualan_discount'] = $penjualan_discount;
-        $data['penjualan_retur'] = $penjualan_retur;
-        $data['pembelian'] = $pembelian;
-        $data['pembelian_discount'] = $pembelian_discount;
-        $data['pembelian_retur'] = $pembelian_retur;
-        $data['totalStockAdjustment'] = $totalStockAdjustment;
-        $view = view('laplabarugi.cetak', $data);
-
-
-        // Buat instance TCPDF
-        $pdf = new TCPDF();
-
-        // Set properti dokumen
-        $pdf->SetCreator(PDF_CREATOR);
-        $pdf->SetAuthor('Your Name');
-        $pdf->SetTitle('Laporan Laba Rugi');
-        $pdf->SetSubject('Laporan Laba Rugi');
-        $pdf->SetKeywords('TCPDF, PDF, laporan, labarugi');
-        $pdf->SetFont('times', '', 10);
-        $pdf->setPrintHeader(false);
-        $pdf->setPrintFooter(false);
-
-        // Set margin halaman
-        $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-        $pdf->SetTopMargin(5);
-        // Tambahkan halaman
-        $pdf->AddPage('P');
-
-        // Tulis konten HTML ke dalam PDF
-        $pdf->writeHTML($view, true, false, true, false, '');
-
-        // Output PDF
-        $pdf->Output('laporan_labarugi.pdf', 'I');
+        if ($jenisCetakan == 'excel') {
+            header("Content-Type: application/vnd.ms-excel");
+            header("Content-Disposition: attachment; filename=laporan_laba_rugi.xls");
+            header("Pragma: no-cache");
+            header("Expires: 0");
+            echo $view;
+        } else {
+            $pdf = new TCPDF();
+            $pdf->SetCreator(PDF_CREATOR);
+            $pdf->SetAuthor('TZ Developer');
+            $pdf->SetTitle('Laporan Laba Rugi');
+            $pdf->SetSubject('Laporan Laba Rugi');
+            $pdf->SetKeywords('TCPDF, PDF, laporan, labarugi');
+            $pdf->SetFont('times', '', 10);
+            $pdf->setPrintHeader(false);
+            $pdf->setPrintFooter(false);
+            $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+            $pdf->SetTopMargin(5);
+            $pdf->AddPage('P');
+            $pdf->writeHTML($view, true, false, true, false, '');
+            $pdf->Output('laporan_laba_rugi.pdf', 'I');
+        }
     }
 }

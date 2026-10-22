@@ -3,223 +3,273 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Pembelian</title>
-    <link rel="stylesheet" href="{{ asset('') }}assets/bootstrap4/bootstrap.min.css">
-    <script src="{{ asset('') }}assets/bootstrap4/jquery-3.2.1.slim.min.js"></script>
-    <script src="{{ asset('') }}assets/bootstrap4/popper.min.js"></script>
-    <script src="{{ asset('') }}assets/bootstrap4/bootstrap.min.js"></script>
-
+    <title>Laporan Laba Rugi</title>
     <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: times, serif;
+            font-size: 10px;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
         }
-
-
-        th,
-        td {
-            padding: 8px;
+        th, td {
+            padding: 3px 6px;
             text-align: left;
             font-size: 10px;
         }
-
-        .judullaporan {
-            margin-top: 50px;
-        }
-
-        .judullaporan h1 {
-            font-size: 12px;
-            font-weight: bold;
-            text-align: center;
-            display: block;
-        }
-
-        .judullaporan h2 {
-            font-size: 10px;
-            font-weight: bold;
-            text-align: center;
-            display: block;
-            margin-top: -30px;
-        }
-
-        .content {
-            margin-top: 20px;
-        }
-
-
-        .no-border-bottom {
-            border-bottom: 1px solid #eee;
-        }
-
-        .no-border-top {
-            border-top: 1px solid #eee;
-        }
-
-        .add-border-top {
+        .kop-garis {
             border-top: 1px solid black;
-        }
-
-        .add-border-bottom {
             border-bottom: 1px solid black;
+        }
+        .judul {
+            text-align: center;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .sub-judul {
+            text-align: center;
+            font-size: 10px;
+        }
+        .section-header td {
+            font-weight: bold;
+            font-size: 10px;
+            padding-top: 8px;
+            text-decoration: underline;
+        }
+        .group-header td {
+            font-weight: bold;
+            font-size: 10px;
+            padding-top: 4px;
+        }
+        .akun-item td {
+            font-size: 10px;
+        }
+        .subtotal td {
+            font-weight: bold;
+            border-top: 1px solid #999;
+        }
+        .total-row td {
+            font-weight: bold;
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+        }
+        .grand-total td {
+            font-weight: bold;
+            border-top: 2px solid black;
+            border-bottom: 2px solid black;
+            font-size: 11px;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .separator {
+            height: 6px;
         }
     </style>
 </head>
 
 <body>
+    {{-- Kop Surat --}}
     <table>
-        <thead>
-            <tr>
-                <th class="add-border-bottom" style="width: 20%; text-align: center;" rowspan="3"><img
-                        src="{{ url('images') . '/logo.png' }}" alt="" style="width: 60px;"></th>
-                <th style="width: 70%; font-size: 15px; text-align: center; padding-right: 50px;">CV. CAHAYA LAMBOY
-                    KOTA PONTIANAK</th>
-                <th style="width: 10%;"></th>
-            </tr>
-            <tr>
-                <th style="font-size: 10px; text-align: center;">Jl. A. Yani No. 233 Kec.
-                    Pontianak Kota Kalimantan
-                    Barat</th>
-                <th></th>
-            </tr>
-            <tr>
-                <th class="add-border-bottom" style="font-size: 10px; text-align: center;">No Telepon. (0561)
-                    6427881 / FAX. (0561) 6427882
-                </th>
-                <th class="add-border-bottom"></th>
-            </tr>
-        </thead>
+        <tr>
+            <td style="width:15%; text-align:center; vertical-align:middle;" rowspan="3">
+                <img src="{{ public_path('images/' . session('usaha_logo')) }}" alt="" style="width:55px;">
+            </td>
+            <td style="width:75%; text-align:center; font-size:14px; font-weight:bold;">
+                {{ session('usaha_nama') }}
+            </td>
+            <td style="width:10%;"></td>
+        </tr>
+        <tr>
+            <td style="text-align:center; font-size:9px;">{{ session('usaha_alamat') }}</td>
+            <td></td>
+        </tr>
+        <tr class="kop-garis">
+            <td style="text-align:center; font-size:9px;">Telp. {{ session('usaha_telepon') }}</td>
+            <td></td>
+        </tr>
     </table>
 
-    <div class="judullaporan">
-        <h1>LAPORAN LABA RUGI</h1>
-        <h2>PERIODE {{ Str::upper(tglindonesia($tglawal)) }} S/D {{ Str::upper(tglindonesia($tglakhir)) }}</h2>
-    </div>
+    <table style="margin-top:8px;">
+        <tr>
+            <td class="judul">LAPORAN LABA RUGI</td>
+        </tr>
+        <tr>
+            <td class="sub-judul">
+                PERIODE {{ Str::upper(tglindonesia($tglawal)) }} S/D {{ Str::upper(tglindonesia($tglakhir)) }}
+            </td>
+        </tr>
+    </table>
 
-    <div class="content">
+    <table style="margin-top:10px;">
+        @php
+            $prevL2 = '';
+            $prevL3 = '';
+        @endphp
 
+        {{-- ============================================================ --}}
+        {{-- I. PENDAPATAN --}}
+        {{-- ============================================================ --}}
+        <tr class="section-header">
+            <td width="55%">I. PENDAPATAN</td>
+            <td width="22%" class="text-right"></td>
+            <td width="23%" class="text-right"></td>
+        </tr>
 
-        <table border="0" cellpadding="10">
+        @php
+            $prevL2 = ''; $prevL3 = '';
+            $subtotalL3 = 0; $subtotalL2 = 0;
+            $groupedL2 = []; $groupedL3 = [];
+            // Bangun struktur hierarki untuk pendapatan
+            foreach ($pendapatan as $row) {
+                $groupedL2[$row->kdparent_l2 . '|' . $row->namaparent_l2] = true;
+                $groupedL3[$row->kdparent_l3 . '|' . $row->namaparent_l3][$row->kdparent_l2 . '|' . $row->namaparent_l2] = true;
+            }
+        @endphp
 
-            <tbody>
-                @php
+        @foreach ($pendapatan as $idx => $row)
+            @if ($prevL2 != $row->kdparent_l2)
+                @if ($prevL2 != '')
+                    {{-- Subtotal L3 sebelumnya --}}
+                    @php /* subtotalL3 sudah ditambahkan di bawah */ @endphp
+                @endif
+                @php $prevL2 = $row->kdparent_l2; $prevL3 = ''; @endphp
+                <tr class="group-header">
+                    <td width="55%">&nbsp;&nbsp;{{ $row->namaparent_l2 }}</td>
+                    <td width="22%" class="text-right"></td>
+                    <td width="23%" class="text-right"></td>
+                </tr>
+            @endif
 
-                    $no = 1;
+            @if ($prevL3 != $row->kdparent_l3)
+                @php $prevL3 = $row->kdparent_l3; @endphp
+                <tr>
+                    <td width="55%">&nbsp;&nbsp;&nbsp;&nbsp;{{ $row->namaparent_l3 }}</td>
+                    <td width="22%" class="text-right"></td>
+                    <td width="23%" class="text-right"></td>
+                </tr>
+            @endif
 
-                    echo '
-                        <tr style="font-weight: bold; font-size:10px;">
-                            <td width="60%" style="text-align:left;">I. PENDAPATAN</td>
-                            <td width="20%" style="text-align:right;"></td>
-                            <td width="20%" style="text-align:right;"></td>
-                        </tr>
-                    ';
+            <tr class="akun-item">
+                <td width="55%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $row->namaakun }}</td>
+                <td width="22%" class="text-right">{{ format_rupiah($row->saldo) }}</td>
+                <td width="23%" class="text-right"></td>
+            </tr>
+        @endforeach
 
-                    echo '
-                        <tr style="font-size:10px;">
-                            <td width="60%" style="text-align:left;">Penjualan</td>
-                            <td width="20%" style="text-align:right;">' .
-                        format_rupiah($penjualan) .
-                        '</td>
-                            <td width="20%" style="text-align:right;"></td>
-                        </tr>
-                        <tr style="font-size:10px;">
-                            <td width="60%" style="text-align:left;">Discount Penjualan</td>
-                            <td width="20%" style="text-align:right;">' .
-                        format_rupiah($penjualan_discount) .
-                        '</td>
-                            <td width="20%" style="text-align:right;"></td>
-                        </tr>
-                        <tr style="font-size:10px;">
-                            <td width="60%" style="text-align:left;">Retur Penjualan</td>
-                            <td width="20%" style="text-align:right;">' .
-                        format_rupiah($penjualan_retur) .
-                        '</td>
-                            <td width="20%" style="text-align:right;"></td>
-                        </tr>
-                    ';
+        <tr class="total-row">
+            <td width="55%">Total Pendapatan</td>
+            <td width="22%" class="text-right"></td>
+            <td width="23%" class="text-right">{{ format_rupiah($totalPendapatan) }}</td>
+        </tr>
 
-                    echo '
-                        <tr style="font-weight: bold; font-size:10px;">
-                            <td width="60%" style="text-align:right;">Total Pendapatan</td>
-                            <td width="20%" style="text-align:right;"></td>
-                            <td width="20%" style="text-align:right;">' .
-                        format_rupiah($penjualan + $penjualan_discount + $penjualan_retur) .
-                        '</td>
-                        </tr>
-                    ';
+        <tr class="separator"><td colspan="3"></td></tr>
 
-                    echo '
-                        <tr style="font-weight: bold; font-size:10px;">
-                            <td width="60%" style="text-align:left;">II. HARGA POKOK PENJAULAN</td>
-                            <td width="20%" style="text-align:right;"></td>
-                            <td width="20%" style="text-align:right;"></td>
-                        </tr>
-                    ';
+        {{-- ============================================================ --}}
+        {{-- II. HARGA POKOK PENJUALAN (HPP) --}}
+        {{-- ============================================================ --}}
+        <tr class="section-header">
+            <td width="55%">II. HARGA POKOK PENJUALAN</td>
+            <td width="22%" class="text-right"></td>
+            <td width="23%" class="text-right"></td>
+        </tr>
 
-                    echo '
-                        <tr style="font-size:10px;">
-                            <td width="60%" style="text-align:left;">Persediaan Barang Dagang</td>
-                            <td width="20%" style="text-align:right;"></td>
-                            <td width="20%" style="text-align:right;">0</td>
-                        </tr>
-                        <tr style="font-size:10px;">
-                            <td width="60%" style="text-align:left;">Pembelian</td>
-                            <td width="20%" style="text-align:right;">' .
-                        format_rupiah($pembelian) .
-                        '</td>
-                            <td width="20%" style="text-align:right;"></td>
-                        </tr>
-                        <tr style="font-size:10px;">
-                            <td width="60%" style="text-align:left;">Discount Barang Dagang</td>
-                            <td width="20%" style="text-align:right;">' .
-                        format_rupiah($pembelian_discount) .
-                        '</td>
-                            <td width="20%" style="text-align:right;"></td>
-                        </tr>
-                        <tr style="font-size:10px;">
-                            <td width="60%" style="text-align:left;">Retur Pembelian</td>
-                            <td width="20%" style="text-align:right;">' .
-                        format_rupiah($pembelian_retur) .
-                        '</td>
-                            <td width="20%" style="text-align:right;"></td>
-                        </tr>
-                        <tr style="font-size:10px;">
-                            <td width="60%" style="text-align:left;">Pendapatn Bersih</td>
-                            <td width="20%" style="text-align:right;"></td>
-                            <td width="20%" style="text-align:right;">' .
-                        format_rupiah($pembelian + $pembelian_discount + $pembelian_retur) .
-                        '</td>
-                        </tr>
-                    ';
+        @php $prevL2 = ''; $prevL3 = ''; @endphp
+        @foreach ($hpp as $row)
+            @if ($prevL2 != $row->kdparent_l2)
+                @php $prevL2 = $row->kdparent_l2; $prevL3 = ''; @endphp
+                <tr class="group-header">
+                    <td width="55%">&nbsp;&nbsp;{{ $row->namaparent_l2 }}</td>
+                    <td width="22%" class="text-right"></td>
+                    <td width="23%" class="text-right"></td>
+                </tr>
+            @endif
+            @if ($prevL3 != $row->kdparent_l3)
+                @php $prevL3 = $row->kdparent_l3; @endphp
+                <tr>
+                    <td width="55%">&nbsp;&nbsp;&nbsp;&nbsp;{{ $row->namaparent_l3 }}</td>
+                    <td width="22%" class="text-right"></td>
+                    <td width="23%" class="text-right"></td>
+                </tr>
+            @endif
+            <tr class="akun-item">
+                <td width="55%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $row->namaakun }}</td>
+                <td width="22%" class="text-right">{{ format_rupiah($row->saldo) }}</td>
+                <td width="23%" class="text-right"></td>
+            </tr>
+        @endforeach
 
-                    $totalHPP = $pembelian + $pembelian_discount + $pembelian_retur;
-                    echo '
-                        <tr style="font-weight: bold; font-size:10px;">
-                            <td width="60%" style="text-align:right;">Total HPP</td>
-                            <td width="20%" style="text-align:right;"></td>
-                            <td width="20%" style="text-align:right;">' .
-                        format_rupiah($totalHPP) .
-                        '</td>
-                        </tr>
-                    ';
+        <tr class="total-row">
+            <td width="55%">Total HPP</td>
+            <td width="22%" class="text-right"></td>
+            <td width="23%" class="text-right">{{ format_rupiah($totalHPP) }}</td>
+        </tr>
 
-                    echo '
-                        <tr style="font-weight: bold; font-size:10px;">
-                            <td width="60%" style="text-align:right;">Laba Kotor</td>
-                            <td width="20%" style="text-align:right;"></td>
-                            <td width="20%" style="text-align:right;">' .
-                        format_rupiah($penjualan - $totalHPP) .
-                        '</td>
-                        </tr>
-                    ';
+        <tr class="separator"><td colspan="3"></td></tr>
 
-                @endphp
+        {{-- Laba Kotor --}}
+        <tr class="grand-total">
+            <td width="55%">LABA KOTOR</td>
+            <td width="22%" class="text-right"></td>
+            <td width="23%" class="text-right">{{ format_rupiah($labaKotor) }}</td>
+        </tr>
 
-            </tbody>
-        </table>
+        <tr class="separator"><td colspan="3"></td></tr>
 
+        {{-- ============================================================ --}}
+        {{-- III. BEBAN OPERASIONAL --}}
+        {{-- ============================================================ --}}
+        <tr class="section-header">
+            <td width="55%">III. BEBAN OPERASIONAL</td>
+            <td width="22%" class="text-right"></td>
+            <td width="23%" class="text-right"></td>
+        </tr>
 
-    </div>
+        @php $prevL2 = ''; $prevL3 = ''; @endphp
+        @foreach ($beban as $row)
+            @if ($prevL2 != $row->kdparent_l2)
+                @php $prevL2 = $row->kdparent_l2; $prevL3 = ''; @endphp
+                <tr class="group-header">
+                    <td width="55%">&nbsp;&nbsp;{{ $row->namaparent_l2 }}</td>
+                    <td width="22%" class="text-right"></td>
+                    <td width="23%" class="text-right"></td>
+                </tr>
+            @endif
+            @if ($prevL3 != $row->kdparent_l3)
+                @php $prevL3 = $row->kdparent_l3; @endphp
+                <tr>
+                    <td width="55%">&nbsp;&nbsp;&nbsp;&nbsp;{{ $row->namaparent_l3 }}</td>
+                    <td width="22%" class="text-right"></td>
+                    <td width="23%" class="text-right"></td>
+                </tr>
+            @endif
+            <tr class="akun-item">
+                <td width="55%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $row->namaakun }}</td>
+                <td width="22%" class="text-right">{{ format_rupiah($row->saldo) }}</td>
+                <td width="23%" class="text-right"></td>
+            </tr>
+        @endforeach
+
+        <tr class="total-row">
+            <td width="55%">Total Beban Operasional</td>
+            <td width="22%" class="text-right"></td>
+            <td width="23%" class="text-right">{{ format_rupiah($totalBeban) }}</td>
+        </tr>
+
+        <tr class="separator"><td colspan="3"></td></tr>
+
+        {{-- Laba Bersih --}}
+        <tr class="grand-total">
+            <td width="55%">LABA BERSIH SEBELUM PAJAK</td>
+            <td width="22%" class="text-right"></td>
+            <td width="23%" class="text-right">{{ format_rupiah($labaBersih) }}</td>
+        </tr>
+
+    </table>
 </body>
 
 </html>
+

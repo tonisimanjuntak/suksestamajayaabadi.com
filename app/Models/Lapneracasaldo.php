@@ -10,15 +10,54 @@ class Lapneracasaldo extends Model
 {
     use HasFactory;
 
-
+    /**
+     * Ambil saldo akun level 4 untuk neraca saldo.
+     * Menggabungkan saldo awal (sebelum $tglawal) dan mutasi periode ($tglawal s.d. $tglakhir).
+     */
     public function getSaldoJurnal($tglawal, $tglakhir)
     {
-        return DB::select("SELECT akun.kdakun, akun.namaakun, 
-                            (SELECT SUM(v_jurnaldetail.debet) FROM v_jurnaldetail 
-                                WHERE v_jurnaldetail.kdparent = akun.kdakun AND v_jurnaldetail.tgljurnal BETWEEN '$tglawal' AND '$tglakhir') AS debet,
-                            (SELECT SUM(v_jurnaldetail.kredit) FROM v_jurnaldetail 
-                                WHERE v_jurnaldetail.kdparent = akun.kdakun AND v_jurnaldetail.tgljurnal BETWEEN '$tglawal' AND '$tglakhir') AS kredit
-                            FROM akun 
-                            WHERE akun.levels = 3 order by kdakun");
+        return DB::select("
+            SELECT 
+                a4.kdakun,
+                a4.namaakun,
+                a4.levels,
+                a1.kdakun  AS kdparent_l1,
+                a1.namaakun AS namaparent_l1,
+                a2.kdakun  AS kdparent_l2,
+                a2.namaakun AS namaparent_l2,
+                a3.kdakun  AS kdparent_l3,
+                a3.namaakun AS namaparent_l3,
+                COALESCE(sa.debet, 0)   AS debet_awal,
+                COALESCE(sa.kredit, 0)  AS kredit_awal,
+                COALESCE(mut.debet, 0)  AS debet_mutasi,
+                COALESCE(mut.kredit, 0) AS kredit_mutasi
+            FROM akun a4
+            JOIN akun a3 ON a3.kdakun = a4.kdparent
+            JOIN akun a2 ON a2.kdakun = a3.kdparent
+            JOIN akun a1 ON a1.kdakun = a2.kdparent
+            LEFT JOIN (
+                SELECT 
+                    jd.kdakun,
+                    SUM(jd.debet)  AS debet,
+                    SUM(jd.kredit) AS kredit
+                FROM jurnaldetail jd
+                JOIN jurnal j ON j.idjurnal = jd.idjurnal
+                WHERE j.tgljurnal < '$tglawal'
+                GROUP BY jd.kdakun
+            ) sa ON sa.kdakun = a4.kdakun
+            LEFT JOIN (
+                SELECT 
+                    jd.kdakun,
+                    SUM(jd.debet)  AS debet,
+                    SUM(jd.kredit) AS kredit
+                FROM jurnaldetail jd
+                JOIN jurnal j ON j.idjurnal = jd.idjurnal
+                WHERE j.tgljurnal BETWEEN '$tglawal' AND '$tglakhir'
+                GROUP BY jd.kdakun
+            ) mut ON mut.kdakun = a4.kdakun
+            WHERE a4.levels = 4
+            ORDER BY a4.kdakun ASC
+        ");
     }
 }
+

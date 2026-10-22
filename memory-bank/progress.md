@@ -36,6 +36,8 @@ Bukti implementasi terverifikasi dari routes di `routes/web.php` dan 60 controll
    - Penerimaan & Pengeluaran Kas/Bank (`PenerimaanController`, `PengeluaranController`).
    - Jurnal Umum Manual (`JurnalController`).
    - Posting Jurnal Periode Bulanan (`PostingjurnalController`, `Postingjurnal`): Pembaruan arsitektur posting transaksi (Penjualan, Pembelian, Retur, Piutang, Hutang, Penerimaan, Pengeluaran) ke tabel `jurnal` dan `jurnaldetail` dengan mapping akun Level 4 standar dagang, chunk batch 500 baris, format 15 digit `idjurnal`, isolasi `idposting`, serta verifikasi balance Debet == Kredit.
+   - Laporan Laba Rugi (`LaplabarugiController`, `Laplabarugi`): Mengambil data murni dari tabel `jurnal` dan `jurnaldetail` hasil posting akuntansi. Menghitung saldo normal Pendapatan (Kredit - Debet), HPP (Debet - Kredit), Beban Operasional (Debet - Kredit), Laba Kotor, dan Laba Bersih sebelum pajak. Dilengkapi cetak PDF (TCPDF layout tabel murni) & Excel.
+   - Laporan Neraca Saldo (`LapneracasaldoController`, `Lapneracasaldo`): Mengambil data murni dari tabel `jurnal` dan `jurnaldetail` pada akun transaksi Level 4. Menghitung saldo awal kumulatif sebelum periode dan mutasi periode berjalan, penempatan saldo netto pada kolom Debet atau Kredit berdasarkan saldo normal akun (Aset/Beban/HPP di Debet, Kewajiban/Modal/Pendapatan di Kredit), penjaminan total Debet == total Kredit (Balance), indikator status balance, serta template cetak PDF (TCPDF) & Excel terstruktur dengan sub-header Level 1 dan Level 2.
    - Saldo Awal Akun & Saldo Piutang (`SaldoawalController`, `SaldopiutangController`).
 6. **Persediaan & Stok**:
    - Stock Opname Fisik (`StockopnameController`).

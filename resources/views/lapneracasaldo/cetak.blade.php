@@ -3,119 +3,155 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Pembelian</title>
+    <title>Laporan Neraca Saldo</title>
     <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: times, serif;
+            font-size: 10px;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
         }
-
-        .judullaporan .nama-laporan {
-            font-size: 20px;
-            font-weight: bold;
-            text-align: center;
-            display: block;
+        th, td {
+            padding: 3px 5px;
+            font-size: 10px;
         }
-
-        .judullaporan .periode-laporan {
-            font-size: 14px;
-            font-weight: bold;
-            text-align: center;
-            display: block;
-        }
-
-        .content {
-            margin-top: 200px;
-        }
-
-        .barisKosong {
-            display: block;
-        }
-
-        .no-border-bottom {
-            border-bottom: 1px solid #eee;
-        }
-
-        .no-border-top {
-            border-top: 1px solid #eee;
-        }
-
-        .add-border-top {
+        .kop-garis {
             border-top: 1px solid black;
-        }
-
-        .add-border-bottom {
             border-bottom: 1px solid black;
+        }
+        .judul {
+            text-align: center;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .sub-judul {
+            text-align: center;
+            font-size: 10px;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .text-left {
+            text-align: left;
+        }
+        .font-bold {
+            font-weight: bold;
         }
     </style>
 </head>
 
 <body>
+    {{-- Kop Surat --}}
+    @php
+        $logoFile = session('usaha_logo');
+        $logoPath = $logoFile ? public_path('images/' . $logoFile) : null;
+        $hasLogo = $logoPath && file_exists($logoPath);
+    @endphp
     <table>
-        <thead>
-            <tr>
-                <th class="" style="width: 10%; text-align: center;" rowspan="3"><img
-                        src="{{ public_path('images/'. session('usaha_logo')) }}" alt="" style="width: 50px;"></th>
-                <th style="width: 90%; font-size: 15px; text-align: left; padding-right: 50px;" colspan="7">{{ session('usaha_nama') }}</th>
-            </tr>
-            <tr>
-                <th style="font-size: 10px; text-align: left;" colspan="7">{{ session('usaha_alamat') }}</th>
-            </tr>
-            <tr>
-                <th class="" style="font-size: 10px; text-align: left;" colspan="7">No Telepon. {{ session('usaha_telepon') }}
-                </th>
-            </tr>
-        </thead>
+        <tr>
+            @if ($hasLogo)
+                <td style="width:15%; text-align:center; vertical-align:middle;" rowspan="3">
+                    <img src="{{ $logoPath }}" alt="" style="width:55px;">
+                </td>
+                <td style="width:75%; text-align:center; font-size:14px; font-weight:bold;">
+                    {{ session('usaha_nama') }}
+                </td>
+                <td style="width:10%;"></td>
+            @else
+                <td style="width:100%; text-align:center; font-size:14px; font-weight:bold;" colspan="3">
+                    {{ session('usaha_nama') }}
+                </td>
+            @endif
+        </tr>
+        <tr>
+            <td style="text-align:center; font-size:9px;" colspan="{{ $hasLogo ? 1 : 3 }}">{{ session('usaha_alamat') }}</td>
+            @if ($hasLogo) <td></td> @endif
+        </tr>
+        <tr class="kop-garis">
+            <td style="text-align:center; font-size:9px;" colspan="{{ $hasLogo ? 1 : 3 }}">Telp. {{ session('usaha_telepon') }}</td>
+            @if ($hasLogo) <td></td> @endif
+        </tr>
     </table>
 
-    <div class="judullaporan">
-        <div class="nama-laporan">LAPORAN NERACA SALDO</div>
-        <div class="periode-laporan">PERIODE {{ Str::upper(tglindonesia($tglawal)) }} S/D {{ Str::upper(tglindonesia($tglakhir)) }}</div>
-    </div>
+    <table style="margin-top:8px;">
+        <tr>
+            <td class="judul">LAPORAN NERACA SALDO</td>
+        </tr>
+        <tr>
+            <td class="sub-judul">
+                PERIODE {{ Str::upper(tglindonesia($tglawal)) }} S/D {{ Str::upper(tglindonesia($tglakhir)) }}
+            </td>
+        </tr>
+    </table>
 
-    <div class="content">
-
-        <table border="1" cellpadding="10">
-            <thead>
-                <tr style="font-size:10px; font-weight:bold;">
-                    <th width="15%" style="text-align:center;">KODE</th>
-                    <th width="45%" style="text-align:center;">URAIAN</th>
-                    <th width="20%" style="text-align:center;">DEBET</th>
-                    <th width="20%" style="text-align:center;">KREDIT</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php
-                    $totalDebet = 0;
-                    $totalKredit = 0;
-                @endphp
-                @if (count($rsSaldoJurnal)>0)
-                    @foreach ($rsSaldoJurnal as $row)
-                    @php
-                        $totalDebet += $row->debet;
-                        $totalKredit += $row->kredit;
-                    @endphp
-                        <tr style="font-size:10px;">
-                            <th width="15%" style="text-align:center;">{{ $row->kdakun }}</th>
-                            <th width="45%" style="text-align:left;">{{ $row->namaakun }}</th>
-                            <th width="20%" style="text-align:right;">{{ format_rupiah($row->debet) }}</th>
-                            <th width="20%" style="text-align:right;">{{ format_rupiah($row->kredit) }}</th>
+    <table border="1" cellpadding="3" style="margin-top:10px;">
+        <thead>
+            <tr style="font-weight:bold; background-color:#e0e0e0;">
+                <th width="18%" class="text-center font-bold">KODE AKUN</th>
+                <th width="46%" class="text-center font-bold">NAMA AKUN</th>
+                <th width="18%" class="text-center font-bold">DEBET</th>
+                <th width="18%" class="text-center font-bold">KREDIT</th>
+            </tr>
+        </thead>
+        <tbody>
+            @php
+                $prevL1 = '';
+                $prevL2 = '';
+            @endphp
+            @if (count($rsSaldoJurnal) > 0)
+                @foreach ($rsSaldoJurnal as $row)
+                    @if ($prevL1 != $row->kdparent_l1)
+                        @php
+                            $prevL1 = $row->kdparent_l1;
+                            $prevL2 = '';
+                        @endphp
+                        <tr style="font-weight:bold; background-color:#eeeeee;">
+                            <td colspan="4" class="font-bold" style="font-size:9px;">
+                                <strong>{{ $row->kdparent_l1 }} - {{ Str::upper($row->namaparent_l1) }}</strong>
+                            </td>
                         </tr>
-                    @endforeach
-
-                    <tr style="font-size:10px;; font-weight: bold;">
-                        <th width="60%" style="text-align:right;" colspan="2">TOTAL</th>
-                        <th width="20%" style="text-align:right;">{{ format_rupiah($totalDebet) }}</th>
-                        <th width="20%" style="text-align:right;">{{ format_rupiah($totalKredit) }}</th>
+                    @endif
+                    @if ($prevL2 != $row->kdparent_l2)
+                        @php $prevL2 = $row->kdparent_l2; @endphp
+                        <tr style="font-weight:bold; background-color:#f8f8f8;">
+                            <td colspan="4" style="font-size:9px; padding-left:10px;">
+                                <em>&nbsp;&nbsp;{{ $row->kdparent_l2 }} {{ $row->namaparent_l2 }}</em>
+                            </td>
+                        </tr>
+                    @endif
+                    <tr>
+                        <td width="18%" class="text-center" style="font-size:9px;">{{ $row->kdakun }}</td>
+                        <td width="46%" class="text-left" style="font-size:9px; padding-left:15px;">&nbsp;&nbsp;&nbsp;&nbsp;{{ $row->namaakun }}</td>
+                        <td width="18%" class="text-right" style="font-size:9px;">{{ format_rupiah($row->debet) }}</td>
+                        <td width="18%" class="text-right" style="font-size:9px;">{{ format_rupiah($row->kredit) }}</td>
                     </tr>
-                @endif
+                @endforeach
 
-            </tbody>
-        </table>
-
-
-    </div>
+                <tr style="font-weight:bold; background-color:#e0e0e0;">
+                    <td colspan="2" width="64%" class="text-right font-bold" style="font-size:10px;">TOTAL</td>
+                    <td width="18%" class="text-right font-bold" style="font-size:10px;">{{ format_rupiah($totalDebet) }}</td>
+                    <td width="18%" class="text-right font-bold" style="font-size:10px;">{{ format_rupiah($totalKredit) }}</td>
+                </tr>
+                <tr style="font-weight:bold;">
+                    <td colspan="4" class="text-center font-bold" style="font-size:9px;">
+                        STATUS: {{ $isBalance ? 'SEIMBANG / BALANCE' : 'TIDAK SEIMBANG / OUT OF BALANCE (SELISIH: ' . format_rupiah(abs($totalDebet - $totalKredit)) . ')' }}
+                    </td>
+                </tr>
+            @else
+                <tr>
+                    <td colspan="4" class="text-center">Data akun tidak ditemukan.</td>
+                </tr>
+            @endif
+        </tbody>
+    </table>
 </body>
 
 </html>
+

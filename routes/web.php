@@ -687,7 +687,7 @@ Route::middleware(['check.menu.access'])->group(function () {
 
         Route::controller(LaplabarugiController::class)->group(function () {
             Route::get('laplabarugi', 'index');
-            Route::get('laplabarugi/cetak/{tglawal}/{tglakhir}', 'cetak');            
+            Route::get('laplabarugi/cetak/{jenisCetakan}/{tglawal}/{tglakhir}', 'cetak');            
         });
 
 });

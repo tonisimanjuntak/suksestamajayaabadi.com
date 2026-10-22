@@ -29,8 +29,39 @@
 
                             <div class="card-body">
                                 <div class="row d-flex justify-content-center">
-                                    <div class="col-md-6 text-center">
-                                        <h5 class="mt-5 mb-5">Sedang dalam proses pengerjaan.</h5>
+                                    <div class="col-md-6">
+                                        <div class="card">
+                                            <div class="card-body p-5">
+                                                <div class="row">
+                                                    <div class="col-12 mb-3">
+                                                        <h1>Laporan Laba Rugi</h1>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div class="form-group row">
+                                                            <label for="" class="col-md-3 col-form-label">Tanggal
+                                                                Periode</label>
+                                                            <div class="col-md-4">
+                                                                <input type="date" name="tglawal" id="tglawal"
+                                                                    class="form-control" value="{{ date('Y-m-01') }}">
+                                                            </div>
+                                                            <label for=""
+                                                                class="col-md-1 col-form-label text-center">s/d</label>
+                                                            <div class="col-md-4">
+                                                                <input type="date" name="tglakhir" id="tglakhir"
+                                                                    class="form-control" value="{{ date('Y-m-d') }}">
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="col-12 mt-5">
+                                                        <button class="btn btn-danger float-right ml-1" id="btnCetakPdf"><i
+                                                            class="fa fa-file-pdf"></i> Cetak Pdf</button>
+                                                        <button class="btn btn-success float-right" id="btnCetakExcel"><i
+                                                                class="fa fa-file-excel"></i> Cetak Excel</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
 
                                     </div>
                                 </div>
@@ -46,5 +77,31 @@
 @endsection
 
 @section('scripts')
-    
+    <script>
+        $(document).ready(function() {
+
+        });
+
+        $('#btnCetakPdf').click(function() {
+            cetak('pdf');
+        });
+
+        $('#btnCetakExcel').click(function() {
+            cetak('excel');
+        });
+
+        function cetak(jenisCetakan)
+        {
+            var tglawal = $('#tglawal').val();
+            var tglakhir = $('#tglakhir').val();
+
+            if (tglawal === '' || tglakhir === '') {
+                swal("Informasi", "Tanggal periode belum dipilih!", "info");
+                return;
+            }
+
+            window.open("{{ url('laplabarugi/cetak') }}" + "/" + jenisCetakan + "/" + tglawal + "/" + tglakhir);
+        }
+    </script>
 @endsection
+

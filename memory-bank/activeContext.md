@@ -2,11 +2,13 @@
 Tanggal: 2026-10-15
 
 ## Fokus Saat Ini
-1. **Posting Jurnal Bulanan & Akuntansi**: Perbaikan menyeluruh logika modul posting jurnal bulanan (`PostingjurnalController.php` dan `Postingjurnal.php`) yang memproses seluruh transaksi bulanan ke tabel `jurnal` dan `jurnaldetail` untuk bahan laporan akuntansi. Mengatasi session NULL dengan fallback ke tabel `settings` dan mapping akun Level 4 standar dagang, chunk insert 500 baris, format 15 digit `idjurnal`, penghapusan aman per `idposting`, serta verifikasi balance debet & kredit.
-2. **Analisa & Penyesuaian Bagan Akun (COA)**: Standardisasi kode akun akuntansi 4 level untuk modul ERP (HPP, persediaan, kontra penjualan/pembelian, pajak, utang ekspedisi jangka pendek, dan beban operasional), serta perbaikan helper `get_saldo_normal`.
-3. **Multi-Dashboard Pengguna**: Pengalihan otomatis halaman dashboard berdasarkan konfigurasi pengguna (`halamandashboard` = 'Dashboard Admin', 'Dashboard Sales', 'Dashboard Kosong').
-4. **Dashboard Sales**: Halaman khusus sales (`homesales.blade.php`) dengan informasi Top Penjualan Sales (Bulan Ini, Bulan Kemarin, Tahun Ini) dan Top 5 Piutang Lewat Jatuh Tempo berbasis persentase, serta 5 transaksi penagihan terbaru tanpa kolom status dan link menu cepat.
-5. **Dokumentasi & Log Update**: Pembaruan berkala riwayat update di `public/logupdate.txt` dan sinkronisasi berkas `memory-bank/`.
+1. **Laporan Neraca Saldo (Trial Balance)**: Telah diperbaiki secara komprehensif (`LapneracasaldoController.php`, `Lapneracasaldo.php`, dan `cetak.blade.php`). Menggunakan hierarki akun Level 4 (Tingkat Transaksi), agregasi saldo awal kumulatif sebelum periode dan mutasi periode, kalkulasi saldo akhir netto (Debet vs Kredit sesuai saldo normal), penjaminan keseimbangan debet-kredit ($\sum Debet == \sum Kredit$), serta template cetak TCPDF & Excel dengan kop surat resmi dan indikator status balance.
+2. **Laporan Laba Rugi**: Mengambil data laba rugi murni dari tabel `jurnal` dan `jurnaldetail` berdasarkan akun Level 4 (prefix 4 Pendapatan, 6 HPP, 5 Beban Operasional). Dilengkapi antarmuka pemilihan rentang tanggal dan fungsi export PDF (TCPDF standar murni tabel) serta file Excel.
+3. **Posting Jurnal Bulanan & Akuntansi**: Perbaikan menyeluruh logika modul posting jurnal bulanan (`PostingjurnalController.php` dan `Postingjurnal.php`) yang memproses seluruh transaksi bulanan ke tabel `jurnal` dan `jurnaldetail` untuk bahan laporan akuntansi. Mengatasi session NULL dengan fallback ke tabel `settings` dan mapping akun Level 4 standar dagang, chunk insert 500 baris, format 15 digit `idjurnal`, penghapusan aman per `idposting`, serta verifikasi balance debet & kredit.
+3. **Analisa & Penyesuaian Bagan Akun (COA)**: Standardisasi kode akun akuntansi 4 level untuk modul ERP (HPP, persediaan, kontra penjualan/pembelian, pajak, utang ekspedisi jangka pendek, dan beban operasional), serta perbaikan helper `get_saldo_normal`.
+4. **Multi-Dashboard Pengguna**: Pengalihan otomatis halaman dashboard berdasarkan konfigurasi pengguna (`halamandashboard` = 'Dashboard Admin', 'Dashboard Sales', 'Dashboard Kosong').
+5. **Dashboard Sales**: Halaman khusus sales (`homesales.blade.php`) dengan informasi Top Penjualan Sales (Bulan Ini, Bulan Kemarin, Tahun Ini) dan Top 5 Piutang Lewat Jatuh Tempo berbasis persentase, serta 5 transaksi penagihan terbaru tanpa kolom status dan link menu cepat.
+6. **Dokumentasi & Log Update**: Pembaruan berkala riwayat update di `public/logupdate.txt` dan sinkronisasi berkas `memory-bank/`.
 
 ## Perubahan Terbaru (dari git log)
 - `a81b099` (2026-10-08): *Update db.sql* — Pembaruan dump skema database MySQL terkait tabel dan fungsi transaksi.
