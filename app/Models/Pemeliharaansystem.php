@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Session;
 use Exception;
 
 class Pemeliharaansystem extends Model
@@ -12,9 +14,9 @@ class Pemeliharaansystem extends Model
     use HasFactory;
 
     /**
-     * Ambil statistik global tabel riwayataktifitas dan arsip
+     * Ambil statistik global tabel riwayataktifitas, arsip, dan sesi pengguna
      */
-    public function getStatistikGlobal()
+    public function getStatistikGlobal($currentSessionId = null)
     {
         $aktifCount = DB::table('riwayataktifitas')->count();
         $archiveCount = DB::table('riwayataktifitas_archive')->count();
@@ -25,6 +27,16 @@ class Pemeliharaansystem extends Model
         $archiveMinDate = DB::table('riwayataktifitas_archive')->min('inserted_date');
         $archiveMaxDate = DB::table('riwayataktifitas_archive')->max('inserted_date');
 
+        $totalSesi = 0;
+        $sesiLain = 0;
+        if (Schema::hasTable('sessions')) {
+            $totalSesi = DB::table('sessions')->count();
+            if (empty($currentSessionId)) {
+                $currentSessionId = Session::getId();
+            }
+            $sesiLain = DB::table('sessions')->where('id', '!=', $currentSessionId)->count();
+        }
+
         return [
             'aktif_count' => $aktifCount,
             'archive_count' => $archiveCount,
@@ -32,6 +44,8 @@ class Pemeliharaansystem extends Model
             'aktif_max_date' => $aktifMaxDate ? date('d-m-Y H:i', strtotime($aktifMaxDate)) : '-',
             'archive_min_date' => $archiveMinDate ? date('d-m-Y H:i', strtotime($archiveMinDate)) : '-',
             'archive_max_date' => $archiveMaxDate ? date('d-m-Y H:i', strtotime($archiveMaxDate)) : '-',
+            'total_sesi' => $totalSesi,
+            'sesi_lain' => $sesiLain,
         ];
     }
 
@@ -203,6 +217,65 @@ class Pemeliharaansystem extends Model
                 'message' => 'Terjadi kesalahan saat memproses arsip: ' . $e->getMessage(),
                 'inserted' => 0,
                 'deleted' => 0,
+            ];
+        }
+    }
+
+    /**
+     * Mengeluarkan (force logout) seluruh pengguna lain dari sistem.
+     * Sesi developer saat ini ($currentSessionId) tetap dipertahankan.
+     */
+    public function logoutSemuaPengguna($currentSessionId = null)
+    {
+        try {
+            if (empty($currentSessionId)) {
+                $currentSessionId = Session::getId();
+            }
+
+            $countLain = 0;
+            if (Schema::hasTable('sessions')) {
+                $countLain = DB::table('sessions')
+                    ->where('id', '!=', $currentSessionId)
+                    ->count();
+
+                DB::table('sessions')
+                    ->where('id', '!=', $currentSessionId)
+                    ->delete();
+            }
+
+            // Bersihkan file session lokal jika ada file selain sesi developer saat ini
+            $sessionFiles = glob(storage_path('framework/sessions/*'));
+            $fileDeleted = 0;
+            if ($sessionFiles) {
+                foreach ($sessionFiles as $file) {
+                    $filename = basename($file);
+                    if ($filename !== $currentSessionId && $filename !== '.gitignore') {
+                        if (@unlink($file)) {
+                            $fileDeleted++;
+                        }
+                    }
+                }
+            }
+
+            // Catat riwayat aktifitas pemeliharaan sistem
+            $appModel = new App();
+            $appModel->riwayatAktifitas([
+                'keterangan' => 'Force Logout Semua Pengguna Lain',
+                'sesi_dikeluarkan' => $countLain,
+                'file_sesi_dibersihkan' => $fileDeleted,
+                'developer_session_id' => $currentSessionId,
+            ], 'sessions', 'logoutSemuaPengguna');
+
+            return [
+                'status' => 'success',
+                'message' => 'Berhasil mengeluarkan seluruh pengguna dari sistem. Sebanyak ' . number_format($countLain, 0, ',', '.') . ' sesi pengguna lain telah dinonaktifkan. Pengguna harus login ulang.',
+                'total_logout' => $countLain,
+            ];
+        } catch (Exception $e) {
+            return [
+                'status' => 'error',
+                'message' => 'Gagal memproses logout seluruh pengguna: ' . $e->getMessage(),
+                'total_logout' => 0,
             ];
         }
     }

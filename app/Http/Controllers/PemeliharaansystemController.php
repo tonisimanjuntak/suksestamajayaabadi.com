@@ -74,4 +74,18 @@ class PemeliharaansystemController extends Controller
 
         return response()->json($result);
     }
+
+    /**
+     * Eksekusi force logout semua pengguna lain via AJAX
+     */
+    public function logoutSemuaPengguna(Request $request)
+    {
+        $this->checkDev();
+
+        $currentSessionId = session()->getId();
+        $result = $this->pemeliharaanModel->logoutSemuaPengguna($currentSessionId);
+        $result['statistik'] = $this->pemeliharaanModel->getStatistikGlobal($currentSessionId);
+
+        return response()->json($result);
+    }
 }

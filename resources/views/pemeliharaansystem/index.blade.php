@@ -23,31 +23,46 @@
 
             <!-- Overview Statistik Database -->
             <div class="row">
-                <div class="col-md-6 col-12">
+                <div class="col-md-4 col-12">
                     <div class="info-box shadow-sm">
                         <span class="info-box-icon bg-info elevation-1"><i class="fas fa-history"></i></span>
                         <div class="info-box-content">
-                            <span class="info-box-text text-muted font-weight-bold">Tabel Riwayat Aktifitas (Aktif)</span>
+                            <span class="info-box-text text-muted font-weight-bold">Riwayat Aktifitas (Aktif)</span>
                             <span class="info-box-number text-lg" id="statAktifCount">
                                 {{ number_format($statistik['aktif_count'], 0, ',', '.') }} <small>baris</small>
                             </span>
                             <span class="text-xs text-muted">
-                                Rentang data: <span id="statAktifMin">{{ $statistik['aktif_min_date'] }}</span> s/d <span id="statAktifMax">{{ $statistik['aktif_max_date'] }}</span>
+                                Rentang: <span id="statAktifMin">{{ $statistik['aktif_min_date'] }}</span> s/d <span id="statAktifMax">{{ $statistik['aktif_max_date'] }}</span>
                             </span>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-md-6 col-12">
+                <div class="col-md-4 col-12">
                     <div class="info-box shadow-sm">
                         <span class="info-box-icon bg-success elevation-1"><i class="fas fa-archive"></i></span>
                         <div class="info-box-content">
-                            <span class="info-box-text text-muted font-weight-bold">Tabel Riwayat Aktifitas (Arsip)</span>
+                            <span class="info-box-text text-muted font-weight-bold">Riwayat Aktifitas (Arsip)</span>
                             <span class="info-box-number text-lg" id="statArchiveCount">
                                 {{ number_format($statistik['archive_count'], 0, ',', '.') }} <small>baris</small>
                             </span>
                             <span class="text-xs text-muted">
-                                Rentang data: <span id="statArchiveMin">{{ $statistik['archive_min_date'] }}</span> s/d <span id="statArchiveMax">{{ $statistik['archive_max_date'] }}</span>
+                                Rentang: <span id="statArchiveMin">{{ $statistik['archive_min_date'] }}</span> s/d <span id="statArchiveMax">{{ $statistik['archive_max_date'] }}</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-12">
+                    <div class="info-box shadow-sm">
+                        <span class="info-box-icon bg-warning elevation-1 text-white"><i class="fas fa-users"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text text-muted font-weight-bold">Sesi Pengguna Aktif</span>
+                            <span class="info-box-number text-lg">
+                                <span id="statSesiTotal">{{ number_format($statistik['total_sesi'] ?? 0, 0, ',', '.') }}</span> <small>sesi</small>
+                            </span>
+                            <span class="text-xs text-muted">
+                                Pengguna lain aktif: <strong id="statSesiLain" class="text-primary">{{ number_format($statistik['sesi_lain'] ?? 0, 0, ',', '.') }}</strong> sesi
                             </span>
                         </div>
                     </div>
@@ -147,6 +162,60 @@
                 </div>
             </div>
 
+            <!-- Modul 2: Manajemen Sesi & Logout Seluruh Pengguna -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card card-outline card-warning shadow-sm">
+                        <div class="card-header">
+                            <h3 class="card-title font-weight-bold">
+                                <i class="fas fa-user-lock mr-2 text-warning"></i>2. Force Logout Seluruh Pengguna
+                            </h3>
+                            <div class="card-tools">
+                                <span class="badge badge-warning">Session Management</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-light border mb-4">
+                                <h6 class="font-weight-bold text-dark mb-1"><i class="fas fa-info-circle mr-1 text-warning"></i>Petunjuk Operasi:</h6>
+                                <p class="mb-1 text-sm text-muted">
+                                    Fitur ini digunakan untuk mengeluarkan (<em>force logout</em>) seluruh pengguna yang sedang aktif menggunakan sistem (Kasir, Sales, Bagian Gudang, Admin, Akunting, dll).
+                                </p>
+                                <ul class="mb-0 text-sm text-muted pl-3">
+                                    <li>Sesi aktif Anda sebagai <strong>Developer</strong> akan tetap dipertahankan (tidak ikut ter-logout).</li>
+                                    <li>Seluruh sesi pengguna lain akan dihapus dari sistem, sehingga ketika mereka melakukan navigasi atau aksi berikutnya, sistem akan mengarahkan mereka untuk login ulang.</li>
+                                    <li>Sangat disarankan dieksekusi setelah pembaruan sistem (seperti pembaruan tampilan login, penerapan verifikasi Google reCAPTCHA, atau penyesuaian hak akses menu) agar seluruh pengguna segera memuat konfigurasi terbaru.</li>
+                                </ul>
+                            </div>
+
+                            <div class="card bg-light border p-3 mb-0">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8 col-12 mb-md-0 mb-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="mr-3">
+                                                <span class="btn btn-warning btn-lg disabled" style="cursor: default; opacity: 1;">
+                                                    <i class="fas fa-users-slash fa-2x"></i>
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <h6 class="font-weight-bold mb-1 text-dark">Keluarkan Seluruh Pengguna Lain</h6>
+                                                <p class="text-sm text-muted mb-0">
+                                                    Saat ini terdapat <strong class="text-primary font-weight-bold" id="textSesiLainCount">{{ number_format($statistik['sesi_lain'] ?? 0, 0, ',', '.') }}</strong> sesi pengguna lain yang sedang aktif di database.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-12 text-md-right text-left">
+                                        <button type="button" class="btn btn-warning btn-lg font-weight-bold shadow-sm" id="btnForceLogout">
+                                            <i class="fas fa-sign-out-alt mr-2"></i>Logout Semua Pengguna
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Placeholder untuk Pemeliharaan System Mendatang -->
             <div class="row">
                 <div class="col-12">
@@ -197,6 +266,13 @@ $(document).ready(function() {
         $('#statAktifMax').text(stat.aktif_max_date);
         $('#statArchiveMin').text(stat.archive_min_date);
         $('#statArchiveMax').text(stat.archive_max_date);
+        if (stat.total_sesi !== undefined) {
+            $('#statSesiTotal').text(formatNumber(stat.total_sesi));
+        }
+        if (stat.sesi_lain !== undefined) {
+            $('#statSesiLain').text(formatNumber(stat.sesi_lain));
+            $('#textSesiLainCount').text(formatNumber(stat.sesi_lain));
+        }
     }
 
     function loadStatusPeriode(callback) {
@@ -378,6 +454,76 @@ $(document).ready(function() {
                     });
                 }
             });
+        });
+    });
+
+    // Tombol Force Logout Semua Pengguna
+    $('#btnForceLogout').on('click', function(e) {
+        e.preventDefault();
+
+        swal({
+            title: "Konfirmasi Logout Semua Pengguna",
+            text: "Apakah Anda yakin ingin mengeluarkan (force logout) seluruh pengguna lain dari sistem?\n\n" +
+                "• Sesi Anda sebagai developer TETAP AKTIF.\n" +
+                "• Seluruh sesi pengguna lain akan dihapus dari sistem.\n" +
+                "• Seluruh pengguna lain wajib memasukkan username, password, dan verifikasi reCAPTCHA baru untuk masuk kembali.",
+            icon: "warning",
+            buttons: ["Batal", "Ya, Keluarkan Semua!"],
+            dangerMode: true,
+        }).then((willProceed) => {
+            if (willProceed) {
+                var $btn = $('#btnForceLogout');
+                var origHtml = $btn.html();
+                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Memproses Logout...');
+
+                $.ajax({
+                    url: "{{ route('pemeliharaansystem.logoutSemuaPengguna') }}",
+                    type: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}"
+                    },
+                    dataType: "json",
+                    success: function(res) {
+                        $btn.prop('disabled', false).html(origHtml);
+
+                        if (res.status === 'success') {
+                            swal({
+                                title: "Berhasil!",
+                                text: res.message,
+                                icon: "success",
+                                button: "OK"
+                            });
+
+                            if (res.statistik) {
+                                updateStatistikGlobal(res.statistik);
+                            }
+                        } else {
+                            swal({
+                                title: "Gagal!",
+                                text: res.message || "Terjadi kesalahan saat memproses logout pengguna.",
+                                icon: "error",
+                                button: "OK"
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        $btn.prop('disabled', false).html(origHtml);
+                        var errDetail = "Terjadi kesalahan pada server.";
+                        try {
+                            var parsed = JSON.parse(xhr.responseText);
+                            if (parsed && parsed.message) {
+                                errDetail = parsed.message;
+                            }
+                        } catch(e) {}
+                        swal({
+                            title: "Error Server",
+                            text: errDetail,
+                            icon: "error",
+                            button: "OK"
+                        });
+                    }
+                });
+            }
         });
     });
 

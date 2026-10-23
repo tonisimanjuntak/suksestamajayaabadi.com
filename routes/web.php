@@ -111,6 +111,7 @@ Route::controller(PemeliharaansystemController::class)->group(function () {
     Route::get('pemeliharaansystem', 'index')->name('pemeliharaansystem.index');
     Route::post('pemeliharaansystem/cekstatus', 'cekStatus')->name('pemeliharaansystem.cekStatus');
     Route::post('pemeliharaansystem/archiveriwayataktifitas', 'archiveRiwayatAktifitas')->name('pemeliharaansystem.archiveRiwayatAktifitas');
+    Route::post('pemeliharaansystem/logoutsemuapengguna', 'logoutSemuaPengguna')->name('pemeliharaansystem.logoutSemuaPengguna');
 });
 
 Route::controller(LoginController::class)->group(function () {
