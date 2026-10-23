@@ -1,5 +1,5 @@
 # Progress
-Terakhir diperbarui: 2026-10-09
+Terakhir diperbarui: 2026-10-23
 
 ## Status Keseluruhan
 
@@ -60,6 +60,8 @@ Bukti implementasi terverifikasi dari routes di `routes/web.php` dan 60 controll
 9. **Audit Trail & Dashboard**:
    - Pencatatan seluruh operasi data pengguna ke tabel `riwayataktifitas` (`App::riwayatAktifitas`).
    - Dashboard Operasional Modern (`HomeController`, `Home`, `resources/views/home.blade.php`): KPI Cards (Penjualan, Pembelian, Piutang, Hutang), tren grafik tahunan & donat cara bayar (Chart.js 2.9.4), widget monitoring (stok mendekati batas minimum, piutang jatuh tempo, top konsumen omset tertinggi), dan live feed riwayat aktivitas asinkron.
+10. **Autentikasi & Antarmuka Login**:
+   - Redesain antarmuka login modern (`LoginController`, `resources/views/login.blade.php`): Layout split-screen responsif, identitas perusahaan dinamis, showcase fitur unggulan (FIFO, ekspedisi, hutang piutang, pelaporan akuntansi), live WIB digital clock, indikator status online, toggle show/hide password, deteksi Caps Lock real-time, animasi validasi shake, dan modal panduan bantuan/kontak IT.
 
 ---
 

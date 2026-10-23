@@ -32,8 +32,8 @@ resources/views/
 │   ├── modal*.php / .blade.php # [PARTIAL] Form modal popup (barang, akun, pembayaran)
 │   └── cetak*.blade.php        # [PRINT/STANDALONE] Lembar faktur / kwitansi / laporan fisik
 ├── home.blade.php              # [PAGE] Dashboard utama sistem
-├── login.blade.php             # [STANDALONE] Form otentikasi (tema Login_v18)
-├── login.blade copy.php        # [LEGACY/BACKUP] Backup form login
+├── login.blade.php             # [STANDALONE] Form otentikasi modern & responsif (split-screen ERP layout, live clock, info bisnis)
+├── login.blade copy.php        # [LEGACY/BACKUP] Backup form login lama
 ├── riwayatupdate.blade.php     # [PAGE] Halaman log pembaruan aplikasi
 ├── lihatriwayataktifitas.blade.php # [PAGE] Halaman audit trail aktivitas
 └── welcome.blade.php           # [STANDALONE] Halaman sambutan default Laravel (tidak terpakai)

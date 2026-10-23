@@ -7,6 +7,7 @@ use App\Models\Login;
 use App\Models\Pengaturan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 
 class LoginController extends Controller
@@ -30,11 +31,52 @@ class LoginController extends Controller
         $data['usaha_nama'] = $usaha_nama;
         $data['usaha_logo'] = $usaha_logo;
         $data['usaha_nama_singkat'] = $usaha_nama_singkat;
+        $data['usaha_alamat'] = Pengaturan::getValues('usaha_alamat');
+        $data['usaha_telepon'] = Pengaturan::getValues('usaha_telepon');
+
+        $data['recaptcha_enabled'] = (Pengaturan::getValues('google_recaptcha_v2_enabled') == '1');
+        $data['recaptcha_site_key'] = Pengaturan::getValues('google_recaptcha_v2_site_key');
+
         return view('login', $data);
     }
 
     public function login(Request $request)
     {
+        $recaptcha_enabled = (Pengaturan::getValues('google_recaptcha_v2_enabled') == '1');
+        if ($recaptcha_enabled) {
+            $recaptchaResponse = $request->input('g-recaptcha-response');
+            if (empty($recaptchaResponse)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Silakan centang verifikasi "Saya bukan robot" (reCAPTCHA) terlebih dahulu.'
+                ]);
+            }
+
+            $secretKey = Pengaturan::getValues('google_recaptcha_v2_secret_key');
+            if (!empty($secretKey)) {
+                try {
+                    $verifyResponse = Http::asForm()->timeout(10)->post('https://www.google.com/recaptcha/api/siteverify', [
+                        'secret' => $secretKey,
+                        'response' => $recaptchaResponse,
+                        'remoteip' => $request->ip(),
+                    ]);
+
+                    $verifyResult = $verifyResponse->json();
+                    if (!isset($verifyResult['success']) || !$verifyResult['success']) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Verifikasi reCAPTCHA tidak valid atau telah kadaluarsa. Silakan coba lagi.'
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Gagal memverifikasi reCAPTCHA ke server Google: ' . $e->getMessage()
+                    ]);
+                }
+            }
+        }
+
         $user = Pengguna::where('username', $request->username)->first();
         if ($user && Hash::check($request->password, $user->password)) {
             Session::put('idpengguna', $user->idpengguna);
