@@ -168,6 +168,7 @@
 [2026-10-21] [customize] Konversi Stok - Tambah validasi posting jurnal pada hapus konversi stok
 
 [2026-10-22] [update] Update Posting jurnal ke pos masing-masing akun
+[2026-10-23] [feature] Laporan Arus Kas - Tambah modul Laporan Arus Kas (metode langsung) dari table jurnal dan jurnaldetail (LaparuskasController.php)
 [2026-10-22] [update] Update kode akun
 [2026-10-22] [bugfix] StokFifoService - Batal barang keluar handle multiple jenistransaksi (Surat Jalan & Penjualan), yang mengakibatkan selisih stok fifo.
 [2026-10-22] [bugfix] Lapstokfifo resetStokFifo - ubah jenistransaksi ke Surat Jalan

@@ -32,6 +32,7 @@ use App\Http\Controllers\LapjurnalController;
 use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\LaplabarugiController;
+use App\Http\Controllers\LaparuskasController;
 use App\Http\Controllers\LappembelianController;
 use App\Http\Controllers\LappenjualanController;
 use App\Http\Controllers\LappenjualandetailController;
@@ -695,6 +696,11 @@ Route::middleware(['check.menu.access'])->group(function () {
         Route::controller(LaplabarugiController::class)->group(function () {
             Route::get('laplabarugi', 'index');
             Route::get('laplabarugi/cetak/{jenisCetakan}/{tglawal}/{tglakhir}', 'cetak');            
+        });
+
+        Route::controller(LaparuskasController::class)->group(function () {
+            Route::get('laparuskas', 'index');
+            Route::get('laparuskas/cetak/{jenisCetakan}/{tglawal}/{tglakhir}', 'cetak');            
         });
 
 });

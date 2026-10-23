@@ -73,6 +73,8 @@ INSERT INTO menus (idmenus, menus, parent, urlmenus, iconmenus, urut, levels, st
 ('M059', 'Laporan Jurnal', 'M009', 'lapjurnal', 'far fa-circle', 580, 1, 'Aktif', 'Lihat'),
 ('M060', 'Laporan Neraca Saldo', 'M009', 'lapneracasaldo', 'far fa-circle', 590, 1, 'Aktif', 'Lihat'),
 ('M061', 'Laporan Laba Rugi', 'M009', 'laplabarugi', 'far fa-circle', 600, 1, 'Aktif', 'Lihat'),
+('AK01', 'Laporan Arus Kas', 'M009', 'laparuskas', 'far fa-circle', 605, 1, 'Aktif', 'Lihat'),
+('AK02', 'Laporan Perubahan Modal', 'M009', 'lapperubahanmodal', 'far fa-circle', 610, 1, 'Aktif', 'Lihat'),
 
 ('RI01', 'Riwayat Update', NULL, 'riwayatupdate', 'fa fa-calendar', 609, 0, 'Aktif', ''),
 
