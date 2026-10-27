@@ -2,19 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Uploads;
+use App\Models\App;
 use App\Models\Konsumen;
 use App\Models\Wilayah;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use App\Models\App;
-
 
 class KonsumenController extends Controller
 {
-    var $model;
-    var $App;
+    public $model;
+
+    public $App;
 
     public function __construct()
     {
@@ -28,13 +27,15 @@ class KonsumenController extends Controller
         $konsumen = Konsumen::all();
         $data['konsumen'] = $konsumen;
         $data['menu'] = 'konsumen';
+
         return view('konsumen.index', $data);
     }
 
     public function tambah()
     {
         $data['menu'] = 'konsumen';
-        $data['idkonsumen'] = "";
+        $data['idkonsumen'] = '';
+
         return view('konsumen.form', $data);
     }
 
@@ -48,6 +49,7 @@ class KonsumenController extends Controller
         }
         $data['menu'] = 'konsumen';
         $data['idkonsumen'] = $idkonsumen;
+
         return view('konsumen.form', $data);
     }
 
@@ -62,7 +64,7 @@ class KonsumenController extends Controller
         }
 
         // Cek apakah ada pencarian
-        if ($request->has('search') && !empty($request->input('search.value'))) {
+        if ($request->has('search') && ! empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where('idkonsumen', 'LIKE', "%{$search}%")
                 ->orWhere('namakonsumen', 'LIKE', "%{$search}%");
@@ -86,7 +88,6 @@ class KonsumenController extends Controller
             $query->orderBy('namakonsumen', 'Asc');
         }
 
-
         // Hitung total data tanpa filter
         $totalData = Konsumen::count();
 
@@ -105,25 +106,38 @@ class KonsumenController extends Controller
         // Format data untuk DataTables
         $data = [];
         $no = 1;
+        $hakaksiAktif = session('hakaksi_aktif', '');
+        $canEdit = str_contains($hakaksiAktif, 'Edit');
+        $canHapus = str_contains($hakaksiAktif, 'Hapus');
+
         foreach ($rsData as $row) {
             if ($row->statusaktif == 'Aktif') {
-                $statusaktif = '<span class="badge badge-success">' . $row->statusaktif . '</span>';
+                $statusaktif = '<span class="badge badge-success">'.$row->statusaktif.'</span>';
             } else {
-                $statusaktif = '<span class="badge badge-danger">' . $row->statusaktif . '</span>';
+                $statusaktif = '<span class="badge badge-danger">'.$row->statusaktif.'</span>';
             }
             $informasiPemilik = '';
-            if (!empty($row->namapemilik)) {
+            if (! empty($row->namapemilik)) {
                 $informasiPemilik = $row->namapemilik;
             }
-            if (!empty($row->nowapemilik)) {
-                $informasiPemilik .= '<br> No WA:' . $row->nowapemilik;
+            if (! empty($row->nowapemilik)) {
+                $informasiPemilik .= '<br> No WA:'.$row->nowapemilik;
             }
+
+            $btnEdit = $canEdit
+                ? '<a href="'.url('konsumen/edit/'.Crypt::encrypt($row->idkonsumen)).'" class="btn btn-warning">Edit</a>'
+                : '<button type="button" class="btn btn-warning" disabled title="Anda tidak memiliki hak akses Edit">Edit</button>';
+
+            $itemHapus = $canHapus
+                ? '<a href="'.url('konsumen/hapus/'.Crypt::encrypt($row->idkonsumen)).'" class="dropdown-item" id="btnHapus">Hapus</a>'
+                : '<span class="dropdown-item disabled text-muted" title="Anda tidak memiliki hak akses Hapus">Hapus</span>';
+
             $data[] = [
                 'no' => $no++,
                 'idkonsumen' => $row->idkonsumen,
                 'namakonsumen' => $row->namakonsumen,
                 'namapemilik' => $informasiPemilik,
-                'limitkredit' => 'Rp. ' . format_rupiah($row->limitkredit) . '<br><small><i>(Sisa: Rp.' . format_rupiah($row->limitkredit - $row->jumlahpiutang) . ')</i></small>',
+                'limitkredit' => 'Rp. '.format_rupiah($row->limitkredit).'<br><small><i>(Sisa: Rp.'.format_rupiah($row->limitkredit - $row->jumlahpiutang).')</i></small>',
                 'statusaktif' => $statusaktif,
                 'action' => '<div class="btn-group btn-block">
                                 <div class="btn-group dropleft" role="group">
@@ -131,10 +145,10 @@ class KonsumenController extends Controller
                                     <span class="sr-only">Toggle Dropleft</span>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a href="' . url('konsumen/hapus/' . Crypt::encrypt($row->idkonsumen)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
+                                        '.$itemHapus.'
                                     </div>
                                 </div>
-                                <a href="' . url('konsumen/edit/' . Crypt::encrypt($row->idkonsumen)) . '" class="btn btn-warning">Edit</a>                                
+                                '.$btnEdit.'                                
                             </div>',
 
             ];
@@ -176,7 +190,7 @@ class KonsumenController extends Controller
 
         if (empty($idkonsumen)) {
             $idkonsumen = $this->model->createID($namakonsumen);
-            $data = array(
+            $data = [
                 'idkonsumen' => $idkonsumen,
                 'namakonsumen' => $namakonsumen,
                 'notelpkonsumen' => $notelpkonsumen,
@@ -193,16 +207,16 @@ class KonsumenController extends Controller
                 'inserted_date' => $inserted_date,
                 'updated_date' => $updated_date,
                 'statusaktif' => 'Aktif',
-            );
+            ];
             $simpan = $this->model->simpanData($data);
         } else {
 
             $rsKonsumenOld = Konsumen::find($idkonsumen);
             if ($limitkredit < $rsKonsumenOld->jumlahpiutang) {
-                return redirect('/konsumen')->with('fail', 'Data gagal disimpan! Jumlah kredit tidak boleh lebih kecil dari jumlah piutang konsumen. Jumlah kredit saat ini: Rp.' . format_rupiah($rsKonsumenOld->jumlahpiutang) . ' Jumlah kredit yang diinput: Rp.' . format_rupiah($limitkredit));
+                return redirect('/konsumen')->with('fail', 'Data gagal disimpan! Jumlah kredit tidak boleh lebih kecil dari jumlah piutang konsumen. Jumlah kredit saat ini: Rp.'.format_rupiah($rsKonsumenOld->jumlahpiutang).' Jumlah kredit yang diinput: Rp.'.format_rupiah($limitkredit));
             }
 
-            $data = array(
+            $data = [
                 'idkonsumen' => $idkonsumen,
                 'namakonsumen' => $namakonsumen,
                 'notelpkonsumen' => $notelpkonsumen,
@@ -218,7 +232,7 @@ class KonsumenController extends Controller
                 'kdakunpiutang' => $kdakunpiutang,
                 'updated_date' => $updated_date,
                 'statusaktif' => $statusaktif,
-            );
+            ];
             $simpan = $this->model->updateData($data, $idkonsumen);
         }
 
@@ -226,11 +240,9 @@ class KonsumenController extends Controller
         if ($simpan['status'] == 'success') {
             return redirect('/konsumen')->with('success', $simpan['message']);
         } else {
-            return redirect('/konsumen')->with('fail', 'Data gagal disimpan! Error: ' . $simpan['message']);
+            return redirect('/konsumen')->with('fail', 'Data gagal disimpan! Error: '.$simpan['message']);
         }
     }
-
-
 
     public function hapus($idkonsumen)
     {
@@ -245,7 +257,7 @@ class KonsumenController extends Controller
         if ($hapus['status'] == 'success') {
             return redirect('/konsumen')->with('success', $hapus['message']);
         } else {
-            return redirect('/konsumen')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/konsumen')->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
 
@@ -253,6 +265,7 @@ class KonsumenController extends Controller
     {
         $idkonsumen = $request->input('idkonsumen');
         $rsKonsumen = Konsumen::find($idkonsumen);
+
         return response()->json($rsKonsumen);
     }
 
@@ -291,7 +304,7 @@ class KonsumenController extends Controller
         $formattedResults = $results->map(function ($item) {
             return [
                 'id' => $item->idkonsumen,
-                'text' => $item->namakonsumen . ' | NPWP: ' . $item->npwp . ' | ' . $item->namawilayah,
+                'text' => $item->namakonsumen.' | NPWP: '.$item->npwp.' | '.$item->namawilayah,
             ];
         });
 

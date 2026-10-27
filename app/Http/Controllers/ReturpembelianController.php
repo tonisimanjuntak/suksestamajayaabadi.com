@@ -2,21 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Returpembelian;
-use App\Models\Uploads;
+use App\Models\App;
 use App\Models\Barang;
-use App\Models\Supplier;
 use App\Models\Pembelian;
-use App\Models\Hutang;
+use App\Models\Returpembelian;
+use App\Models\Supplier;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use App\Models\App;
-
 
 class ReturpembelianController extends Controller
 {
-    var $model;
+    public $model;
 
     public function __construct()
     {
@@ -29,6 +26,7 @@ class ReturpembelianController extends Controller
         $returpembelian = $this->model->allView();
         $data['returpembelian'] = $returpembelian;
         $data['menu'] = 'returpembelian';
+
         return view('returpembelian.index', $data);
     }
 
@@ -36,7 +34,8 @@ class ReturpembelianController extends Controller
     {
         $data['rsBarang'] = Barang::all();
         $data['menu'] = 'returpembelian';
-        $data['idreturpembelian'] = "";
+        $data['idreturpembelian'] = '';
+
         return view('returpembelian.form', $data);
     }
 
@@ -57,9 +56,9 @@ class ReturpembelianController extends Controller
         $data['idreturpembelian'] = $idreturpembelian;
         $data['rsPembelian'] = $rsPembelian;
         $data['rsRetur'] = $rsRetur;
+
         return view('returpembelian.ubahstatus', $data);
     }
-
 
     public function listdata(Request $request)
     {
@@ -71,17 +70,17 @@ class ReturpembelianController extends Controller
         $idsupplier = $request->input('idsupplier');
         $carabayar = $request->input('carabayar');
 
-        $query->whereBetween("tglpengajuan", [$tglawal, $tglakhir]);
+        $query->whereBetween('tglpengajuan', [$tglawal, $tglakhir]);
         if ($idsupplier != '' && $idsupplier != null) {
             $query->where('idsupplier', $idsupplier);
         }
 
-        if (!empty($carabayar)) {
+        if (! empty($carabayar)) {
             $query->where('carabayar', $carabayar);
         }
 
         // Cek apakah ada pencarian
-        if ($request->has('search') && !empty($request->input('search.value'))) {
+        if ($request->has('search') && ! empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where(function ($groupwhere) use ($search) {
                 $groupwhere->where('idreturpembelian', 'LIKE', "%{$search}%")
@@ -110,7 +109,6 @@ class ReturpembelianController extends Controller
             $query->orderBy('idreturpembelian', 'Desc');
         }
 
-
         // Hitung total data tanpa filter
         $totalData = Returpembelian::count();
 
@@ -127,6 +125,10 @@ class ReturpembelianController extends Controller
             ->get();
 
         // Format data untuk DataTables
+        $hakaksiAktif = session('hakaksi_aktif', '');
+        $canEdit = str_contains($hakaksiAktif, 'Edit');
+        $canHapus = str_contains($hakaksiAktif, 'Hapus');
+
         $data = [];
         $no = 1;
         foreach ($rsData as $row) {
@@ -137,10 +139,18 @@ class ReturpembelianController extends Controller
                 $status = '<span class="badge badge-success">Selesai</span>';
             }
 
+            $btnUbahStatus = $canEdit
+                ? '<a href="'.url('returpembelian/ubahstatus/'.Crypt::encrypt($row->idreturpembelian)).'" class="btn btn-warning">Ubah Status</a>'
+                : '<button type="button" class="btn btn-warning" disabled title="Anda tidak memiliki hak akses Edit">Ubah Status</button>';
+
+            $btnHapus = $canHapus
+                ? '<a href="'.url('returpembelian/hapus/'.Crypt::encrypt($row->idreturpembelian)).'" class="dropdown-item" id="btnHapus">Hapus</a>'
+                : '<span class="dropdown-item disabled text-muted" title="Anda tidak memiliki hak akses Hapus"><i class="fa fa-ban mr-1"></i> Hapus</span>';
+
             $data[] = [
                 'no' => $no++,
-                'tglretur' => tgldmy($row->tglpengajuan) . '<br>' . $row->idreturpembelian,
-                'nofaktur' => $row->nofaktur . '<br>' . tgldmy($row->tglfaktur) . '<br>',
+                'tglretur' => tgldmy($row->tglpengajuan).'<br>'.$row->idreturpembelian,
+                'nofaktur' => $row->nofaktur.'<br>'.tgldmy($row->tglfaktur).'<br>',
                 'namasupplier' => $row->namasupplier,
                 'keterangan' => $row->keterangan,
                 'carabayar' => $row->carabayar,
@@ -152,15 +162,14 @@ class ReturpembelianController extends Controller
                                     <span class="sr-only">Toggle Dropleft</span>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a href="' . url('returpembelian/hapus/' . Crypt::encrypt($row->idreturpembelian)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
+                                        '.$btnHapus.'
                                     </div>
                                 </div>
-                                <a href="' . url('returpembelian/ubahstatus/' . Crypt::encrypt($row->idreturpembelian)) . '" class="btn btn-warning">Ubah Status</a>                                
+                                '.$btnUbahStatus.'                                
                             </div>',
 
             ];
         }
-
 
         // Response untuk DataTables
         return response()->json([
@@ -188,20 +197,20 @@ class ReturpembelianController extends Controller
             $idreturpembelian = $this->model->createID();
             $totalretur = 0;
 
-            $dataDetail = array();
+            $dataDetail = [];
             for ($i = 0; $i < count($isidatatable); $i++) {
-                $dataDetail[] = array(
+                $dataDetail[] = [
                     'idreturpembelian' => $idreturpembelian,
                     'idbarang' => $isidatatable[$i]['idbarang'],
                     'jumlahretur' => untitik($isidatatable[$i]['jumlahretur']),
                     'hargaretur' => untitik($isidatatable[$i]['hargaretur']),
                     'subtotalretur' => untitik($isidatatable[$i]['subtotalretur']),
-                );
+                ];
                 $hargaretur = untitik($isidatatable[$i]['hargaretur']) * untitik($isidatatable[$i]['jumlahretur']);
                 $totalretur += $hargaretur;
             }
 
-            $data = array(
+            $data = [
                 'idreturpembelian' => $idreturpembelian,
                 'idpembelian' => $idpembelian,
                 'tglpengajuan' => $tglpengajuan,
@@ -213,19 +222,18 @@ class ReturpembelianController extends Controller
                 'carabayar' => $carabayar,
                 'idbank' => $idbank,
                 'statusretur' => 'Proses',
-            );
+            ];
             $simpan = $this->model->simpanData($data, $dataDetail, $idreturpembelian);
         } else {
-            return response()->json(array('msg' => 'Proses update tidak diperbolehkan untuk form ini!'));
+            return response()->json(['msg' => 'Proses update tidak diperbolehkan untuk form ini!']);
         }
 
         if ($simpan['status'] == 'success') {
-            return response()->json(array('success' => true));
+            return response()->json(['success' => true]);
         } else {
-            return response()->json(array('msg' => 'Data gagal disimpan! Error: ' . $simpan['message']));
+            return response()->json(['msg' => 'Data gagal disimpan! Error: '.$simpan['message']]);
         }
     }
-
 
     public function simpanubahstatus(Request $request)
     {
@@ -238,21 +246,21 @@ class ReturpembelianController extends Controller
 
         $rsRetur = Returpembelian::findOrFail($idreturpembelian);
         if ($rsRetur->statusretur == 'Selesai') {
-            return response()->json(array("msg" => "Data sudah selesai di proses, tidak boleh diubah!"));
+            return response()->json(['msg' => 'Data sudah selesai di proses, tidak boleh diubah!']);
         }
-
 
         if (App::isPosting($tglretur)) {
             $bulan = bulan(date('m', strtotime($tglretur)));
             $tahun = date('Y', strtotime($tglretur));
-            return response()->json(array("msg" => "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!"));
+
+            return response()->json(['msg' => "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!"]);
         }
 
         if ($carabayar != 'Transfer') {
             $idbank = null;
         }
 
-        $data = array(
+        $data = [
             'idreturpembelian' => $idreturpembelian,
             'tglretur' => $tglretur,
             'updated_date' => $updated_date,
@@ -260,19 +268,16 @@ class ReturpembelianController extends Controller
             'carabayar' => $carabayar,
             'idbank' => $idbank,
             'statusretur' => $statusretur,
-        );
+        ];
 
         $simpan = $this->model->updateData($data, $idreturpembelian);
 
-
         if ($simpan['status'] == 'success') {
-            return response()->json(array('success' => true));
+            return response()->json(['success' => true]);
         } else {
-            return response()->json(array('msg' => 'Data gagal disimpan! Error: ' . $simpan['message']));
+            return response()->json(['msg' => 'Data gagal disimpan! Error: '.$simpan['message']]);
         }
     }
-
-
 
     public function hapus($idreturpembelian)
     {
@@ -287,6 +292,7 @@ class ReturpembelianController extends Controller
         if (App::isPosting($tglretur)) {
             $bulan = bulan(date('m', strtotime($tglretur)));
             $tahun = date('Y', strtotime($tglretur));
+
             return redirect('/returpembelian')->with('fail', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
         }
 
@@ -294,7 +300,7 @@ class ReturpembelianController extends Controller
         if ($hapus['status'] == 'success') {
             return redirect('/returpembelian')->with('success', $hapus['message']);
         } else {
-            return redirect('/returpembelian')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/returpembelian')->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
 
@@ -304,7 +310,8 @@ class ReturpembelianController extends Controller
         $rsRetur = Returpembelian::find($idreturpembelian);
 
         $rsDetail = $this->model->getDetail($idreturpembelian);
-        return response()->json(array('rsRetur' => $rsRetur, 'rsDetail' => $rsDetail));
+
+        return response()->json(['rsRetur' => $rsRetur, 'rsDetail' => $rsDetail]);
     }
 
     public function searchPembelian(Request $request)
@@ -321,7 +328,7 @@ class ReturpembelianController extends Controller
         $formattedResults = $results->map(function ($item) {
             return [
                 'id' => $item->idpembelian,
-                'text' => $item->idpembelian . ' - ' . tgldmy($item->tglfaktur),
+                'text' => $item->idpembelian.' - '.tgldmy($item->tglfaktur),
             ];
         });
 
@@ -332,6 +339,7 @@ class ReturpembelianController extends Controller
     {
         $idpembelian = $request->input('idpembelian');
         $rsPembelian = Pembelian::find($idpembelian);
+
         return response()->json($rsPembelian);
     }
 
@@ -342,7 +350,6 @@ class ReturpembelianController extends Controller
 
         // Query pencarian
         $results = $this->model->searchBarangRetur($search, $idpembelian);
-
 
         // Format data untuk Select2
         $formattedResults = $results->map(function ($item) {
@@ -360,6 +367,7 @@ class ReturpembelianController extends Controller
         $idpembelian = $request->idpembelian;
         $idbarang = $request->idbarang;
         $rowBarang = $this->model->getDetailPembelian($idpembelian, $idbarang);
+
         return response()->json($rowBarang);
     }
 }

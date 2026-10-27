@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Akun3;
 use App\Models\Akun4;
 use App\Models\App;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 
 class Akun4Controller extends Controller
 {
-    var $model;
-    var $App;
+    public $model;
+
+    public $App;
 
     public function __construct()
     {
@@ -26,14 +27,16 @@ class Akun4Controller extends Controller
         $akun4 = Akun4::all();
         $data['akun4'] = $akun4;
         $data['menu'] = 'akun4';
+
         return view('akun4.index', $data);
     }
 
     public function tambah()
     {
         $data['menu'] = 'akun4';
-        $data['kdakun'] = "";
-        $data['ltambah'] = "1";
+        $data['kdakun'] = '';
+        $data['ltambah'] = '1';
+
         return view('akun4.form', $data);
     }
 
@@ -47,7 +50,8 @@ class Akun4Controller extends Controller
         }
         $data['menu'] = 'akun4';
         $data['kdakun'] = $kdakun;
-        $data['ltambah'] = "0";
+        $data['ltambah'] = '0';
+
         return view('akun4.form', $data);
     }
 
@@ -62,7 +66,7 @@ class Akun4Controller extends Controller
         }
 
         // Cek apakah ada pencarian
-        if ($request->has('search') && !empty($request->input('search.value'))) {
+        if ($request->has('search') && ! empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where('kdakun', 'LIKE', "%{$search}%")
                 ->orWhere('namaakun', 'LIKE', "%{$search}%");
@@ -86,7 +90,6 @@ class Akun4Controller extends Controller
             $query->orderBy('kdakun', 'Asc');
         }
 
-
         // Hitung total data tanpa filter
         $totalData = Akun4::count();
 
@@ -105,21 +108,33 @@ class Akun4Controller extends Controller
         // Format data untuk DataTables
         $data = [];
         $no = 1;
+        $hakaksiAktif = session('hakaksi_aktif', '');
+        $canEdit = str_contains($hakaksiAktif, 'Edit');
+        $canHapus = str_contains($hakaksiAktif, 'Hapus');
+
         foreach ($rsData as $row) {
+            $btnEdit = $canEdit
+                ? '<a href="'.url('akun4/edit/'.Crypt::encrypt($row->kdakun)).'" class="btn btn-warning">Edit</a>'
+                : '<button type="button" class="btn btn-warning" disabled title="Anda tidak memiliki hak akses Edit">Edit</button>';
+
+            $itemHapus = $canHapus
+                ? '<a href="'.url('akun4/hapus/'.Crypt::encrypt($row->kdakun)).'" class="dropdown-item" id="btnHapus">Hapus</a>'
+                : '<span class="dropdown-item disabled text-muted" title="Anda tidak memiliki hak akses Hapus">Hapus</span>';
+
             $data[] = [
                 'no' => $no++,
                 'kdakun' => $row->kdakun,
-                'namaakun' => '<strong>' . $row->namaakun . '</strong><br><small>' . $row->kdparent . ' - ' . $row->namaparent . '</small>',
+                'namaakun' => '<strong>'.$row->namaakun.'</strong><br><small>'.$row->kdparent.' - '.$row->namaparent.'</small>',
                 'action' => '<div class="btn-group btn-block">
                                 <div class="btn-group dropleft" role="group">
                                     <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <span class="sr-only">Toggle Dropleft</span>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a href="' . url('akun4/hapus/' . Crypt::encrypt($row->kdakun)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
+                                        '.$itemHapus.'
                                     </div>
                                 </div>
-                                <a href="' . url('akun4/edit/' . Crypt::encrypt($row->kdakun)) . '" class="btn btn-warning">Edit</a>                                
+                                '.$btnEdit.'                                
                             </div>',
 
             ];
@@ -144,7 +159,7 @@ class Akun4Controller extends Controller
         $updated_date = date('Y-m-d H:i:s');
 
         if ($ltambah == '1') {
-            $data = array(
+            $data = [
                 'kdakun' => $kdakun,
                 'namaakun' => $namaakun,
                 'kdparent' => $kdparent,
@@ -152,14 +167,14 @@ class Akun4Controller extends Controller
                 'updated_date' => $updated_date,
                 'statusaktif' => 'Aktif',
                 'levels' => '4',
-            );
+            ];
             $simpan = $this->model->simpanData($data);
         } else {
-            $data = array(
+            $data = [
                 'kdakun' => $kdakun,
                 'namaakun' => $namaakun,
                 'updated_date' => $updated_date,
-            );
+            ];
             $simpan = $this->model->updateData($data, $kdakun);
         }
 
@@ -167,11 +182,9 @@ class Akun4Controller extends Controller
         if ($simpan['status'] == 'success') {
             return redirect('/akun4')->with('success', $simpan['message']);
         } else {
-            return redirect('/akun4')->with('fail', 'Data gagal disimpan! Error: ' . $simpan['message']);
+            return redirect('/akun4')->with('fail', 'Data gagal disimpan! Error: '.$simpan['message']);
         }
     }
-
-
 
     public function hapus($kdakun)
     {
@@ -186,7 +199,7 @@ class Akun4Controller extends Controller
         if ($hapus['status'] == 'success') {
             return redirect('/akun4')->with('success', $hapus['message']);
         } else {
-            return redirect('/akun4')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/akun4')->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
 
@@ -194,6 +207,7 @@ class Akun4Controller extends Controller
     {
         $kdakun = $request->input('kdakun');
         $rsAkun4 = Akun4::find($kdakun);
+
         return response()->json($rsAkun4);
     }
 
@@ -210,7 +224,7 @@ class Akun4Controller extends Controller
         $formattedResults = $results->map(function ($item) {
             return [
                 'id' => $item->kdakun,
-                'text' => $item->kdakun . ' - ' . $item->namaakun,
+                'text' => $item->kdakun.' - '.$item->namaakun,
             ];
         });
 
@@ -231,7 +245,7 @@ class Akun4Controller extends Controller
         $formattedResults = $results->map(function ($item) {
             return [
                 'id' => $item->kdakun,
-                'text' => $item->kdakun . ' - ' . $item->namaakun,
+                'text' => $item->kdakun.' - '.$item->namaakun,
             ];
         });
 
@@ -255,7 +269,7 @@ class Akun4Controller extends Controller
         $formattedResults = $results->map(function ($item) {
             return [
                 'id' => $item->kdakun,
-                'text' => $item->kdakun . ' - ' . $item->namaakun,
+                'text' => $item->kdakun.' - '.$item->namaakun,
             ];
         });
 
@@ -279,7 +293,7 @@ class Akun4Controller extends Controller
         $formattedResults = $results->map(function ($item) {
             return [
                 'id' => $item->kdakun,
-                'text' => $item->kdakun . ' - ' . $item->namaakun,
+                'text' => $item->kdakun.' - '.$item->namaakun,
             ];
         });
 
@@ -303,13 +317,12 @@ class Akun4Controller extends Controller
         $formattedResults = $results->map(function ($item) {
             return [
                 'id' => $item->kdakun,
-                'text' => $item->kdakun . ' - ' . $item->namaakun,
+                'text' => $item->kdakun.' - '.$item->namaakun,
             ];
         });
 
         return response()->json(['results' => $formattedResults]);
     }
-
 
     public function searchAkunPiutangKonsumen(Request $request)
     {
@@ -328,13 +341,12 @@ class Akun4Controller extends Controller
         $formattedResults = $results->map(function ($item) {
             return [
                 'id' => $item->kdakun,
-                'text' => $item->kdakun . ' - ' . $item->namaakun,
+                'text' => $item->kdakun.' - '.$item->namaakun,
             ];
         });
 
         return response()->json(['results' => $formattedResults]);
     }
-
 
     public function searchAkunUtangSupplier(Request $request)
     {
@@ -353,13 +365,12 @@ class Akun4Controller extends Controller
         $formattedResults = $results->map(function ($item) {
             return [
                 'id' => $item->kdakun,
-                'text' => $item->kdakun . ' - ' . $item->namaakun,
+                'text' => $item->kdakun.' - '.$item->namaakun,
             ];
         });
 
         return response()->json(['results' => $formattedResults]);
     }
-
 
     public function searchAkunUtangEkspedisi(Request $request)
     {
@@ -378,7 +389,7 @@ class Akun4Controller extends Controller
         $formattedResults = $results->map(function ($item) {
             return [
                 'id' => $item->kdakun,
-                'text' => $item->kdakun . ' - ' . $item->namaakun,
+                'text' => $item->kdakun.' - '.$item->namaakun,
             ];
         });
 

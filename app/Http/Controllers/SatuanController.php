@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Satuan;
 use App\Models\App;
+use App\Models\Satuan;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class SatuanController extends Controller
 {
-    var $model;
-    var $App;
+    public $model;
+
+    public $App;
 
     public function __construct()
     {
@@ -25,13 +26,15 @@ class SatuanController extends Controller
         $satuan = Satuan::all();
         $data['satuan'] = $satuan;
         $data['menu'] = 'satuan';
+
         return view('satuan.index', $data);
     }
 
     public function tambah()
     {
         $data['menu'] = 'satuan';
-        $data['idsatuan'] = "";
+        $data['idsatuan'] = '';
+
         return view('satuan.form', $data);
     }
 
@@ -45,6 +48,7 @@ class SatuanController extends Controller
         }
         $data['menu'] = 'satuan';
         $data['idsatuan'] = $idsatuan;
+
         return view('satuan.form', $data);
     }
 
@@ -59,7 +63,7 @@ class SatuanController extends Controller
         }
 
         // Cek apakah ada pencarian
-        if ($request->has('search') && !empty($request->input('search.value'))) {
+        if ($request->has('search') && ! empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where('idsatuan', 'LIKE', "%{$search}%")
                 ->orWhere('namasatuan', 'LIKE', "%{$search}%");
@@ -83,7 +87,6 @@ class SatuanController extends Controller
             $query->orderBy('namasatuan', 'Asc');
         }
 
-
         // Hitung total data tanpa filter
         $totalData = Satuan::count();
 
@@ -102,12 +105,25 @@ class SatuanController extends Controller
         // Format data untuk DataTables
         $data = [];
         $no = 1;
+        $hakaksiAktif = session('hakaksi_aktif', '');
+        $canEdit = str_contains($hakaksiAktif, 'Edit');
+        $canHapus = str_contains($hakaksiAktif, 'Hapus');
+
         foreach ($rsData as $row) {
             if ($row->statusaktif == 'Aktif') {
-                $statusaktif = '<span class="badge badge-success">' . $row->statusaktif . '</span>';
+                $statusaktif = '<span class="badge badge-success">'.$row->statusaktif.'</span>';
             } else {
-                $statusaktif = '<span class="badge badge-danger">' . $row->statusaktif . '</span>';
+                $statusaktif = '<span class="badge badge-danger">'.$row->statusaktif.'</span>';
             }
+
+            $btnEdit = $canEdit
+                ? '<a href="'.url('satuan/edit/'.Crypt::encrypt($row->idsatuan)).'" class="btn btn-warning">Edit</a>'
+                : '<button type="button" class="btn btn-warning" disabled title="Anda tidak memiliki hak akses Edit">Edit</button>';
+
+            $itemHapus = $canHapus
+                ? '<a href="'.url('satuan/hapus/'.Crypt::encrypt($row->idsatuan)).'" class="dropdown-item" id="btnHapus">Hapus</a>'
+                : '<span class="dropdown-item disabled text-muted" title="Anda tidak memiliki hak akses Hapus">Hapus</span>';
+
             $data[] = [
                 'no' => $no++,
                 'idsatuan' => $row->idsatuan,
@@ -119,10 +135,10 @@ class SatuanController extends Controller
                                     <span class="sr-only">Toggle Dropleft</span>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a href="' . url('satuan/hapus/' . Crypt::encrypt($row->idsatuan)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
+                                        '.$itemHapus.'
                                     </div>
                                 </div>
-                                <a href="' . url('satuan/edit/' . Crypt::encrypt($row->idsatuan)) . '" class="btn btn-warning">Edit</a>                                
+                                '.$btnEdit.'                                
                             </div>',
 
             ];
@@ -149,21 +165,21 @@ class SatuanController extends Controller
 
         if (empty($idsatuan)) {
             $idsatuan = $this->model->createID();
-            $data = array(
+            $data = [
                 'idsatuan' => $idsatuan,
                 'namasatuan' => $namasatuan,
                 'inserted_date' => $inserted_date,
                 'updated_date' => $updated_date,
                 'statusaktif' => 'Aktif',
-            );
+            ];
             $simpan = $this->model->simpanData($data);
         } else {
-            $data = array(
+            $data = [
                 'idsatuan' => $idsatuan,
                 'namasatuan' => $namasatuan,
                 'updated_date' => $updated_date,
                 'statusaktif' => $statusaktif,
-            );
+            ];
             $simpan = $this->model->updateData($data, $idsatuan);
         }
 
@@ -171,11 +187,9 @@ class SatuanController extends Controller
         if ($simpan['status'] == 'success') {
             return redirect('/satuan')->with('success', $simpan['message']);
         } else {
-            return redirect('/satuan')->with('fail', 'Data gagal disimpan! Error: ' . $simpan['message']);
+            return redirect('/satuan')->with('fail', 'Data gagal disimpan! Error: '.$simpan['message']);
         }
     }
-
-
 
     public function hapus($idsatuan)
     {
@@ -190,7 +204,7 @@ class SatuanController extends Controller
         if ($hapus['status'] == 'success') {
             return redirect('/satuan')->with('success', $hapus['message']);
         } else {
-            return redirect('/satuan')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/satuan')->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
 
@@ -198,6 +212,7 @@ class SatuanController extends Controller
     {
         $idsatuan = $request->input('idsatuan');
         $rsSatuan = Satuan::find($idsatuan);
+
         return response()->json($rsSatuan);
     }
 

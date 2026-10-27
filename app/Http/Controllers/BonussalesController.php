@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bonussales;
-use Illuminate\Http\Request;
-use App\Models\Uploads;
-use App\Models\Sales;
 use App\Models\App;
-use Illuminate\Support\Facades\Crypt;
+use App\Models\Bonussales;
+use App\Models\Sales;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use TCPDF;
 
 class BonussalesController extends Controller
 {
-    var $model;
-    var $App;
+    public $model;
+
+    public $App;
 
     public function __construct()
     {
@@ -26,13 +26,15 @@ class BonussalesController extends Controller
     public function index()
     {
         $data['menu'] = 'bonussales';
+
         return view('bonussales.index', $data);
     }
 
     public function tambah()
     {
         $data['menu'] = 'bonussales';
-        $data['idbonus'] = "";
+        $data['idbonus'] = '';
+
         return view('bonussales.form', $data);
     }
 
@@ -42,7 +44,7 @@ class BonussalesController extends Controller
         $query = Bonussales::select('*');
 
         // Cek apakah ada pencarian
-        if ($request->has('search') && !empty($request->input('search.value'))) {
+        if ($request->has('search') && ! empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where('idbonus', 'LIKE', "%{$search}%")
                 ->orWhere('namasales', 'LIKE', "%{$search}%");
@@ -66,7 +68,6 @@ class BonussalesController extends Controller
             $query->orderBy('namasales', 'Asc');
         }
 
-
         // Hitung total data tanpa filter
         $totalData = Bonussales::count();
 
@@ -83,11 +84,18 @@ class BonussalesController extends Controller
             ->get();
 
         // Format data untuk DataTables
+        $hakaksiAktif = session('hakaksi_aktif', '');
+        $canHapus = str_contains($hakaksiAktif, 'Hapus');
+
         $data = [];
         $no = 1;
         foreach ($rsData as $row) {
 
             $totalbonussemua = $row->totalbonustarget + $row->totalbonuspenjualan + $row->totalbonuspenagihan;
+
+            $btnHapus = $canHapus
+                ? '<a href="'.url('bonussales/hapus/'.Crypt::encrypt($row->idbonus)).'" class="dropdown-item" id="btnHapus">Hapus</a>'
+                : '<span class="dropdown-item disabled text-muted" title="Anda tidak memiliki hak akses Hapus"><i class="fa fa-ban mr-1"></i> Hapus</span>';
 
             $data[] = [
                 'no' => $no++,
@@ -105,10 +113,10 @@ class BonussalesController extends Controller
                                     <span class="sr-only">Toggle Dropleft</span>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a href="' . url('bonussales/hapus/' . Crypt::encrypt($row->idbonus)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
+                                        '.$btnHapus.'
                                     </div>
                                 </div>
-                                <a href="' . url('bonussales/cetak/' . Crypt::encrypt($row->idbonus)) . '" class="btn btn-primary" target="_blank">Cetak</a>                                
+                                <a href="'.url('bonussales/cetak/'.Crypt::encrypt($row->idbonus)).'" class="btn btn-primary" target="_blank">Cetak</a>                                
                             </div>',
 
             ];
@@ -141,7 +149,6 @@ class BonussalesController extends Controller
         $inserted_date = date('Y-m-d H:i:s');
         $updated_date = date('Y-m-d H:i:s');
 
-
         $idbonus = $this->model->createID();
 
         // ============================================= BONUS PENJUALAN ==============
@@ -151,13 +158,13 @@ class BonussalesController extends Controller
             $idpenjualan = $penjualan['idpenjualan'];
 
             //array untuk update tabel detail penjualan
-            array_push($dataPenjualanDetail, array(
+            array_push($dataPenjualanDetail, [
                 'id' => $penjualan['idpenjualandetail'],
                 'jenisbonuspenjualan' => $penjualan['jenisbonuspenjualan'],
                 'persenbonuspenjualan' => $penjualan['persenbonuspenjualan'],
                 'jumlahbonuspenjualan' => untitik($penjualan['jumlahbonuspenjualan']),
                 'subtotalbonuspenjualan' => untitik($penjualan['totalbonus']),
-            ));
+            ]);
 
             //membuat total berdasarkan idpenjualan, atau grouping
             if (isset($arrBonusPenjualan[$idpenjualan])) {
@@ -173,21 +180,19 @@ class BonussalesController extends Controller
                 ];
             }
         }
-        $dataBonusPenjualan = array();
+        $dataBonusPenjualan = [];
         foreach ($arrBonusPenjualan as $row) {
             array_push(
                 $dataBonusPenjualan,
-                array(
+                [
                     'idpenjualan' => $row['idpenjualan'],
                     'idbonus' => $row['idbonus'],
                     'iddetailsuratjalan' => $row['iddetailsuratjalan'],
                     'totalinvoice' => $row['totalinvoice'],
                     'totalbonus' => $row['totalbonus'],
-                )
+                ]
             );
         }
-
-
 
         // ============================================= BONUS PENAGIHAN ==============
         $arrBonusPenagihan = [];
@@ -196,13 +201,13 @@ class BonussalesController extends Controller
             $idpiutang = $penagihan['idpiutang'];
 
             //array untuk update tabel detail penjualan
-            array_push($dataPenjualanDetailPenagihan, array(
+            array_push($dataPenjualanDetailPenagihan, [
                 'id' => $penagihan['idpenjualandetail'],
                 'jenisbonustagihan' => $penagihan['jenisbonustagihan'],
                 'persenbonustagihan' => $penagihan['persenbonustagihan'],
                 'jumlahbonustagihan' => untitik($penagihan['jumlahbonustagihan']),
                 'subtotalbonustagihan' => untitik($penagihan['totalbonus']),
-            ));
+            ]);
 
             //membuat total berdasarkan idpenjualan, atau grouping
             if (isset($arrBonusPenagihan[$idpiutang])) {
@@ -219,21 +224,19 @@ class BonussalesController extends Controller
             }
         }
 
-        $dataBonusPenagihan = array();
+        $dataBonusPenagihan = [];
         foreach ($arrBonusPenagihan as $row) {
             array_push(
                 $dataBonusPenagihan,
-                array(
+                [
                     'idpiutang' => $row['idpiutang'],
                     'idpenjualan' => $row['idpenjualan'],
                     'idbonus' => $row['idbonus'],
                     'totaltagihan' => $row['totaltagihan'],
                     'totalbonus' => $row['totalbonus'],
-                )
+                ]
             );
         }
-
-
 
         // ============================================= BONUS TARGET ==============
         $arrBonusTarget = [];
@@ -242,12 +245,12 @@ class BonussalesController extends Controller
             $idpenjualan = $target['idpenjualan'];
 
             //array untuk update tabel detail penjualan
-            array_push($dataPenjualanDetailTarget, array(
+            array_push($dataPenjualanDetailTarget, [
                 'id' => $target['idpenjualandetail'],
                 'idjenisbarang' => $target['idjenisbarang'],
                 'persenbonustarget' => $target['persenbonustarget'],
                 'subtotalbonustarget' => untitik($target['totalbonus']),
-            ));
+            ]);
 
             //membuat total berdasarkan idpenjualan, atau grouping
             if (isset($arrBonusTarget[$idpenjualan])) {
@@ -262,22 +265,20 @@ class BonussalesController extends Controller
                 ];
             }
         }
-        $dataBonusTarget = array();
+        $dataBonusTarget = [];
         foreach ($arrBonusTarget as $row) {
             array_push(
                 $dataBonusTarget,
-                array(
+                [
                     'idpenjualan' => $row['idpenjualan'],
                     'idbonus' => $row['idbonus'],
                     'totalinvoice' => $row['totalinvoice'],
                     'totalbonus' => $row['totalbonus'],
-                )
+                ]
             );
         }
 
-
-
-        $data = array(
+        $data = [
             'idbonus' => $idbonus,
             'tglbonus' => $tglbonus,
             'idsales' => $idsales,
@@ -292,13 +293,13 @@ class BonussalesController extends Controller
             'inserted_date' => $inserted_date,
             'updated_date' => $updated_date,
             'idpengguna' => session('idpengguna'),
-        );
+        ];
         $simpan = $this->model->simpanData($data, $dataBonusPenjualan, $dataPenjualanDetail, $dataBonusPenagihan, $dataPenjualanDetailPenagihan, $dataBonusTarget, $dataPenjualanDetailTarget);
 
         if ($simpan['status'] == 'success') {
-            return response()->json(array('success' => true));
+            return response()->json(['success' => true]);
         } else {
-            return response()->json(array('msg' => 'Data gagal disimpan! Error: ' . $simpan['message']));
+            return response()->json(['msg' => 'Data gagal disimpan! Error: '.$simpan['message']]);
         }
     }
 
@@ -315,7 +316,7 @@ class BonussalesController extends Controller
         if ($hapus['status'] == 'success') {
             return redirect('/bonussales')->with('success', $hapus['message']);
         } else {
-            return redirect('/bonussales')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/bonussales')->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
 
@@ -324,7 +325,7 @@ class BonussalesController extends Controller
         $idbonus = $request->input('idbonus');
         $rsBonus = Bonussales::find($idbonus);
 
-        return response()->json(array('rsBonus' => $rsBonus));
+        return response()->json(['rsBonus' => $rsBonus]);
     }
 
     public function getBonus(Request $request)
@@ -337,13 +338,13 @@ class BonussalesController extends Controller
         $TargetPenjualanSales = $this->model->getTargetPenjualanSales($idsales);
         $PencapaianPenjualan = $this->model->getPencapaianPenjualanSales($idsales);
 
-        return response()->json(array(
+        return response()->json([
             'rsHitungBonusPenjualan' => $rsHitungBonusPenjualan,
             'rsHitungBonusPenagihan' => $rsHitungBonusPenagihan,
             'rsHitungBonusTarget' => $rsHitungBonusTarget,
             'TargetPenjualanSales' => $TargetPenjualanSales,
             'PencapaianPenjualan' => $PencapaianPenjualan,
-        ));
+        ]);
     }
 
     public function cetak($idbonus)
@@ -360,7 +361,6 @@ class BonussalesController extends Controller
         $data['rsSales'] = $rsSales;
         $data['rsBonus'] = $rsBonus;
         $view = view('bonussales.cetak', $data)->render();
-
 
         // Buat instance TCPDF
         $pdf = new TCPDF();

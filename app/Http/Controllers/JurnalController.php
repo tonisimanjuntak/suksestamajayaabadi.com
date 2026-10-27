@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Jurnal;
-use Illuminate\Http\Request;
-use App\Models\Akun;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\App;
+use App\Models\Jurnal;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 
 class JurnalController extends Controller
 {
-    var $model;
+    public $model;
 
     public function __construct()
     {
@@ -22,13 +21,15 @@ class JurnalController extends Controller
     public function index()
     {
         $data['menu'] = 'jurnal';
+
         return view('jurnal.index', $data);
     }
 
     public function tambah()
     {
         $data['menu'] = 'jurnal';
-        $data['idjurnal'] = "";
+        $data['idjurnal'] = '';
+
         return view('jurnal.form', $data);
     }
 
@@ -42,9 +43,9 @@ class JurnalController extends Controller
         }
         $data['menu'] = 'jurnal';
         $data['idjurnal'] = $idjurnal;
+
         return view('jurnal.form', $data);
     }
-
 
     public function listdata(Request $request)
     {
@@ -54,11 +55,11 @@ class JurnalController extends Controller
         $tglawal = $request->input('tglawal');
         $tglakhir = $request->input('tglakhir');
 
-        $query->whereBetween("tgljurnal", [$tglawal, $tglakhir]);
+        $query->whereBetween('tgljurnal', [$tglawal, $tglakhir]);
         $query->where('jenis', 'Jurnal Penyesuaian');
 
         // Cek apakah ada pencarian
-        if ($request->has('search') && !empty($request->input('search.value'))) {
+        if ($request->has('search') && ! empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where(function ($groupwhere) use ($search) {
                 $groupwhere->where('idjurnal', 'LIKE', "%{$search}%")
@@ -86,7 +87,6 @@ class JurnalController extends Controller
             $query->orderBy('idjurnal', 'Desc');
         }
 
-
         // Hitung total data tanpa filter
         $totalData = Jurnal::count();
 
@@ -103,9 +103,21 @@ class JurnalController extends Controller
             ->get();
 
         // Format data untuk DataTables
+        $hakaksiAktif = session('hakaksi_aktif', '');
+        $canEdit = str_contains($hakaksiAktif, 'Edit');
+        $canHapus = str_contains($hakaksiAktif, 'Hapus');
+
         $data = [];
         $no = 1;
         foreach ($rsData as $row) {
+
+            $btnEdit = $canEdit
+                ? '<a href="'.url('jurnal/edit/'.Crypt::encrypt($row->idjurnal)).'" class="btn btn-warning">Edit</a>'
+                : '<button type="button" class="btn btn-warning" disabled title="Anda tidak memiliki hak akses Edit">Edit</button>';
+
+            $btnHapus = $canHapus
+                ? '<a href="'.url('jurnal/hapus/'.Crypt::encrypt($row->idjurnal)).'" class="dropdown-item" id="btnHapus">Hapus</a>'
+                : '<span class="dropdown-item disabled text-muted" title="Anda tidak memiliki hak akses Hapus"><i class="fa fa-ban mr-1"></i> Hapus</span>';
 
             $data[] = [
                 'no' => $no++,
@@ -121,15 +133,14 @@ class JurnalController extends Controller
                                     <span class="sr-only">Toggle Dropleft</span>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a href="' . url('jurnal/hapus/' . Crypt::encrypt($row->idjurnal)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
+                                        '.$btnHapus.'
                                     </div>
                                 </div>
-                                <a href="' . url('jurnal/edit/' . Crypt::encrypt($row->idjurnal)) . '" class="btn btn-warning">Edit</a>                                
+                                '.$btnEdit.'                                
                             </div>',
 
             ];
         }
-
 
         // Response untuk DataTables
         return response()->json([
@@ -152,27 +163,27 @@ class JurnalController extends Controller
         $inserted_date = date('Y-m-d H:i:s');
         $updated_date = date('Y-m-d H:i:s');
 
-
         if (App::isPosting($tgljurnal)) {
             $bulan = bulan(date('m', strtotime($tgljurnal)));
             $tahun = date('Y', strtotime($tgljurnal));
-            return response()->json(array("msg" => "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!"));
+
+            return response()->json(['msg' => "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!"]);
         }
 
         if (empty($idjurnal)) {
 
             $idjurnal = $this->model->createIDJurnalPenyesuaian();
-            $dataDetail = array();
+            $dataDetail = [];
             for ($i = 0; $i < count($isidatatable); $i++) {
-                $dataDetail[] = array(
+                $dataDetail[] = [
                     'idjurnal' => $idjurnal,
                     'kdakun' => $isidatatable[$i]['kdakun'],
                     'debet' => untitik($isidatatable[$i]['debet']),
                     'kredit' => untitik($isidatatable[$i]['kredit']),
-                );
+                ];
             }
 
-            $data = array(
+            $data = [
                 'idjurnal' => $idjurnal,
                 'tgljurnal' => $tgljurnal,
                 'keterangan' => $keterangan,
@@ -182,21 +193,21 @@ class JurnalController extends Controller
                 'updated_date' => $updated_date,
                 'idpengguna' => session('idpengguna'),
                 'jenis' => 'Jurnal Penyesuaian',
-            );
+            ];
             $simpan = $this->model->simpanData($data, $dataDetail, $idjurnal);
         } else {
 
-            $dataDetail = array();
+            $dataDetail = [];
             for ($i = 0; $i < count($isidatatable); $i++) {
-                $dataDetail[] = array(
+                $dataDetail[] = [
                     'idjurnal' => $idjurnal,
                     'kdakun' => $isidatatable[$i]['kdakun'],
                     'debet' => untitik($isidatatable[$i]['debet']),
                     'kredit' => untitik($isidatatable[$i]['kredit']),
-                );
+                ];
             }
 
-            $data = array(
+            $data = [
                 'idjurnal' => $idjurnal,
                 'tgljurnal' => $tgljurnal,
                 'keterangan' => $keterangan,
@@ -205,19 +216,17 @@ class JurnalController extends Controller
                 'updated_date' => $updated_date,
                 'idpengguna' => session('idpengguna'),
                 'jenis' => 'Jurnal Penyesuaian',
-            );
+            ];
 
             $simpan = $this->model->updateData($data, $dataDetail, $idjurnal);
         }
 
         if ($simpan['status'] == 'success') {
-            return response()->json(array('success' => true));
+            return response()->json(['success' => true]);
         } else {
-            return response()->json(array('msg' => 'Data gagal disimpan! Error: ' . $simpan['message']));
+            return response()->json(['msg' => 'Data gagal disimpan! Error: '.$simpan['message']]);
         }
     }
-
-
 
     public function hapus($idjurnal)
     {
@@ -232,6 +241,7 @@ class JurnalController extends Controller
         if (App::isPosting($tgljurnal)) {
             $bulan = bulan(date('m', strtotime($tgljurnal)));
             $tahun = date('Y', strtotime($tgljurnal));
+
             return redirect('/jurnal')->with('fail', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
         }
 
@@ -239,7 +249,7 @@ class JurnalController extends Controller
         if ($hapus['status'] == 'success') {
             return redirect('/jurnal')->with('success', $hapus['message']);
         } else {
-            return redirect('/jurnal')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/jurnal')->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
 
@@ -249,6 +259,7 @@ class JurnalController extends Controller
         $rsJurnal = Jurnal::find($idjurnal);
 
         $rsDetail = $this->model->getDetail($idjurnal);
-        return response()->json(array('rsJurnal' => $rsJurnal, 'rsDetail' => $rsDetail));
+
+        return response()->json(['rsJurnal' => $rsJurnal, 'rsDetail' => $rsDetail]);
     }
 }

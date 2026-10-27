@@ -90,7 +90,11 @@
                                                 </div>
                                                 <div class="col-md-4">
                                                     @if ($sisaHutang > 0 )
-                                                    <button class="btn btn-primary float-right" data-toggle="modal" data-target="#modalTambahPembayaran"><i class="fa fa-plus"></i> Tambah Pembayaran</button>
+                                                        @if (str_contains(strtolower(session('hakaksi_aktif')), 'tambah') || str_contains(strtolower(session('hakaksi_aktif')), 'edit') || session('idpengguna') == '9999999999')
+                                                        <button class="btn btn-primary float-right" data-toggle="modal" data-target="#modalTambahPembayaran"><i class="fa fa-plus"></i> Tambah Pembayaran</button>
+                                                        @else
+                                                        <button class="btn btn-primary float-right" disabled title="Anda tidak memiliki hak akses Tambah"><i class="fa fa-plus"></i> Tambah Pembayaran</button>
+                                                        @endif
                                                     @endif
                                                 </div>
                                                 <div class="col-12 mt-3">
@@ -126,7 +130,13 @@
                                                                 @endif
 
                                                                 <td style="text-align: right;">{{ format_rupiah($row->debet) }}</td>
-                                                                <td style="text-align: center;"><a href="{{ url('hutang/hapusDetailPembayaran/'.Crypt::encrypt($row->idhutangdetail)) }}" class="btn btn-danger btn-sm" id="btnHapus"><i class="fa fa-trash"></i></a></td>
+                                                                <td style="text-align: center;">
+                                                                    @if (str_contains(strtolower(session('hakaksi_aktif')), 'hapus') || session('idpengguna') == '9999999999')
+                                                                        <a href="{{ url('hutang/hapusDetailPembayaran/'.Crypt::encrypt($row->idhutangdetail)) }}" class="btn btn-danger btn-sm" id="btnHapus"><i class="fa fa-trash"></i></a>
+                                                                    @else
+                                                                        <button type="button" class="btn btn-danger btn-sm" disabled title="Anda tidak memiliki hak akses Hapus"><i class="fa fa-trash"></i></button>
+                                                                    @endif
+                                                                </td>
                                                             </tr>
 
                                                             @empty

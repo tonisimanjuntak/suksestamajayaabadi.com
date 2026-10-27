@@ -34,10 +34,14 @@
                             <div class="d-flex justify-content-between">
                                 <h3 class="card-title font-weight-bold"><i class="far fa-list-alt mr-1"></i>List Data
                                     Sales</h3>
-                                <a href="{{ url('sales/tambah') }}" class="btn btn-sm btn-primary"
-                                    @if (!str_contains(strtolower(session('hakaksi_aktif')), 'tambah') )
-                                        style="display: none;"
-                                    @endif
+                                @if (str_contains(strtolower(session('hakaksi_aktif')), 'tambah'))
+                                    <a href="{{ url('sales/tambah') }}" class="btn btn-sm btn-primary"><i
+                                            class="fa fa-plus-circle mr-1"></i> Tambah Data</a>
+                                @else
+                                    <button type="button" class="btn btn-sm btn-primary" disabled
+                                        title="Anda tidak memiliki hak akses Tambah"><i
+                                            class="fa fa-plus-circle mr-1"></i> Tambah Data</button>
+                                @endif
                                 ><i
                                         class="fa fa-plus-circle mr-1"></i> Tambah Data</a>
                             </div>

@@ -2,26 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Uploads;
-use App\Models\Konsumen;
-use App\Models\Material;
-use App\Models\Penjualan;
-use App\Models\Barang;
-use App\Models\Piutang;
-use App\Models\Suratjalan;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Helpers\PpnHelper;
 use App\Models\App;
 use App\Models\Bank;
+use App\Models\Barang;
+use App\Models\Konsumen;
+use App\Models\Penjualan;
+use App\Models\Piutang;
 use App\Models\Returpenjualan;
 use App\Models\Sales;
-use App\Helpers\PpnHelper;
+use App\Models\Suratjalan;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use TCPDF;
 
 class PenjualanController extends Controller
 {
-    var $model;
+    public $model;
 
     public function __construct()
     {
@@ -34,6 +32,7 @@ class PenjualanController extends Controller
         $penjualan = $this->model->allView();
         $data['penjualan'] = $penjualan;
         $data['menu'] = 'penjualan';
+
         return view('penjualan.index', $data);
     }
 
@@ -42,10 +41,11 @@ class PenjualanController extends Controller
         $rsSales = Sales::getSalesAktif();
         $noinvoice = $this->model->createInvoice();
         $data['menu'] = 'penjualan';
-        $data['idpenjualan'] = "";
+        $data['idpenjualan'] = '';
         $data['noinvoice'] = $noinvoice;
         $data['rsSales'] = $rsSales;
         $data['ppnpersen'] = session('ppn_penjualan');
+
         return view('penjualan.form', $data);
     }
 
@@ -62,6 +62,7 @@ class PenjualanController extends Controller
         if (App::isPosting($tglinvoice)) {
             $bulan = bulan(date('m', strtotime($tglinvoice)));
             $tahun = date('Y', strtotime($tglinvoice));
+
             return redirect('/penjualan')->with('other', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
         }
 
@@ -75,7 +76,6 @@ class PenjualanController extends Controller
             return redirect('/penjualan')->with('other', 'Penjualan ini sudah di retur, sehingga tidak dapat dirubah lagi!');
         }
 
-
         //cek jika sudah ada suratjalan
         if (Suratjalan::sudahAdaSuratJalan($idpenjualan)) {
             return redirect('/penjualan')->with('other', 'Penjualan ini sudah ada suratjalan, sehingga tidak dapat dirubah lagi!');
@@ -87,9 +87,9 @@ class PenjualanController extends Controller
         $data['noinvoice'] = $rsPenjualan['noinvoice'];
         $data['rsSales'] = $rsSales;
         $data['ppnpersen'] = session('ppn_penjualan');
+
         return view('penjualan.form', $data);
     }
-
 
     public function listdata(Request $request)
     {
@@ -101,16 +101,16 @@ class PenjualanController extends Controller
         $idkonsumen = $request->input('idkonsumen');
         $carabayar = $request->input('carabayar');
 
-        $query->whereBetween("tglinvoice", [$tglawal, $tglakhir]);
+        $query->whereBetween('tglinvoice', [$tglawal, $tglakhir]);
         if ($idkonsumen != '' && $idkonsumen != null) {
             $query->where('idkonsumen', $idkonsumen);
         }
-        if (!empty($carabayar)) {
+        if (! empty($carabayar)) {
             $query->where('carabayar', $carabayar);
         }
 
         // Cek apakah ada pencarian
-        if ($request->has('search') && !empty($request->input('search.value'))) {
+        if ($request->has('search') && ! empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where(function ($groupwhere) use ($search) {
                 $groupwhere->where('idpenjualan', 'LIKE', "%{$search}%")
@@ -140,7 +140,6 @@ class PenjualanController extends Controller
             $query->orderBy('idpenjualan', 'Desc');
         }
 
-
         // Hitung total data tanpa filter
         $totalData = Penjualan::count();
 
@@ -157,16 +156,28 @@ class PenjualanController extends Controller
             ->get();
 
         // Format data untuk DataTables
+        $hakaksiAktif = session('hakaksi_aktif', '');
+        $canEdit = str_contains($hakaksiAktif, 'Edit');
+        $canHapus = str_contains($hakaksiAktif, 'Hapus');
+
         $data = [];
         $no = 1;
         foreach ($rsData as $row) {
 
+            $btnEdit = $canEdit
+                ? '<a href="'.url('penjualan/edit/'.Crypt::encrypt($row->idpenjualan)).'" class="btn btn-warning">Edit</a>'
+                : '<button type="button" class="btn btn-warning" disabled title="Anda tidak memiliki hak akses Edit">Edit</button>';
+
+            $btnHapus = $canHapus
+                ? '<a href="'.url('penjualan/hapus/'.Crypt::encrypt($row->idpenjualan)).'" class="dropdown-item" id="btnHapus">Hapus</a>'
+                : '<span class="dropdown-item disabled text-muted" title="Anda tidak memiliki hak akses Hapus"><i class="fa fa-ban mr-1"></i> Hapus</span>';
+
             $data[] = [
                 'no' => $no++,
                 'idpenjualan' => $row->idpenjualan,
-                'tglinvoice' => $row->tglinvoice . '<br>' . $row->noinvoice,
-                'namakonsumen' => $row->namakonsumen . '<br>(' . $row->namawilayah . ')',
-                'keterangan' => (!empty($row->keterangan) ? $row->keterangan . '<br>' : '')  .'ID TR: '.$row->idpenjualan.'<br>Cara Bayar: '.$row->carabayar.'<br>Operator: '.$row->namapengguna,
+                'tglinvoice' => $row->tglinvoice.'<br>'.$row->noinvoice,
+                'namakonsumen' => $row->namakonsumen.'<br>('.$row->namawilayah.')',
+                'keterangan' => (! empty($row->keterangan) ? $row->keterangan.'<br>' : '').'ID TR: '.$row->idpenjualan.'<br>Cara Bayar: '.$row->carabayar.'<br>Operator: '.$row->namapengguna,
                 'namasales' => $row->namasales,
                 'totaldpp' => format_rupiah($row->totaldpp),
                 'totalppn' => format_rupiah($row->totalppn),
@@ -177,18 +188,17 @@ class PenjualanController extends Controller
                                     <span class="sr-only">Toggle Dropleft</span>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a href="' . url('penjualan/cetakInvoice/' . Crypt::encrypt($row->idpenjualan)) . '" class="dropdown-item" target="_blank">Cetak Invoice</a>
-                                        <a href="' . url('penjualan/cetakKwitansi/' . Crypt::encrypt($row->idpenjualan)) . '" class="dropdown-item" target="_blank">Cetak Kwitansi</a>
+                                        <a href="'.url('penjualan/cetakInvoice/'.Crypt::encrypt($row->idpenjualan)).'" class="dropdown-item" target="_blank">Cetak Invoice</a>
+                                        <a href="'.url('penjualan/cetakKwitansi/'.Crypt::encrypt($row->idpenjualan)).'" class="dropdown-item" target="_blank">Cetak Kwitansi</a>
                                         <div class="dropdown-divider"></div>
-                                        <a href="' . url('penjualan/hapus/' . Crypt::encrypt($row->idpenjualan)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
+                                        '.$btnHapus.'
                                     </div>
                                 </div>
-                                <a href="' . url('penjualan/edit/' . Crypt::encrypt($row->idpenjualan)) . '" class="btn btn-warning">Edit</a>                                
+                                '.$btnEdit.'                                
                             </div>',
 
             ];
         }
-
 
         // Response untuk DataTables
         return response()->json([
@@ -210,27 +220,27 @@ class PenjualanController extends Controller
 
             //jika konsumen lewat jatuh tempo maka tidak diijinkan untuk melakukan piutang lagi
             if ($this->model->adaPiutangKadaluarsa($idpenjualan)) {
-                return response()->json(array("msg" => "Ada piutang konsumen yang sudah melewati tanggal jatuh tempo! Konsumen tidak dapat membeli lagi dengan cara piutang!"));
+                return response()->json(['msg' => 'Ada piutang konsumen yang sudah melewati tanggal jatuh tempo! Konsumen tidak dapat membeli lagi dengan cara piutang!']);
             }
 
             //cek jika limit kredit tidak cukup
             $rsKonsumen = Konsumen::find($idkonsumen);
-            
+
             $sisakredit = $rsKonsumen->limitkredit - $rsKonsumen->jumlahpiutang;
             if (empty($idpenjualan)) { // tambah data
                 if ($totalinvoice > $sisakredit) {
-                    return response()->json(array("msg" => "Kredit konsumen tidak mencukupi! Sisa kredit konsumen : Rp." . format_rupiah($sisakredit)));
+                    return response()->json(['msg' => 'Kredit konsumen tidak mencukupi! Sisa kredit konsumen : Rp.'.format_rupiah($sisakredit)]);
                 }
             } else { // edit data
                 $rsPenjualan = Penjualan::find($idpenjualan);
 
                 if (($totalinvoice - $rsPenjualan->totalinvoice) > $sisakredit) {
-                    return response()->json(array("msg" => "Kredit konsumen tidak mencukupi! Sisa kredit konsumen : Rp." . format_rupiah($sisakredit)));
+                    return response()->json(['msg' => 'Kredit konsumen tidak mencukupi! Sisa kredit konsumen : Rp.'.format_rupiah($sisakredit)]);
                 }
             }
         }
 
-        return response()->json(array("success" => true));
+        return response()->json(['success' => true]);
     }
 
     public function simpanData(Request $request)
@@ -251,17 +261,16 @@ class PenjualanController extends Controller
         $biayapengiriman = untitik($request->get('biayapengiriman'));
         $totalinvoice = untitik($request->get('totalinvoice'));
 
-
         $idsales = $request->get('idsales');
         $isidatatable = $request->get('isidatatable');
         $inserted_date = date('Y-m-d H:i:s');
         $updated_date = date('Y-m-d H:i:s');
 
-
         if (App::isPosting($tglinvoice)) {
             $bulan = bulan(date('m', strtotime($tglinvoice)));
             $tahun = date('Y', strtotime($tglinvoice));
-            return response()->json(array("msg" => "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!"));
+
+            return response()->json(['msg' => "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!"]);
         }
 
         if ($carabayar != 'Transfer' && $carabayar != 'Giro') {
@@ -274,7 +283,7 @@ class PenjualanController extends Controller
 
         if ($carabayar != 'Piutang') {
             $idjenispiutang = null;
-        }        
+        }
 
         if (empty($idpenjualan)) {
 
@@ -285,24 +294,24 @@ class PenjualanController extends Controller
             }
 
             if ($this->model->cekNoInvoice($noinvoice)) {
-                return response()->json(array('msg' => 'Data gagal disimpan karena Nomor invoice sudah ada!'));
+                return response()->json(['msg' => 'Data gagal disimpan karena Nomor invoice sudah ada!']);
             }
 
-            $totalSubTotalJualDetail = array_sum(array_map(function($item) {
+            $totalSubTotalJualDetail = array_sum(array_map(function ($item) {
                 return (float) untitik($item['subtotaljual']);
             }, $isidatatable));
-            
-            $dataDetail = array();
+
+            $dataDetail = [];
             $runningTotalPpn = 0;
             for ($i = 0; $i < count($isidatatable); $i++) {
                 $subTotalJual = untitik($isidatatable[$i]['subtotaljual']);
                 $hargaSatuan = untitik($isidatatable[$i]['hargasatuan']);
                 $jumlahDiskon = untitik($isidatatable[$i]['jumlahdiskon']);
                 $jumlahJual = untitik($isidatatable[$i]['jumlahjual']);
-                
+
                 // Proporsional Per 1 Item Barang
                 $rasioProporsi = ($totalSubTotalJualDetail > 0) ? ($subTotalJual / $totalSubTotalJualDetail) : 0;
-                
+
                 // Hitung PPN Proporsional per item
                 if ($i == count($isidatatable) - 1) {
                     $jumlahPpnItem = $totalppn - $runningTotalPpn;
@@ -314,7 +323,7 @@ class PenjualanController extends Controller
                 $jumlahPpnSatuan = ($jumlahJual > 0) ? PpnHelper::roundPPN($jumlahPpnItem / $jumlahJual) : 0;
                 $hargaDppSatuan = $hargaSatuan - $jumlahDiskon - $jumlahPpnSatuan;
 
-                $dataDetail[] = array(
+                $dataDetail[] = [
                     'idpenjualan' => $idpenjualan,
                     'idbarang' => $isidatatable[$i]['idbarang'],
                     'jumlahjual' => $jumlahJual,
@@ -327,10 +336,10 @@ class PenjualanController extends Controller
                     'diskonpersen1' => $isidatatable[$i]['diskonpersen1'],
                     'diskonpersen2' => $isidatatable[$i]['diskonpersen2'],
                     'diskonpersen3' => $isidatatable[$i]['diskonpersen3'],
-                );
+                ];
             }
 
-            $data = array(
+            $data = [
                 'idpenjualan' => $idpenjualan,
                 'idkonsumen' => $idkonsumen,
                 'noinvoice' => $noinvoice,
@@ -350,8 +359,7 @@ class PenjualanController extends Controller
                 'idsales' => $idsales,
                 'nokwitansi' => $nokwitansi,
                 'nobilyetgiro' => $nobilyetgiro,
-            );
-
+            ];
 
             $simpan = $this->model->simpanData($data, $dataDetail, $idpenjualan, $nokwitansi);
         } else {
@@ -363,32 +371,32 @@ class PenjualanController extends Controller
 
             //cek jika sudah dilakukan pembayaran piutang
             if (Piutang::piutangSudahDibayar($idpenjualan)) {
-                return response()->json(array('msg' => 'Piutang untuk invoice ini sudah dilakukan pembayaran sehingga tidak dapat diubah lagi!'));
+                return response()->json(['msg' => 'Piutang untuk invoice ini sudah dilakukan pembayaran sehingga tidak dapat diubah lagi!']);
             }
 
             if (Suratjalan::sudahAdaSuratJalan($idpenjualan)) {
-                return response()->json(array('msg' => 'Penjualan sudah diterbitkan surat jalan sehingga tidak dapat diubah lagi!'));
+                return response()->json(['msg' => 'Penjualan sudah diterbitkan surat jalan sehingga tidak dapat diubah lagi!']);
             }
 
             if (Returpenjualan::penjualanSudahDiRetur($idpenjualan)) {
-                return response()->json(array('msg' => 'Penjualan sudah pernah diretur sehingga tidak dapat diubah lagi!'));
+                return response()->json(['msg' => 'Penjualan sudah pernah diretur sehingga tidak dapat diubah lagi!']);
             }
 
-            $totalSubTotalJualDetail = array_sum(array_map(function($item) {
+            $totalSubTotalJualDetail = array_sum(array_map(function ($item) {
                 return (float) untitik($item['subtotaljual']);
             }, $isidatatable));
-            
-            $dataDetail = array();
+
+            $dataDetail = [];
             $runningTotalPpn = 0;
             for ($i = 0; $i < count($isidatatable); $i++) {
                 $subTotalJual = untitik($isidatatable[$i]['subtotaljual']);
                 $hargaSatuan = untitik($isidatatable[$i]['hargasatuan']);
                 $jumlahDiskon = untitik($isidatatable[$i]['jumlahdiskon']);
                 $jumlahJual = untitik($isidatatable[$i]['jumlahjual']);
-                
+
                 // Proporsional Per 1 Item Barang
                 $rasioProporsi = ($totalSubTotalJualDetail > 0) ? ($subTotalJual / $totalSubTotalJualDetail) : 0;
-                
+
                 // Hitung PPN Proporsional per item
                 if ($i == count($isidatatable) - 1) {
                     $jumlahPpnItem = $totalppn - $runningTotalPpn;
@@ -400,7 +408,7 @@ class PenjualanController extends Controller
                 $jumlahPpnSatuan = ($jumlahJual > 0) ? PpnHelper::roundPPN($jumlahPpnItem / $jumlahJual) : 0;
                 $hargaDppSatuan = $hargaSatuan - $jumlahDiskon - $jumlahPpnSatuan;
 
-                $dataDetail[] = array(
+                $dataDetail[] = [
                     'idpenjualan' => $idpenjualan,
                     'idbarang' => $isidatatable[$i]['idbarang'],
                     'jumlahjual' => $jumlahJual,
@@ -413,10 +421,10 @@ class PenjualanController extends Controller
                     'diskonpersen1' => $isidatatable[$i]['diskonpersen1'],
                     'diskonpersen2' => $isidatatable[$i]['diskonpersen2'],
                     'diskonpersen3' => $isidatatable[$i]['diskonpersen3'],
-                );
+                ];
             }
 
-            $data = array(
+            $data = [
                 'idpenjualan' => $idpenjualan,
                 'idkonsumen' => $idkonsumen,
                 'noinvoice' => $noinvoice,
@@ -435,23 +443,19 @@ class PenjualanController extends Controller
                 'idsales' => $idsales,
                 'nokwitansi' => $nokwitansi,
                 'nobilyetgiro' => $nobilyetgiro,
-            );
+            ];
 
             // return response()->json(array('data' => $data));
-
-
 
             $simpan = $this->model->updateData($data, $dataDetail, $idpenjualan, $nokwitansi);
         }
 
         if ($simpan['status'] == 'success') {
-            return response()->json(array('success' => true));
+            return response()->json(['success' => true]);
         } else {
-            return response()->json(array('msg' => 'Data gagal disimpan! Error: ' . $simpan['message']));
+            return response()->json(['msg' => 'Data gagal disimpan! Error: '.$simpan['message']]);
         }
     }
-
-
 
     public function hapus($idpenjualan)
     {
@@ -466,6 +470,7 @@ class PenjualanController extends Controller
         if (App::isPosting($tglinvoice)) {
             $bulan = bulan(date('m', strtotime($tglinvoice)));
             $tahun = date('Y', strtotime($tglinvoice));
+
             return redirect('/penjualan')->with('other', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
         }
 
@@ -488,7 +493,7 @@ class PenjualanController extends Controller
         if ($hapus['status'] == 'success') {
             return redirect('/penjualan')->with('success', $hapus['message']);
         } else {
-            return redirect('/penjualan')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/penjualan')->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
 
@@ -498,7 +503,8 @@ class PenjualanController extends Controller
         $rsPenjualan = Penjualan::find($idpenjualan);
 
         $rsDetail = $this->model->getDetail($idpenjualan);
-        return response()->json(array('rsPenjualan' => $rsPenjualan, 'rsDetail' => $rsDetail));
+
+        return response()->json(['rsPenjualan' => $rsPenjualan, 'rsDetail' => $rsDetail]);
     }
 
     public function cetakInvoice_2026_03_11($idpenjualan)
@@ -508,7 +514,7 @@ class PenjualanController extends Controller
         $rsDetail = $this->model->getDetail($idpenjualan);
 
         $tgljatuhtempo = '-';
-        if ($rsPenjualan->carabayar == "Piutang") {
+        if ($rsPenjualan->carabayar == 'Piutang') {
             $tgljatuhtempo = tglindonesia(App::createTglJatuhTempo($rsPenjualan->idjenispiutang, $rsPenjualan->tglinvoice));
         }
 
@@ -523,6 +529,7 @@ class PenjualanController extends Controller
         $data['rowSales'] = $rowSales;
         $data['rsBank'] = $rsBank;
         $data['tgljatuhtempo'] = $tgljatuhtempo;
+
         return view('penjualan.cetakInvoice', $data);
     }
 
@@ -533,7 +540,7 @@ class PenjualanController extends Controller
         $rsDetail = $this->model->getDetail($idpenjualan);
 
         $tgljatuhtempo = '-';
-        if ($rsPenjualan->carabayar == "Piutang") {
+        if ($rsPenjualan->carabayar == 'Piutang') {
             $rsPiutang = Piutang::where('idpenjualan', $idpenjualan)->first();
             // dd($rsPiutang);
             $tgljatuhtempo = $rsPiutang->tgljatuhtempo;
@@ -544,7 +551,7 @@ class PenjualanController extends Controller
         $rowKonsumen = Konsumen::find($rsPenjualan->idkonsumen);
         $rowSales = Sales::find($rsPenjualan->idsales);
         $rsBank = Bank::where('statusaktif', 'Aktif')
-                ->limit(2)->get();
+            ->limit(2)->get();
 
         $data['idpenjualan'] = $idpenjualan;
         $data['rowPenjualan'] = $rsPenjualan;
@@ -569,7 +576,7 @@ class PenjualanController extends Controller
         $pdf->setPrintFooter(false);
 
         // Atur ukuran kertas khusus (218 mm x 140 mm)
-        $customPaperSize = array(218, 140); // Lebar: 218 mm, Tinggi: 140 mm
+        $customPaperSize = [218, 140]; // Lebar: 218 mm, Tinggi: 140 mm
         $pdf->AddPage('L', $customPaperSize); // 'P' untuk portrait, 'L' untuk landscape
 
         // Atur margin (1 cm = 10 mm)
@@ -601,7 +608,7 @@ class PenjualanController extends Controller
 
         $rowKwitansi = $this->model->getKwitansiTerakhir($idpenjualan);
 
-        if (!$rowKwitansi) {
+        if (! $rowKwitansi) {
             echo 'Belum ada pembayaran...';
             exit();
         }
@@ -610,6 +617,7 @@ class PenjualanController extends Controller
         $data['rowPenjualan'] = $rsPenjualan;
         $data['rsDetail'] = $rsDetail;
         $data['rowKwitansi'] = $rowKwitansi;
+
         return view('penjualan.cetakKwitansi', $data);
     }
 
@@ -626,7 +634,7 @@ class PenjualanController extends Controller
         $formattedResults = $results->map(function ($item) {
             return [
                 'id' => $item->idpenjualan,
-                'text' => $item->tglinvoice . ' || No Invoice: ' . $item->noinvoice,
+                'text' => $item->tglinvoice.' || No Invoice: '.$item->noinvoice,
             ];
         });
 
@@ -647,7 +655,7 @@ class PenjualanController extends Controller
         $formattedResults = $results->map(function ($item) {
             return [
                 'id' => $item->idpenjualan,
-                'text' => $item->tglinvoice . ' || No Invoice: ' . $item->noinvoice,
+                'text' => $item->tglinvoice.' || No Invoice: '.$item->noinvoice,
             ];
         });
 

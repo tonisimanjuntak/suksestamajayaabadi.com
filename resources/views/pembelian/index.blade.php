@@ -29,10 +29,11 @@
                         <div class="card-header">
                             <h3 class="card-title font-weight-bold"><i class="far fa-list-alt mr-1"></i>List Data
                                 Purchase Order</h3>
-                            <a href="{{ url('pembelian/tambah') }}" class="btn btn-sm btn-primary float-right" <?php if
-                                (!str_contains(strtolower(session('hakaksi_aktif')), 'tambah' ) ) {
-                                echo 'style="display: none;"' ; } ?>
-                                ><i class="fa fa-plus-circle mr-1"></i> Tambah Data</a>
+                            @if (str_contains(strtolower(session('hakaksi_aktif')), 'tambah'))
+                                <a href="{{ url('pembelian/tambah') }}" class="btn btn-sm btn-primary float-right"><i class="fa fa-plus-circle mr-1"></i> Tambah Data</a>
+                            @else
+                                <button type="button" class="btn btn-sm btn-primary float-right" disabled title="Anda tidak memiliki hak akses Tambah"><i class="fa fa-plus-circle mr-1"></i> Tambah Data</button>
+                            @endif
 
                             <button class="btn btn-info btn-sm float-right mr-1 lihat-riwayat"
                                 data-riwayat-table="pembelian"><i class="fa fa-history mr-1"></i> Lihat

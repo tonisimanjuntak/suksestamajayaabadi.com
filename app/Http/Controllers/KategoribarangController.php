@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Kategoribarang;
 use App\Models\App;
+use App\Models\Kategoribarang;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class KategoribarangController extends Controller
 {
-    var $model;
-    var $App;
+    public $model;
+
+    public $App;
 
     public function __construct()
     {
@@ -25,13 +26,15 @@ class KategoribarangController extends Controller
         $kategoribarang = Kategoribarang::all();
         $data['kategoribarang'] = $kategoribarang;
         $data['menu'] = 'kategoribarang';
+
         return view('kategoribarang.index', $data);
     }
 
     public function tambah()
     {
         $data['menu'] = 'kategoribarang';
-        $data['idkategori'] = "";
+        $data['idkategori'] = '';
+
         return view('kategoribarang.form', $data);
     }
 
@@ -45,6 +48,7 @@ class KategoribarangController extends Controller
         }
         $data['menu'] = 'kategoribarang';
         $data['idkategori'] = $idkategori;
+
         return view('kategoribarang.form', $data);
     }
 
@@ -59,7 +63,7 @@ class KategoribarangController extends Controller
         }
 
         // Cek apakah ada pencarian
-        if ($request->has('search') && !empty($request->input('search.value'))) {
+        if ($request->has('search') && ! empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where('idkategori', 'LIKE', "%{$search}%")
                 ->orWhere('namakategori', 'LIKE', "%{$search}%");
@@ -83,7 +87,6 @@ class KategoribarangController extends Controller
             $query->orderBy('namakategori', 'Asc');
         }
 
-
         // Hitung total data tanpa filter
         $totalData = Kategoribarang::count();
 
@@ -102,12 +105,25 @@ class KategoribarangController extends Controller
         // Format data untuk DataTables
         $data = [];
         $no = 1;
+        $hakaksiAktif = session('hakaksi_aktif', '');
+        $canEdit = str_contains($hakaksiAktif, 'Edit');
+        $canHapus = str_contains($hakaksiAktif, 'Hapus');
+
         foreach ($rsData as $row) {
             if ($row->statusaktif == 'Aktif') {
-                $statusaktif = '<span class="badge badge-success">' . $row->statusaktif . '</span>';
+                $statusaktif = '<span class="badge badge-success">'.$row->statusaktif.'</span>';
             } else {
-                $statusaktif = '<span class="badge badge-danger">' . $row->statusaktif . '</span>';
+                $statusaktif = '<span class="badge badge-danger">'.$row->statusaktif.'</span>';
             }
+
+            $btnEdit = $canEdit
+                ? '<a href="'.url('kategoribarang/edit/'.Crypt::encrypt($row->idkategori)).'" class="btn btn-warning">Edit</a>'
+                : '<button type="button" class="btn btn-warning" disabled title="Anda tidak memiliki hak akses Edit">Edit</button>';
+
+            $itemHapus = $canHapus
+                ? '<a href="'.url('kategoribarang/hapus/'.Crypt::encrypt($row->idkategori)).'" class="dropdown-item" id="btnHapus">Hapus</a>'
+                : '<span class="dropdown-item disabled text-muted" title="Anda tidak memiliki hak akses Hapus">Hapus</span>';
+
             $data[] = [
                 'no' => $no++,
                 'idkategori' => $row->idkategori,
@@ -119,10 +135,10 @@ class KategoribarangController extends Controller
                                     <span class="sr-only">Toggle Dropleft</span>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a href="' . url('kategoribarang/hapus/' . Crypt::encrypt($row->idkategori)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
+                                        '.$itemHapus.'
                                     </div>
                                 </div>
-                                <a href="' . url('kategoribarang/edit/' . Crypt::encrypt($row->idkategori)) . '" class="btn btn-warning">Edit</a>                                
+                                '.$btnEdit.'                                
                             </div>',
 
             ];
@@ -149,21 +165,21 @@ class KategoribarangController extends Controller
 
         if (empty($idkategori)) {
             $idkategori = $this->model->createID($namakategori);
-            $data = array(
+            $data = [
                 'idkategori' => $idkategori,
                 'namakategori' => $namakategori,
                 'inserted_date' => $inserted_date,
                 'updated_date' => $updated_date,
                 'statusaktif' => 'Aktif',
-            );
+            ];
             $simpan = $this->model->simpanData($data);
         } else {
-            $data = array(
+            $data = [
                 'idkategori' => $idkategori,
                 'namakategori' => $namakategori,
                 'updated_date' => $updated_date,
                 'statusaktif' => $statusaktif,
-            );
+            ];
             $simpan = $this->model->updateData($data, $idkategori);
         }
 
@@ -171,11 +187,9 @@ class KategoribarangController extends Controller
         if ($simpan['status'] == 'success') {
             return redirect('/kategoribarang')->with('success', $simpan['message']);
         } else {
-            return redirect('/kategoribarang')->with('fail', 'Data gagal disimpan! Error: ' . $simpan['message']);
+            return redirect('/kategoribarang')->with('fail', 'Data gagal disimpan! Error: '.$simpan['message']);
         }
     }
-
-
 
     public function hapus($idkategori)
     {
@@ -190,7 +204,7 @@ class KategoribarangController extends Controller
         if ($hapus['status'] == 'success') {
             return redirect('/kategoribarang')->with('success', $hapus['message']);
         } else {
-            return redirect('/kategoribarang')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/kategoribarang')->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
 
@@ -198,6 +212,7 @@ class KategoribarangController extends Controller
     {
         $idkategori = $request->input('idkategori');
         $rsKategori = Kategoribarang::find($idkategori);
+
         return response()->json($rsKategori);
     }
 

@@ -2,24 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Returpenjualan;
-use App\Models\Konsumen;
-use App\Models\Sales;
-use App\Models\Bank;
-use App\Models\Uploads;
+use App\Models\App;
 use App\Models\Barang;
-use App\Models\Supplier;
+use App\Models\Konsumen;
 use App\Models\Penjualan;
-use App\Models\Hutang;
+use App\Models\Returpenjualan;
+use App\Models\Sales;
+use App\Models\Supplier;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use App\Models\App;
 use TCPDF;
 
 class ReturpenjualanController extends Controller
 {
-    var $model;
+    public $model;
 
     public function __construct()
     {
@@ -30,13 +27,15 @@ class ReturpenjualanController extends Controller
     public function index()
     {
         $data['menu'] = 'returpenjualan';
+
         return view('returpenjualan.index', $data);
     }
 
     public function tambah()
     {
         $data['menu'] = 'returpenjualan';
-        $data['idreturpenjualan'] = "";
+        $data['idreturpenjualan'] = '';
+
         return view('returpenjualan.form', $data);
     }
 
@@ -52,9 +51,9 @@ class ReturpenjualanController extends Controller
         $data['rsSupplier'] = Supplier::all();
         $data['menu'] = 'returpenjualan';
         $data['idreturpenjualan'] = $idreturpenjualan;
+
         return view('returpenjualan.form', $data);
     }
-
 
     public function listdata(Request $request)
     {
@@ -66,17 +65,17 @@ class ReturpenjualanController extends Controller
         $idkonsumen = $request->input('idkonsumen');
         $carabayar = $request->input('carabayar');
 
-        $query->whereBetween("tglretur", [$tglawal, $tglakhir]);
+        $query->whereBetween('tglretur', [$tglawal, $tglakhir]);
         if ($idkonsumen != '' && $idkonsumen != null) {
             $query->where('idkonsumen', $idkonsumen);
         }
 
-        if (!empty($carabayar)) {
+        if (! empty($carabayar)) {
             $query->where('carabayar', $carabayar);
         }
 
         // Cek apakah ada pencarian
-        if ($request->has('search') && !empty($request->input('search.value'))) {
+        if ($request->has('search') && ! empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where(function ($groupwhere) use ($search) {
                 $groupwhere->where('idreturpenjualan', 'LIKE', "%{$search}%")
@@ -105,7 +104,6 @@ class ReturpenjualanController extends Controller
             $query->orderBy('idreturpenjualan', 'Desc');
         }
 
-
         // Hitung total data tanpa filter
         $totalData = Returpenjualan::count();
 
@@ -122,14 +120,21 @@ class ReturpenjualanController extends Controller
             ->get();
 
         // Format data untuk DataTables
+        $hakaksiAktif = session('hakaksi_aktif', '');
+        $canHapus = str_contains($hakaksiAktif, 'Hapus');
+
         $data = [];
         $no = 1;
         foreach ($rsData as $row) {
 
+            $btnHapus = $canHapus
+                ? '<a href="'.url('returpenjualan/hapus/'.Crypt::encrypt($row->idreturpenjualan)).'" class="dropdown-item" id="btnHapus">Hapus</a>'
+                : '<span class="dropdown-item disabled text-muted" title="Anda tidak memiliki hak akses Hapus"><i class="fa fa-ban mr-1"></i> Hapus</span>';
+
             $data[] = [
                 'no' => $no++,
-                'tglretur' => tgldmy($row->tglretur) . '<br>' . $row->idreturpenjualan,
-                'tglinvoice' => tgldmy($row->tglinvoice) . '<br>' . $row->noinvoice,
+                'tglretur' => tgldmy($row->tglretur).'<br>'.$row->idreturpenjualan,
+                'tglinvoice' => tgldmy($row->tglinvoice).'<br>'.$row->noinvoice,
                 'namakonsumen' => $row->namakonsumen,
                 'keterangan' => $row->keterangan,
                 'carabayar' => $row->carabayar,
@@ -141,17 +146,16 @@ class ReturpenjualanController extends Controller
                                     <span class="sr-only">Toggle Dropleft</span>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a href="' . url('returpenjualan/cetak/' . Crypt::encrypt($row->idreturpenjualan)) . '" class="dropdown-item" target="_blank">Cetak Nota Retur</a>
+                                        <a href="'.url('returpenjualan/cetak/'.Crypt::encrypt($row->idreturpenjualan)).'" class="dropdown-item" target="_blank">Cetak Nota Retur</a>
                                         <div class="dropdown-divider"></div>
-                                        <a href="' . url('returpenjualan/hapus/' . Crypt::encrypt($row->idreturpenjualan)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
+                                        '.$btnHapus.'
                                     </div>
                                 </div>
-                                <a href="' . url('returpenjualan/lihat/' . Crypt::encrypt($row->idreturpenjualan)) . '" class="btn btn-warning">Lihat</a>                                
+                                <a href="'.url('returpenjualan/lihat/'.Crypt::encrypt($row->idreturpenjualan)).'" class="btn btn-warning">Lihat</a>                                
                             </div>',
 
             ];
         }
-
 
         // Response untuk DataTables
         return response()->json([
@@ -178,7 +182,8 @@ class ReturpenjualanController extends Controller
         if (App::isPosting($tglretur)) {
             $bulan = bulan(date('m', strtotime($tglretur)));
             $tahun = date('Y', strtotime($tglretur));
-            return response()->json(array("msg" => "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!"));
+
+            return response()->json(['msg' => "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!"]);
         }
 
         if ($carabayar != 'Transfer') {
@@ -190,22 +195,20 @@ class ReturpenjualanController extends Controller
             $idreturpenjualan = $this->model->createID();
             $totalretur = 0;
 
-            $dataDetail = array();
+            $dataDetail = [];
             for ($i = 0; $i < count($isidatatable); $i++) {
-                $dataDetail[] = array(
+                $dataDetail[] = [
                     'idreturpenjualan' => $idreturpenjualan,
                     'idbarang' => $isidatatable[$i]['idbarang'],
                     'jumlahretur' => untitik($isidatatable[$i]['jumlahretur']),
                     'hargaretur' => untitik($isidatatable[$i]['hargaretur']),
                     'subtotalretur' => untitik($isidatatable[$i]['subtotalretur']),
-                );
+                ];
                 $hargaretur = untitik($isidatatable[$i]['hargaretur']) * untitik($isidatatable[$i]['jumlahretur']);
                 $totalretur += $hargaretur;
             }
 
-
-
-            $data = array(
+            $data = [
                 'idreturpenjualan' => $idreturpenjualan,
                 'idpenjualan' => $idpenjualan,
                 'tglretur' => $tglretur,
@@ -216,20 +219,18 @@ class ReturpenjualanController extends Controller
                 'idpengguna' => session('idpengguna'),
                 'carabayar' => $carabayar,
                 'idbank' => $idbank,
-            );
+            ];
             $simpan = $this->model->simpanData($data, $dataDetail, $idreturpenjualan);
         } else {
-            return response()->json(array('msg' => 'Proses update tidak diperbolehkan untuk form ini!'));
+            return response()->json(['msg' => 'Proses update tidak diperbolehkan untuk form ini!']);
         }
 
         if ($simpan['status'] == 'success') {
-            return response()->json(array('success' => true));
+            return response()->json(['success' => true]);
         } else {
-            return response()->json(array('msg' => 'Data gagal disimpan! Error: ' . $simpan['message']));
+            return response()->json(['msg' => 'Data gagal disimpan! Error: '.$simpan['message']]);
         }
     }
-
-
 
     public function hapus($idreturpenjualan)
     {
@@ -244,6 +245,7 @@ class ReturpenjualanController extends Controller
         if (App::isPosting($tglretur)) {
             $bulan = bulan(date('m', strtotime($tglretur)));
             $tahun = date('Y', strtotime($tglretur));
+
             return redirect('/returpenjualan')->with('fail', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
         }
 
@@ -251,7 +253,7 @@ class ReturpenjualanController extends Controller
         if ($hapus['status'] == 'success') {
             return redirect('/returpenjualan')->with('success', $hapus['message']);
         } else {
-            return redirect('/returpenjualan')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/returpenjualan')->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
 
@@ -261,7 +263,8 @@ class ReturpenjualanController extends Controller
         $rsRetur = Returpenjualan::find($idreturpenjualan);
 
         $rsDetail = $this->model->getDetail($idreturpenjualan);
-        return response()->json(array('rsRetur' => $rsRetur, 'rsDetail' => $rsDetail));
+
+        return response()->json(['rsRetur' => $rsRetur, 'rsDetail' => $rsDetail]);
     }
 
     public function searchPenjualan(Request $request)
@@ -278,7 +281,7 @@ class ReturpenjualanController extends Controller
         $formattedResults = $results->map(function ($item) {
             return [
                 'id' => $item->idpenjualan,
-                'text' => $item->idpenjualan . ' - ' . tgldmy($item->tglinvoice),
+                'text' => $item->idpenjualan.' - '.tgldmy($item->tglinvoice),
             ];
         });
 
@@ -289,6 +292,7 @@ class ReturpenjualanController extends Controller
     {
         $idpenjualan = $request->input('idpenjualan');
         $rsPenjualan = Penjualan::find($idpenjualan);
+
         return response()->json($rsPenjualan);
     }
 
@@ -299,7 +303,6 @@ class ReturpenjualanController extends Controller
 
         // Query pencarian
         $results = $this->model->searchBarangRetur($search, $idpenjualan);
-
 
         // Format data untuk Select2
         $formattedResults = $results->map(function ($item) {
@@ -317,6 +320,7 @@ class ReturpenjualanController extends Controller
         $idpenjualan = $request->idpenjualan;
         $idbarang = $request->idbarang;
         $rowBarang = $this->model->getDetailPenjualan($idpenjualan, $idbarang);
+
         return response()->json($rowBarang);
     }
 
@@ -324,7 +328,7 @@ class ReturpenjualanController extends Controller
     {
         $idreturpenjualan = Crypt::decrypt($idreturpenjualan);
         $rowReturPenjualan = Returpenjualan::findOrFail($idreturpenjualan);
-        $rsDetail = $this->model->getDetail($idreturpenjualan);        
+        $rsDetail = $this->model->getDetail($idreturpenjualan);
 
         $rowKonsumen = Konsumen::find($rowReturPenjualan->idkonsumen);
         $rowSales = Sales::find($rowReturPenjualan->idsales);
@@ -350,7 +354,7 @@ class ReturpenjualanController extends Controller
         $pdf->setPrintFooter(false);
 
         // Atur ukuran kertas khusus (218 mm x 140 mm)
-        $customPaperSize = array(218, 140); // Lebar: 218 mm, Tinggi: 140 mm
+        $customPaperSize = [218, 140]; // Lebar: 218 mm, Tinggi: 140 mm
         $pdf->AddPage('L', $customPaperSize); // 'P' untuk portrait, 'L' untuk landscape
 
         // Atur margin (1 cm = 10 mm)

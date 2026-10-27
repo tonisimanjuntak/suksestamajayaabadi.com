@@ -2,18 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Hutangekspedisi;
-use Illuminate\Http\Request;
-use App\Models\Barang;
-use App\Models\Supplier;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\App;
-use TCPDF;
+use App\Models\Hutangekspedisi;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 
 class HutangekspedisiController extends Controller
 {
-    var $model;
+    public $model;
 
     public function __construct()
     {
@@ -24,13 +21,15 @@ class HutangekspedisiController extends Controller
     public function index()
     {
         $data['menu'] = 'hutangekspedisi';
+
         return view('hutangekspedisi.index', $data);
     }
 
     public function tambah()
     {
         $data['menu'] = 'hutangekspedisi';
-        $data['idhutangekspedisi'] = "";
+        $data['idhutangekspedisi'] = '';
+
         return view('hutangekspedisi.form', $data);
     }
 
@@ -47,11 +46,13 @@ class HutangekspedisiController extends Controller
         if (App::isPosting($tglhutang)) {
             $bulan = bulan(date('m', strtotime($tglhutang)));
             $tahun = date('Y', strtotime($tglhutang));
+
             return redirect('/hutangekspedisi')->with('other', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
         }
 
         $data['menu'] = 'hutangekspedisi';
         $data['idhutangekspedisi'] = $idhutangekspedisi;
+
         return view('hutangekspedisi.form', $data);
     }
 
@@ -64,13 +65,13 @@ class HutangekspedisiController extends Controller
         $tglakhir = $request->input('tglakhir');
         $idekspedisi = $request->input('idekspedisi');
 
-        $query->whereBetween("tglhutang", [$tglawal, $tglakhir]);
+        $query->whereBetween('tglhutang', [$tglawal, $tglakhir]);
         if ($idekspedisi != '' && $idekspedisi != null) {
             $query->where('idekspedisi', $idekspedisi);
         }
 
         // Cek apakah ada pencarian
-        if ($request->has('search') && !empty($request->input('search.value'))) {
+        if ($request->has('search') && ! empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where(function ($groupwhere) use ($search) {
                 $groupwhere->where('idhutangekspedisi', 'LIKE', "%{$search}%")
@@ -99,7 +100,6 @@ class HutangekspedisiController extends Controller
             $query->orderBy('idhutangekspedisi', 'Desc');
         }
 
-
         // Hitung total data tanpa filter
         $totalData = Hutangekspedisi::count();
 
@@ -116,22 +116,34 @@ class HutangekspedisiController extends Controller
             ->get();
 
         // Format data untuk DataTables
+        $hakaksiAktif = session('hakaksi_aktif', '');
+        $canEdit = str_contains($hakaksiAktif, 'Edit');
+        $canHapus = str_contains($hakaksiAktif, 'Hapus');
+
         $data = [];
         $no = 1;
         foreach ($rsData as $row) {
 
             $btnAksi = '';
             if ($row->jenis == 'Pembayaran') {
+                $btnEdit = $canEdit
+                    ? '<a href="'.url('hutangekspedisi/edit/'.Crypt::encrypt($row->idhutangekspedisi)).'" class="btn btn-warning">Edit</a>'
+                    : '<button type="button" class="btn btn-warning" disabled title="Anda tidak memiliki hak akses Edit">Edit</button>';
+
+                $btnHapus = $canHapus
+                    ? '<a href="'.url('hutangekspedisi/hapus/'.Crypt::encrypt($row->idhutangekspedisi)).'" class="dropdown-item" id="btnHapus">Hapus</a>'
+                    : '<span class="dropdown-item disabled text-muted" title="Anda tidak memiliki hak akses Hapus"><i class="fa fa-ban mr-1"></i> Hapus</span>';
+
                 $btnAksi = '<div class="btn-group btn-block">
                                     <div class="btn-group dropleft" role="group">
                                         <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <span class="sr-only">Toggle Dropleft</span>
                                         </button>
                                         <div class="dropdown-menu">
-                                            <a href="' . url('hutangekspedisi/hapus/' . Crypt::encrypt($row->idhutangekspedisi)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
+                                            '.$btnHapus.'
                                         </div>
                                     </div>
-                                    <a href="' . url('hutangekspedisi/edit/' . Crypt::encrypt($row->idhutangekspedisi)) . '" class="btn btn-warning">Edit</a>                                
+                                    '.$btnEdit.'                                
                                 </div>';
             }
 
@@ -145,7 +157,6 @@ class HutangekspedisiController extends Controller
                 'action' => $btnAksi,
             ];
         }
-
 
         // Response untuk DataTables
         return response()->json([
@@ -178,6 +189,7 @@ class HutangekspedisiController extends Controller
         if (App::isPosting($tglhutang)) {
             $bulan = bulan(date('m', strtotime($tglhutang)));
             $tahun = date('Y', strtotime($tglhutang));
+
             return redirect('/hutangekspedisi')->with('other', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
         }
 
@@ -191,7 +203,7 @@ class HutangekspedisiController extends Controller
         if (empty($idhutangekspedisi)) {
             $idhutangekspedisi = $this->model->createID();
 
-            $data = array(
+            $data = [
                 'idhutangekspedisi' => $idhutangekspedisi,
                 'tglhutang' => $tglhutang,
                 'idekspedisi' => $idekspedisi,
@@ -210,11 +222,11 @@ class HutangekspedisiController extends Controller
                 'jumlahppn' => $jumlahppn,
                 'persenpph23' => $persenpph23,
                 'jumlahpph23' => $jumlahpph23,
-            );
+            ];
 
             $simpan = $this->model->simpanPembayaran($data, $idhutangekspedisi);
         } else {
-            $data = array(
+            $data = [
                 'idhutangekspedisi' => $idhutangekspedisi,
                 'tglhutang' => $tglhutang,
                 'idekspedisi' => $idekspedisi,
@@ -232,7 +244,7 @@ class HutangekspedisiController extends Controller
                 'jumlahppn' => $jumlahppn,
                 'persenpph23' => $persenpph23,
                 'jumlahpph23' => $jumlahpph23,
-            );
+            ];
 
             $simpan = $this->model->updatePembayaran($data, $idhutangekspedisi);
         }
@@ -240,10 +252,9 @@ class HutangekspedisiController extends Controller
         if ($simpan['status'] == 'success') {
             return redirect('/hutangekspedisi')->with('success', $simpan['message']);
         } else {
-            return redirect('/hutangekspedisi')->with('fail', 'Data gagal disimpan! Error: ' . $simpan['message']);
+            return redirect('/hutangekspedisi')->with('fail', 'Data gagal disimpan! Error: '.$simpan['message']);
         }
     }
-
 
     public function hapus($idhutangekspedisi)
     {
@@ -257,12 +268,13 @@ class HutangekspedisiController extends Controller
         $jenissumber = $rsHutang->jenissumber;
         if ($jenissumber == 'Pembelian' || $jenissumber == 'Penjualan') {
             return redirect('/hutangekspedisi')->with('other', 'Hutangekspedisi ini berasal dari Pembelian atau Penjualan, tidak bisa dihapus!');
-        };
+        }
 
         $tglhutang = $rsHutang->tglhutang;
         if (App::isPosting($tglhutang)) {
             $bulan = bulan(date('m', strtotime($tglhutang)));
             $tahun = date('Y', strtotime($tglhutang));
+
             return redirect('/hutangekspedisi')->with('other', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
         }
 
@@ -270,7 +282,7 @@ class HutangekspedisiController extends Controller
         if ($hapus['status'] == 'success') {
             return redirect('/hutangekspedisi')->with('success', $hapus['message']);
         } else {
-            return redirect('/hutangekspedisi')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/hutangekspedisi')->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
 
@@ -278,6 +290,7 @@ class HutangekspedisiController extends Controller
     {
         $idhutangekspedisi = $request->input('idhutangekspedisi');
         $rsHutang = Hutangekspedisi::find($idhutangekspedisi);
-        return response()->json(array('rsHutang' => $rsHutang));
+
+        return response()->json(['rsHutang' => $rsHutang]);
     }
 }

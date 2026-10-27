@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Uploads;
-use App\Models\Supplier;
 use App\Models\App;
+use App\Models\Supplier;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class SupplierController extends Controller
 {
-    var $model;
-    var $App;
+    public $model;
+
+    public $App;
 
     public function __construct()
     {
@@ -26,13 +26,15 @@ class SupplierController extends Controller
         $supplier = Supplier::all();
         $data['supplier'] = $supplier;
         $data['menu'] = 'supplier';
+
         return view('supplier.index', $data);
     }
 
     public function tambah()
     {
         $data['menu'] = 'supplier';
-        $data['idsupplier'] = "";
+        $data['idsupplier'] = '';
+
         return view('supplier.form', $data);
     }
 
@@ -46,6 +48,7 @@ class SupplierController extends Controller
         }
         $data['menu'] = 'supplier';
         $data['idsupplier'] = $idsupplier;
+
         return view('supplier.form', $data);
     }
 
@@ -60,7 +63,7 @@ class SupplierController extends Controller
         }
 
         // Cek apakah ada pencarian
-        if ($request->has('search') && !empty($request->input('search.value'))) {
+        if ($request->has('search') && ! empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where('idsupplier', 'LIKE', "%{$search}%")
                 ->orWhere('namasupplier', 'LIKE', "%{$search}%");
@@ -84,7 +87,6 @@ class SupplierController extends Controller
             $query->orderBy('namasupplier', 'Asc');
         }
 
-
         // Hitung total data tanpa filter
         $totalData = Supplier::count();
 
@@ -103,18 +105,31 @@ class SupplierController extends Controller
         // Format data untuk DataTables
         $data = [];
         $no = 1;
+        $hakaksiAktif = session('hakaksi_aktif', '');
+        $canEdit = str_contains($hakaksiAktif, 'Edit');
+        $canHapus = str_contains($hakaksiAktif, 'Hapus');
+
         foreach ($rsData as $row) {
             if ($row->statusaktif == 'Aktif') {
-                $statusaktif = '<span class="badge badge-success">' . $row->statusaktif . '</span>';
+                $statusaktif = '<span class="badge badge-success">'.$row->statusaktif.'</span>';
             } else {
-                $statusaktif = '<span class="badge badge-danger">' . $row->statusaktif . '</span>';
+                $statusaktif = '<span class="badge badge-danger">'.$row->statusaktif.'</span>';
             }
+
+            $btnEdit = $canEdit
+                ? '<a href="'.url('supplier/edit/'.Crypt::encrypt($row->idsupplier)).'" class="btn btn-warning">Edit</a>'
+                : '<button type="button" class="btn btn-warning" disabled title="Anda tidak memiliki hak akses Edit">Edit</button>';
+
+            $itemHapus = $canHapus
+                ? '<a href="'.url('supplier/hapus/'.Crypt::encrypt($row->idsupplier)).'" class="dropdown-item" id="btnHapus">Hapus</a>'
+                : '<span class="dropdown-item disabled text-muted" title="Anda tidak memiliki hak akses Hapus">Hapus</span>';
+
             $data[] = [
                 'no' => $no++,
                 'idsupplier' => $row->idsupplier,
-                'namasupplier' => $row->namasupplier . '<br>' . $row->alamatsupplier,
+                'namasupplier' => $row->namasupplier.'<br>'.$row->alamatsupplier,
                 'npwp' => $row->npwp,
-                'kontakperson' => $row->kontakperson . '<br>Telp: ' . $row->notelp . '<br>Email: ' . $row->email,
+                'kontakperson' => $row->kontakperson.'<br>Telp: '.$row->notelp.'<br>Email: '.$row->email,
                 'statusaktif' => $statusaktif,
                 'action' => '<div class="btn-group btn-block">
                                 <div class="btn-group dropleft" role="group">
@@ -122,10 +137,10 @@ class SupplierController extends Controller
                                     <span class="sr-only">Toggle Dropleft</span>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a href="' . url('supplier/hapus/' . Crypt::encrypt($row->idsupplier)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
+                                        '.$itemHapus.'
                                     </div>
                                 </div>
-                                <a href="' . url('supplier/edit/' . Crypt::encrypt($row->idsupplier)) . '" class="btn btn-warning">Edit</a>                                
+                                '.$btnEdit.'                                
                             </div>',
 
             ];
@@ -162,7 +177,7 @@ class SupplierController extends Controller
 
         if (empty($idsupplier)) {
             $idsupplier = $this->model->createID($namasupplier);
-            $data = array(
+            $data = [
                 'idsupplier' => $idsupplier,
                 'namasupplier' => $namasupplier,
                 'npwp' => $npwp,
@@ -174,10 +189,10 @@ class SupplierController extends Controller
                 'updated_date' => $updated_date,
                 'statusaktif' => 'Aktif',
                 'kdakunutang' => $kdakunutang,
-            );
+            ];
             $simpan = $this->model->simpanData($data);
         } else {
-            $data = array(
+            $data = [
                 'idsupplier' => $idsupplier,
                 'namasupplier' => $namasupplier,
                 'npwp' => $npwp,
@@ -188,7 +203,7 @@ class SupplierController extends Controller
                 'updated_date' => $updated_date,
                 'statusaktif' => $statusaktif,
                 'kdakunutang' => $kdakunutang,
-            );
+            ];
             $simpan = $this->model->updateData($data, $idsupplier);
         }
 
@@ -196,11 +211,9 @@ class SupplierController extends Controller
         if ($simpan['status'] == 'success') {
             return redirect('/supplier')->with('success', $simpan['message']);
         } else {
-            return redirect('/supplier')->with('fail', 'Data gagal disimpan! Error: ' . $simpan['message']);
+            return redirect('/supplier')->with('fail', 'Data gagal disimpan! Error: '.$simpan['message']);
         }
     }
-
-
 
     public function hapus($idsupplier)
     {
@@ -215,7 +228,7 @@ class SupplierController extends Controller
         if ($hapus['status'] == 'success') {
             return redirect('/supplier')->with('success', $hapus['message']);
         } else {
-            return redirect('/supplier')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/supplier')->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
 
@@ -223,6 +236,7 @@ class SupplierController extends Controller
     {
         $idsupplier = $request->input('idsupplier');
         $rsSupplier = Supplier::find($idsupplier);
+
         return response()->json($rsSupplier);
     }
 
@@ -247,7 +261,6 @@ class SupplierController extends Controller
         return response()->json(['results' => $formattedResults]);
     }
 
-
     public function searchSupplier(Request $request)
     {
         $search = $request->input('q'); // Ambil parameter pencarian
@@ -262,7 +275,7 @@ class SupplierController extends Controller
         $formattedResults = $results->map(function ($item) {
             return [
                 'id' => $item->idsupplier,
-                'text' => $item->namasupplier . ' (NPWP: ' . $item->npwp . ')',
+                'text' => $item->namasupplier.' (NPWP: '.$item->npwp.')',
             ];
         });
 

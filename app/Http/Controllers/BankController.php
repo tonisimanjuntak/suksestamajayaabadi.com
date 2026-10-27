@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bank;
-use Illuminate\Http\Request;
-use App\Models\Uploads;
 use App\Models\App;
-use Illuminate\Support\Facades\Crypt;
+use App\Models\Bank;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 
 class BankController extends Controller
 {
-    var $model;
-    var $App;
+    public $model;
+
+    public $App;
 
     public function __construct()
     {
@@ -26,13 +26,15 @@ class BankController extends Controller
         $bank = Bank::all();
         $data['bank'] = $bank;
         $data['menu'] = 'bank';
+
         return view('bank.index', $data);
     }
 
     public function tambah()
     {
         $data['menu'] = 'bank';
-        $data['idbank'] = "";
+        $data['idbank'] = '';
+
         return view('bank.form', $data);
     }
 
@@ -46,6 +48,7 @@ class BankController extends Controller
         }
         $data['menu'] = 'bank';
         $data['idbank'] = $idbank;
+
         return view('bank.form', $data);
     }
 
@@ -60,7 +63,7 @@ class BankController extends Controller
         }
 
         // Cek apakah ada pencarian
-        if ($request->has('search') && !empty($request->input('search.value'))) {
+        if ($request->has('search') && ! empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where('idbank', 'LIKE', "%{$search}%")
                 ->orWhere('namabank', 'LIKE', "%{$search}%");
@@ -84,7 +87,6 @@ class BankController extends Controller
             $query->orderBy('namabank', 'Asc');
         }
 
-
         // Hitung total data tanpa filter
         $totalData = Bank::count();
 
@@ -103,16 +105,29 @@ class BankController extends Controller
         // Format data untuk DataTables
         $data = [];
         $no = 1;
+        $hakaksiAktif = session('hakaksi_aktif', '');
+        $canEdit = str_contains($hakaksiAktif, 'Edit');
+        $canHapus = str_contains($hakaksiAktif, 'Hapus');
+
         foreach ($rsData as $row) {
             if ($row->statusaktif == 'Aktif') {
-                $statusaktif = '<span class="badge badge-success">' . $row->statusaktif . '</span>';
+                $statusaktif = '<span class="badge badge-success">'.$row->statusaktif.'</span>';
             } else {
-                $statusaktif = '<span class="badge badge-danger">' . $row->statusaktif . '</span>';
+                $statusaktif = '<span class="badge badge-danger">'.$row->statusaktif.'</span>';
             }
+
+            $btnEdit = $canEdit
+                ? '<a href="'.url('bank/edit/'.Crypt::encrypt($row->idbank)).'" class="btn btn-warning">Edit</a>'
+                : '<button type="button" class="btn btn-warning" disabled title="Anda tidak memiliki hak akses Edit">Edit</button>';
+
+            $itemHapus = $canHapus
+                ? '<a href="'.url('bank/hapus/'.Crypt::encrypt($row->idbank)).'" class="dropdown-item" id="btnHapus">Hapus</a>'
+                : '<span class="dropdown-item disabled text-muted" title="Anda tidak memiliki hak akses Hapus">Hapus</span>';
+
             $data[] = [
                 'no' => $no++,
                 'idbank' => $row->idbank,
-                'namabank' => $row->namabank . '<br>Cabang: ' . $row->cabang,
+                'namabank' => $row->namabank.'<br>Cabang: '.$row->cabang,
                 'atasnama' => $row->atasnama,
                 'norekening' => $row->norekening,
                 'statusaktif' => $statusaktif,
@@ -122,10 +137,10 @@ class BankController extends Controller
                                     <span class="sr-only">Toggle Dropleft</span>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a href="' . url('bank/hapus/' . Crypt::encrypt($row->idbank)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
+                                        '.$itemHapus.'
                                     </div>
                                 </div>
-                                <a href="' . url('bank/edit/' . Crypt::encrypt($row->idbank)) . '" class="btn btn-warning">Edit</a>                                
+                                '.$btnEdit.'                                
                             </div>',
 
             ];
@@ -156,7 +171,7 @@ class BankController extends Controller
 
         if (empty($idbank)) {
             $idbank = $this->model->createID($namabank);
-            $data = array(
+            $data = [
                 'idbank' => $idbank,
                 'namabank' => $namabank,
                 'cabang' => $cabang,
@@ -166,10 +181,10 @@ class BankController extends Controller
                 'inserted_date' => $inserted_date,
                 'updated_date' => $updated_date,
                 'statusaktif' => 'Aktif',
-            );
+            ];
             $simpan = $this->model->simpanData($data);
         } else {
-            $data = array(
+            $data = [
                 'idbank' => $idbank,
                 'namabank' => $namabank,
                 'cabang' => $cabang,
@@ -178,7 +193,7 @@ class BankController extends Controller
                 'kdakun' => $kdakun,
                 'updated_date' => $updated_date,
                 'statusaktif' => $statusaktif,
-            );
+            ];
             $simpan = $this->model->updateData($data, $idbank);
         }
 
@@ -186,11 +201,9 @@ class BankController extends Controller
         if ($simpan['status'] == 'success') {
             return redirect('/bank')->with('success', $simpan['message']);
         } else {
-            return redirect('/bank')->with('fail', 'Data gagal disimpan! Error: ' . $simpan['message']);
+            return redirect('/bank')->with('fail', 'Data gagal disimpan! Error: '.$simpan['message']);
         }
     }
-
-
 
     public function hapus($idbank)
     {
@@ -205,7 +218,7 @@ class BankController extends Controller
         if ($hapus['status'] == 'success') {
             return redirect('/bank')->with('success', $hapus['message']);
         } else {
-            return redirect('/bank')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/bank')->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
 
@@ -213,6 +226,7 @@ class BankController extends Controller
     {
         $idbank = $request->input('idbank');
         $rsBank = Bank::find($idbank);
+
         return response()->json($rsBank);
     }
 
@@ -237,7 +251,6 @@ class BankController extends Controller
         return response()->json(['results' => $formattedResults]);
     }
 
-
     public function searchBank(Request $request)
     {
         $search = $request->input('q'); // Ambil parameter pencarian
@@ -252,7 +265,7 @@ class BankController extends Controller
         $formattedResults = $results->map(function ($item) {
             return [
                 'id' => $item->idbank,
-                'text' => $item->namabank . ' Rek: ' . $item->norekening . ' (' . $item->atasnama . ')',
+                'text' => $item->namabank.' Rek: '.$item->norekening.' ('.$item->atasnama.')',
             ];
         });
 

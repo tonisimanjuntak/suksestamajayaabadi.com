@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Hutang;
-use Illuminate\Http\Request;
-use App\Models\Barang;
-use App\Models\Supplier;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\App;
+use App\Models\Hutang;
+use App\Models\Supplier;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use TCPDF;
 
 class HutangController extends Controller
 {
-    var $model;
+    public $model;
 
     public function __construct()
     {
@@ -24,13 +23,15 @@ class HutangController extends Controller
     public function index()
     {
         $data['menu'] = 'hutang';
+
         return view('hutang.index', $data);
     }
 
     public function tambah()
     {
         $data['menu'] = 'hutang';
-        $data['idhutang'] = "";
+        $data['idhutang'] = '';
+
         return view('hutang.form', $data);
     }
 
@@ -47,6 +48,7 @@ class HutangController extends Controller
         if (App::isPosting($tglhutang)) {
             $bulan = bulan(date('m', strtotime($tglhutang)));
             $tahun = date('Y', strtotime($tglhutang));
+
             return redirect('/hutang')->with('other', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
         }
 
@@ -57,9 +59,9 @@ class HutangController extends Controller
 
         $data['menu'] = 'hutang';
         $data['idhutang'] = $idhutang;
+
         return view('hutang.form', $data);
     }
-
 
     public function detail($idhutang)
     {
@@ -78,9 +80,9 @@ class HutangController extends Controller
         $data['rsHutang'] = $rsHutang;
         $data['rsHutangDetail'] = $rsHutangDetail;
         $data['sisaHutang'] = $sisaHutang;
+
         return view('hutang.detail', $data);
     }
-
 
     public function listdata(Request $request)
     {
@@ -92,17 +94,17 @@ class HutangController extends Controller
         $idsupplier = $request->input('idsupplier');
         $statuslunas = $request->input('statuslunas');
 
-        $query->whereBetween("tglhutang", [$tglawal, $tglakhir]);
+        $query->whereBetween('tglhutang', [$tglawal, $tglakhir]);
         if ($idsupplier != '' && $idsupplier != null) {
             $query->where('idsupplier', $idsupplier);
         }
 
-        if (!empty($statuslunas)) {
+        if (! empty($statuslunas)) {
             $query->where('statuslunas', $statuslunas);
         }
 
         // Cek apakah ada pencarian
-        if ($request->has('search') && !empty($request->input('search.value'))) {
+        if ($request->has('search') && ! empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where(function ($groupwhere) use ($search) {
                 $groupwhere->where('idhutang', 'LIKE', "%{$search}%")
@@ -131,7 +133,6 @@ class HutangController extends Controller
             $query->orderBy('idhutang', 'Desc');
         }
 
-
         // Hitung total data tanpa filter
         $totalData = Hutang::count();
 
@@ -148,6 +149,10 @@ class HutangController extends Controller
             ->get();
 
         // Format data untuk DataTables
+        $hakaksiAktif = session('hakaksi_aktif', '');
+        $canEdit = str_contains($hakaksiAktif, 'Edit');
+        $canHapus = str_contains($hakaksiAktif, 'Hapus');
+
         $data = [];
         $no = 1;
         foreach ($rsData as $row) {
@@ -158,6 +163,18 @@ class HutangController extends Controller
                 $statuslunas = '<span class="badge badge-danger">Belum Lunas</span>';
             }
 
+            $btnBayar = $canEdit
+                ? '<a href="'.url('hutang/detail/'.Crypt::encrypt($row->idhutang)).'" class="btn btn-primary">Bayar</a>'
+                : '<button type="button" class="btn btn-primary" disabled title="Anda tidak memiliki hak akses Edit">Bayar</button>';
+
+            $btnEdit = $canEdit
+                ? '<a href="'.url('hutang/edit/'.Crypt::encrypt($row->idhutang)).'" class="dropdown-item">Edit</a>'
+                : '<span class="dropdown-item disabled text-muted" title="Anda tidak memiliki hak akses Edit"><i class="fa fa-ban mr-1"></i> Edit</span>';
+
+            $btnHapus = $canHapus
+                ? '<a href="'.url('hutang/hapus/'.Crypt::encrypt($row->idhutang)).'" class="dropdown-item" id="btnHapus">Hapus</a>'
+                : '<span class="dropdown-item disabled text-muted" title="Anda tidak memiliki hak akses Hapus"><i class="fa fa-ban mr-1"></i> Hapus</span>';
+
             if ($row->jenissumber == 'Pembelian') {
                 $btnAksi = '<div class="btn-group btn-block">
                                 <div class="btn-group dropleft" role="group">
@@ -165,10 +182,10 @@ class HutangController extends Controller
                                     <span class="sr-only">Toggle Dropleft</span>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a href="' . url('hutang/cetakBukuHutang/' . Crypt::encrypt($row->idhutang)) . '" class="dropdown-item" target="_blank">Cetak Buku Hutang</a>
+                                        <a href="'.url('hutang/cetakBukuHutang/'.Crypt::encrypt($row->idhutang)).'" class="dropdown-item" target="_blank">Cetak Buku Hutang</a>
                                     </div>
                                 </div>
-                                <a href="' . url('hutang/detail/' . Crypt::encrypt($row->idhutang)) . '" class="btn btn-primary">Bayar</a>                                
+                                '.$btnBayar.'                                
                             </div>';
             } else {
                 $btnAksi = '<div class="btn-group btn-block">
@@ -177,28 +194,27 @@ class HutangController extends Controller
                                     <span class="sr-only">Toggle Dropleft</span>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a href="' . url('hutang/cetakBukuHutang/' . Crypt::encrypt($row->idhutang)) . '" class="dropdown-item" target="_blank">Cetak Buku Hutang</a>
+                                        <a href="'.url('hutang/cetakBukuHutang/'.Crypt::encrypt($row->idhutang)).'" class="dropdown-item" target="_blank">Cetak Buku Hutang</a>
                                         <div class="dropdown-divider"></div>
-                                        <a href="' . url('hutang/edit/' . Crypt::encrypt($row->idhutang)) . '" class="dropdown-item">Edit</a>
-                                        <a href="' . url('hutang/hapus/' . Crypt::encrypt($row->idhutang)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
+                                        '.$btnEdit.'
+                                        '.$btnHapus.'
                                     </div>
                                 </div>
-                                <a href="' . url('hutang/detail/' . Crypt::encrypt($row->idhutang)) . '" class="btn btn-primary">Bayar</a>                                
+                                '.$btnBayar.'                                
                             </div>';
             }
 
             $data[] = [
                 'no' => $no++,
-                'idhutang' => $row->idhutang . '<br>' . tgldmy($row->tglhutang),
-                'nofaktur' => !empty($row->nofaktur) ? $row->nofaktur : '-',
-                'namasupplier' => $row->namasupplier . '<br><i>' . $row->keterangan . '</i>',
+                'idhutang' => $row->idhutang.'<br>'.tgldmy($row->tglhutang),
+                'nofaktur' => ! empty($row->nofaktur) ? $row->nofaktur : '-',
+                'namasupplier' => $row->namasupplier.'<br><i>'.$row->keterangan.'</i>',
                 'totalkredit' => format_rupiah($row->totalkredit),
                 'totaldebet' => format_rupiah($row->totaldebet),
                 'statuslunas' => $statuslunas,
                 'action' => $btnAksi,
             ];
         }
-
 
         // Response untuk DataTables
         return response()->json([
@@ -222,15 +238,15 @@ class HutangController extends Controller
         if (App::isPosting($tglhutang)) {
             $bulan = bulan(date('m', strtotime($tglhutang)));
             $tahun = date('Y', strtotime($tglhutang));
+
             return redirect('/hutang')->with('other', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
         }
-
 
         if (empty($idhutang)) {
             $idhutang = $this->model->createID();
             $idhutangdetail = $this->model->createIDDetail($idhutang);
 
-            $data = array(
+            $data = [
                 'idhutang' => $idhutang,
                 'tglhutang' => $tglhutang,
                 'idsupplier' => $idsupplier,
@@ -238,10 +254,9 @@ class HutangController extends Controller
                 'totalkredit' => $totalkredit,
                 'jenissumber' => 'Non Pembelian',
                 'keterangan' => $keterangan,
-            );
+            ];
 
-
-            $dataDetail = array(
+            $dataDetail = [
                 'idhutangdetail' => $idhutangdetail,
                 'idhutang' => $idhutang,
                 'tglhutang' => $tglhutang,
@@ -251,13 +266,13 @@ class HutangController extends Controller
                 'updated_date' => $updated_date,
                 'idpengguna' => session('idpengguna'),
                 'jenis' => 'Hutang',
-            );
+            ];
 
             $simpan = $this->model->simpanTambahPiutang($data, $dataDetail, $idhutang);
         } else {
             $idhutangdetail = $this->model->createIDDetail($idhutang);
 
-            $data = array(
+            $data = [
                 'idhutang' => $idhutang,
                 'tglhutang' => $tglhutang,
                 'idsupplier' => $idsupplier,
@@ -265,10 +280,9 @@ class HutangController extends Controller
                 'totalkredit' => $totalkredit,
                 'jenissumber' => 'Non Pembelian',
                 'keterangan' => $keterangan,
-            );
+            ];
 
-
-            $dataDetail = array(
+            $dataDetail = [
                 'idhutangdetail' => $idhutangdetail,
                 'idhutang' => $idhutang,
                 'tglhutang' => $tglhutang,
@@ -278,7 +292,7 @@ class HutangController extends Controller
                 'updated_date' => $updated_date,
                 'idpengguna' => session('idpengguna'),
                 'jenis' => 'Hutang',
-            );
+            ];
 
             $simpan = $this->model->updateTambahPiutang($data, $dataDetail, $idhutang);
         }
@@ -286,10 +300,9 @@ class HutangController extends Controller
         if ($simpan['status'] == 'success') {
             return redirect('/hutang')->with('success', $simpan['message']);
         } else {
-            return redirect('/hutang')->with('fail', 'Data gagal disimpan! Error: ' . $simpan['message']);
+            return redirect('/hutang')->with('fail', 'Data gagal disimpan! Error: '.$simpan['message']);
         }
     }
-
 
     public function simpanData(Request $request)
     {
@@ -303,11 +316,11 @@ class HutangController extends Controller
         $inserted_date = date('Y-m-d H:i:s');
         $updated_date = date('Y-m-d H:i:s');
 
-
         if (App::isPosting($tglhutang)) {
             $bulan = bulan(date('m', strtotime($tglhutang)));
             $tahun = date('Y', strtotime($tglhutang));
-            return redirect('/hutang/detail/' . Crypt::encrypt($idhutang))->with('other', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
+
+            return redirect('/hutang/detail/'.Crypt::encrypt($idhutang))->with('other', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
         }
 
         if ($carabayar != 'Transfer' && $carabayar != 'Giro') {
@@ -318,10 +331,9 @@ class HutangController extends Controller
             $nobilyetgiro = null;
         }
 
-
         $idhutangdetail = $this->model->createIDDetail($idhutang);
 
-        $data = array(
+        $data = [
             'idhutangdetail' => $idhutangdetail,
             'idhutang' => $idhutang,
             'tglhutang' => $tglhutang,
@@ -334,13 +346,13 @@ class HutangController extends Controller
             'idbank' => $idbank,
             'nobilyetgiro' => $nobilyetgiro,
             'jenis' => 'Pembayaran Hutang',
-        );
+        ];
         $simpan = $this->model->simpanPembayaran($data, $idhutang);
 
         if ($simpan['status'] == 'success') {
-            return redirect('/hutang/detail/' . Crypt::encrypt($idhutang))->with('success', $simpan['message']);
+            return redirect('/hutang/detail/'.Crypt::encrypt($idhutang))->with('success', $simpan['message']);
         } else {
-            return redirect('/hutang/detail/' . Crypt::encrypt($idhutang))->with('fail', 'Data gagal disimpan! Error: ' . $simpan['message']);
+            return redirect('/hutang/detail/'.Crypt::encrypt($idhutang))->with('fail', 'Data gagal disimpan! Error: '.$simpan['message']);
         }
     }
 
@@ -356,12 +368,13 @@ class HutangController extends Controller
         $jenissumber = $rsHutang->jenissumber;
         if ($jenissumber == 'Pembelian') {
             return redirect('/hutang')->with('other', 'Hutang ini berasal dari Pembelian, tidak bisa dihapus!');
-        };
+        }
 
         $tglhutang = $rsHutang->tglhutang;
         if (App::isPosting($tglhutang)) {
             $bulan = bulan(date('m', strtotime($tglhutang)));
             $tahun = date('Y', strtotime($tglhutang));
+
             return redirect('/hutang')->with('other', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
         }
 
@@ -374,7 +387,7 @@ class HutangController extends Controller
         if ($hapus['status'] == 'success') {
             return redirect('/hutang')->with('success', $hapus['message']);
         } else {
-            return redirect('/hutang')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/hutang')->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
 
@@ -392,14 +405,15 @@ class HutangController extends Controller
         if (App::isPosting($tglhutang)) {
             $bulan = bulan(date('m', strtotime($tglhutang)));
             $tahun = date('Y', strtotime($tglhutang));
-            return response()->json(array("msg" => "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!"));
+
+            return response()->json(['msg' => "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!"]);
         }
 
         $hapus = $this->model->hapusDetail($idhutang, $idhutangdetail, $rsHutangDetail);
         if ($hapus['status'] == 'success') {
-            return redirect('/hutang/detail/' . Crypt::encrypt($idhutang))->with('success', $hapus['message']);
+            return redirect('/hutang/detail/'.Crypt::encrypt($idhutang))->with('success', $hapus['message']);
         } else {
-            return redirect('/hutang/detail/' . Crypt::encrypt($idhutang))->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/hutang/detail/'.Crypt::encrypt($idhutang))->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
 
@@ -409,7 +423,8 @@ class HutangController extends Controller
         $rsHutang = Hutang::find($idhutang);
 
         $rsDetail = $this->model->getDetail($idhutang);
-        return response()->json(array('rsHutang' => $rsHutang, 'rsDetail' => $rsDetail));
+
+        return response()->json(['rsHutang' => $rsHutang, 'rsDetail' => $rsDetail]);
     }
 
     public function cetakBukuHutang($idhutang)
@@ -421,7 +436,7 @@ class HutangController extends Controller
             $idhutang = Crypt::decrypt($idhutang);
             $rsHutang = Hutang::findOrFail($idhutang);
         } catch (ModelNotFoundException $e) {
-            echo "Data tidak ditemukan!";
+            echo 'Data tidak ditemukan!';
         }
         $idsupplier = $rsHutang->idsupplier;
         $rsSupplier = Supplier::find($idsupplier);
@@ -430,7 +445,6 @@ class HutangController extends Controller
         $data['rsHutang'] = $rsHutang;
         $data['rsSupplier'] = $rsSupplier;
         $view = view('hutang.cetakBukuHutang', $data);
-
 
         $pdf = new TCPDF();
 

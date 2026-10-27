@@ -3,20 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Penagihan;
-use Illuminate\Http\Request;
-use App\Models\Penjualan;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use App\Models\App;
-use App\Models\Bank;
-use App\Models\Konsumen;
 use App\Models\Sales;
-use TCPDF;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
+use TCPDF;
 
 class PenagihanController extends Controller
 {
-    var $model;
+    public $model;
 
     public function __construct()
     {
@@ -27,6 +23,7 @@ class PenagihanController extends Controller
     public function index()
     {
         $data['menu'] = 'penagihan';
+
         return view('penagihan.index', $data);
     }
 
@@ -38,6 +35,7 @@ class PenagihanController extends Controller
         $data['tgltagihanakhir'] = $nextSundayFormatted;
         $data['idpenagihan'] = '';
         $data['menu'] = 'penagihan';
+
         return view('penagihan.form', $data);
     }
 
@@ -52,6 +50,7 @@ class PenagihanController extends Controller
 
         $data['menu'] = 'penagihan';
         $data['idpenagihan'] = $idpenagihan;
+
         return view('penagihan.form', $data);
     }
 
@@ -64,15 +63,13 @@ class PenagihanController extends Controller
         $tglakhir = $request->input('tglakhir');
         $idsales = $request->input('idsales');
 
-
-        $query->whereBetween("tglpenagihan", [$tglawal, $tglakhir]);
+        $query->whereBetween('tglpenagihan', [$tglawal, $tglakhir]);
         if ($idsales != '' && $idsales != null) {
             $query->where('idsales', $idsales);
         }
 
-
         // Cek apakah ada pencarian
-        if ($request->has('search') && !empty($request->input('search.value'))) {
+        if ($request->has('search') && ! empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where(function ($groupwhere) use ($search) {
                 $groupwhere->where('idpenagihan', 'LIKE', "%{$search}%")
@@ -100,7 +97,6 @@ class PenagihanController extends Controller
             $query->orderBy('idpenagihan', 'Desc');
         }
 
-
         // Hitung total data tanpa filter
         $totalData = Penagihan::count();
 
@@ -117,6 +113,10 @@ class PenagihanController extends Controller
             ->get();
 
         // Format data untuk DataTables
+        $hakaksiAktif = session('hakaksi_aktif', '');
+        $canEdit = str_contains($hakaksiAktif, 'Edit');
+        $canHapus = str_contains($hakaksiAktif, 'Hapus');
+
         $data = [];
         $no = 1;
         foreach ($rsData as $row) {
@@ -127,10 +127,18 @@ class PenagihanController extends Controller
                 $statuscetak = '<span class="badge badge-danger">Belum Cetak</span>';
             }
 
+            $btnEdit = $canEdit
+                ? '<a href="'.url('penagihan/edit/'.Crypt::encrypt($row->idpenagihan)).'" class="btn btn-warning">Edit</a>'
+                : '<button type="button" class="btn btn-warning" disabled title="Anda tidak memiliki hak akses Edit">Edit</button>';
+
+            $btnHapus = $canHapus
+                ? '<a href="'.url('penagihan/hapus/'.Crypt::encrypt($row->idpenagihan)).'" class="dropdown-item" id="btnHapus">Hapus</a>'
+                : '<span class="dropdown-item disabled text-muted" title="Anda tidak memiliki hak akses Hapus"><i class="fa fa-ban mr-1"></i> Hapus</span>';
+
             $data[] = [
                 'no' => $no++,
-                'tglpenagihan' => tgldmy($row->tglpenagihan) . '<br>' . $row->idpenagihan,
-                'namasales' => $row->namasales . '<br><small>NPWP : ' . $row->npwpsales . '</small>',
+                'tglpenagihan' => tgldmy($row->tglpenagihan).'<br>'.$row->idpenagihan,
+                'namasales' => $row->namasales.'<br><small>NPWP : '.$row->npwpsales.'</small>',
                 'totaltagihan' => format_rupiah($row->totaltagihan),
                 'statuscetak' => $statuscetak,
                 'action' => '<div class="btn-group btn-block">
@@ -139,16 +147,15 @@ class PenagihanController extends Controller
                                     <span class="sr-only">Toggle Dropleft</span>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a href="' . url('penagihan/cetak/' . Crypt::encrypt($row->idpenagihan)) . '" class="dropdown-item" target="_blank">Cetak Surat Penagihan</a>
+                                        <a href="'.url('penagihan/cetak/'.Crypt::encrypt($row->idpenagihan)).'" class="dropdown-item" target="_blank">Cetak Surat Penagihan</a>
                                         <div class="dropdown-divider"></div>
-                                        <a href="' . url('penagihan/hapus/' . Crypt::encrypt($row->idpenagihan)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
+                                        '.$btnHapus.'
                                     </div>
                                 </div>
-                                <a href="' . url('penagihan/edit/' . Crypt::encrypt($row->idpenagihan)) . '" class="btn btn-warning">Edit</a>                                
+                                '.$btnEdit.'                                
                             </div>',
             ];
         }
-
 
         // Response untuk DataTables
         return response()->json([
@@ -173,17 +180,17 @@ class PenagihanController extends Controller
         if (empty($idpenagihan)) {
             $idpenagihan = $this->model->createID();
 
-            $dataDetail = array();
+            $dataDetail = [];
             for ($i = 0; $i < count($isidatatable); $i++) {
-                $dataDetail[] = array(
+                $dataDetail[] = [
                     'idpenagihan' => $idpenagihan,
                     'idpiutang' => $isidatatable[$i]['idpiutang'],
                     'idsalesbonus' => $isidatatable[$i]['idsalesbonus'],
                     'jumlahtagihan' => untitik($isidatatable[$i]['jumlahtagihan']),
-                );
+                ];
             }
 
-            $data = array(
+            $data = [
                 'idpenagihan' => $idpenagihan,
                 'tglpenagihan' => $tglpenagihan,
                 'tgltagihanakhir' => $tgltagihanakhir,
@@ -193,35 +200,35 @@ class PenagihanController extends Controller
                 'updated_date' => $updated_date,
                 'idpengguna' => session('idpengguna'),
                 'statuscetak' => 'Belum Cetak',
-            );
+            ];
 
             $simpan = $this->model->simpanData($data, $dataDetail, $idpenagihan);
         } else {
 
-            $dataDetail = array();
+            $dataDetail = [];
             for ($i = 0; $i < count($isidatatable); $i++) {
-                $dataDetail[] = array(
+                $dataDetail[] = [
                     'idpenagihan' => $idpenagihan,
                     'idpiutang' => $isidatatable[$i]['idpiutang'],
                     'idsalesbonus' => $isidatatable[$i]['idsalesbonus'],
                     'jumlahtagihan' => untitik($isidatatable[$i]['jumlahtagihan']),
-                );
+                ];
             }
 
-            $data = array(
+            $data = [
                 'idpenagihan' => $idpenagihan,
                 'totaltagihan' => $total,
                 'updated_date' => $updated_date,
                 'idpengguna' => session('idpengguna'),
-            );
+            ];
 
             $simpan = $this->model->updateData($data, $dataDetail, $idpenagihan);
         }
 
         if ($simpan['status'] == 'success') {
-            return response()->json(array('success' => true));
+            return response()->json(['success' => true]);
         } else {
-            return response()->json(array('msg' => 'Data gagal disimpan! Error: ' . $simpan['message']));
+            return response()->json(['msg' => 'Data gagal disimpan! Error: '.$simpan['message']]);
         }
     }
 
@@ -238,7 +245,7 @@ class PenagihanController extends Controller
         if ($hapus['status'] == 'success') {
             return redirect('/penagihan')->with('success', $hapus['message']);
         } else {
-            return redirect('/penagihan')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/penagihan')->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
 
@@ -249,14 +256,15 @@ class PenagihanController extends Controller
 
         $rsDetail = $this->model->getDetail($idpenagihan);
 
-        return response()->json(array('rsPenagihan' => $rsPenagihan, 'rsDetail' => $rsDetail));
+        return response()->json(['rsPenagihan' => $rsPenagihan, 'rsDetail' => $rsDetail]);
     }
 
     public function getPiutangID(Request $request)
     {
         $idpiutang = $request->input('idpiutang');
         $rsPiutang = $this->model->getPiutangID($idpiutang);
-        return response()->json(array('rsPiutang' => $rsPiutang));
+
+        return response()->json(['rsPiutang' => $rsPiutang]);
     }
 
     public function getPiutangBelumLunas(Request $request)
@@ -266,7 +274,6 @@ class PenagihanController extends Controller
 
         // Query pencarian
         $results = $this->model->getPiutangBelumLunas($idsales, $tgltagihanakhir);
-
 
         return response()->json(['results' => $results]);
     }
@@ -289,7 +296,6 @@ class PenagihanController extends Controller
         $data['rsDetail'] = $rsDetail;
         $data['rsPenagihan'] = $rsPenagihan;
         $view = view('penagihan.cetak', $data)->render();
-
 
         // Buat instance TCPDF
         $pdf = new TCPDF();

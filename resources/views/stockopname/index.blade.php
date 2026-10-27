@@ -30,12 +30,13 @@
                             <div class="">
                                 <h3 class="card-title font-weight-bold"><i class="far fa-list-alt mr-1"></i>List Data
                                     Stockopname</h3>
-                                    <a href="{{ url('stockopname/tambah') }}" class="btn btn-sm btn-primary float-right ml-1"
-                                        @if (!str_contains(strtolower(session('hakaksi_aktif')), 'tambah') )
-                                        style="display: none;"
+                                    @if (str_contains(strtolower(session('hakaksi_aktif')), 'tambah'))
+                                        <a href="{{ url('stockopname/tambah') }}" class="btn btn-sm btn-primary float-right ml-1"><i
+                                                class="fa fa-plus-circle mr-1"></i> Tambah Data</a>
+                                    @else
+                                        <button type="button" class="btn btn-sm btn-primary float-right ml-1" disabled
+                                            title="Anda tidak memiliki hak akses Tambah"><i class="fa fa-plus-circle mr-1"></i> Tambah Data</button>
                                     @endif
-                                    ><i
-                                            class="fa fa-plus-circle mr-1"></i> Tambah Data</a>
                                     <a href="{{ url('stockopname/cetakform') }}" class="btn btn-sm btn-warning float-right" target="_blank"><i
                                         class="fa fa-print mr-1"></i> Cetak Form</a>
                             </div>

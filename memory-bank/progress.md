@@ -1,9 +1,9 @@
 # Progress
-Terakhir diperbarui: 2026-10-23
+Terakhir diperbarui: 2026-10-27
 
 ## Status Keseluruhan
 
-Sistem ERP PT. Sukses Tama Jaya Abadi berada pada status **Production Maintenance & Active Evolution**. Seluruh fungsi utama (pembelian, penjualan, surat jalan, hutang, piutang, kas/bank, persediaan, dan akuntansi) telah selesai dibangun dan digunakan secara aktif dalam operasional distribusi. Pekerjaan terkini berfokus pada stabilisasi metode valuasi stok FIFO, perhitungan HPP otomatis di laporan laba rugi, serta penyusunan dokumentasi arsitektur sistem (Memory Bank).
+Sistem ERP PT. Sukses Tama Jaya Abadi berada pada status **Production Maintenance & Active Evolution**. Seluruh fungsi utama (pembelian, penjualan, surat jalan, hutang, piutang, kas/bank, persediaan, dan akuntansi) telah selesai dibangun dan digunakan secara aktif dalam operasional distribusi. Pekerjaan terkini berfokus pada stabilisasi metode valuasi stok FIFO, perhitungan HPP otomatis di laporan laba rugi, modul pemeliharaan sistem & maintenance mode, serta penyusunan dokumentasi arsitektur sistem (Memory Bank).
 
 ---
 
@@ -13,6 +13,8 @@ Bukti implementasi terverifikasi dari routes di `routes/web.php` dan 60 controll
 
 1. **Master Data & Konfigurasi**:
    - Master Pengguna & Otorisasi Menu Dinamis (`PenggunaController`, `CheckMenuAccess`).
+   - Penjagaan Hak Akses Granular (Lihat, Tambah, Edit, Hapus): Proteksi tombol Tambah (disabled) pada view dan proteksi tombol Edit/Hapus/Bayar/Ubah Status (disabled) pada DataTables server-side controller untuk seluruh 33 menu sistem (Master Data & Referensi 14 menu, Stok & Pergudangan 4 menu, serta Transaksi Operasional & Keuangan 15 menu).
+   - Mode Pemeliharaan Sistem / Maintenance Mode (`CheckMaintenanceMode`, `resources/views/maintenance.blade.php`): Proteksi sesi login saat `settings.maintenance_status = '1'`, live countdown timer dari `settings.maintenance_estimated_finished`, bypass developer (`9999999999`), dan pengecualian logout.
    - Master Konsumen, Supplier, Sales, Ekspedisi, Jenis Ekspedisi, Wilayah, Bank.
    - Master Barang, Jenis Barang, Kategori Barang, Satuan Barang (`BarangController`, dll.).
    - Chart of Accounts 4 Level (`Akun1Controller` s.d. `Akun4Controller`).

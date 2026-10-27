@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Saldoawal;
-use Illuminate\Http\Request;
-use App\Models\Akun;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\App;
+use App\Models\Saldoawal;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 
 class SaldoawalController extends Controller
 {
-    var $model;
+    public $model;
 
     public function __construct()
     {
@@ -22,13 +21,15 @@ class SaldoawalController extends Controller
     public function index()
     {
         $data['menu'] = 'saldoawal';
+
         return view('saldoawal.index', $data);
     }
 
     public function tambah()
     {
         $data['menu'] = 'saldoawal';
-        $data['idsaldoawal'] = "";
+        $data['idsaldoawal'] = '';
+
         return view('saldoawal.form', $data);
     }
 
@@ -42,9 +43,9 @@ class SaldoawalController extends Controller
         }
         $data['menu'] = 'saldoawal';
         $data['idsaldoawal'] = $idsaldoawal;
+
         return view('saldoawal.form', $data);
     }
-
 
     public function listdata(Request $request)
     {
@@ -56,7 +57,7 @@ class SaldoawalController extends Controller
         $query->where('tahun', $tahun);
 
         // Cek apakah ada pencarian
-        if ($request->has('search') && !empty($request->input('search.value'))) {
+        if ($request->has('search') && ! empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where(function ($groupwhere) use ($search) {
                 $groupwhere->where('tahun', 'LIKE', "%{$search}%");
@@ -81,7 +82,6 @@ class SaldoawalController extends Controller
             $query->orderBy('tahun', 'Desc');
         }
 
-
         // Hitung total data tanpa filter
         $totalData = Saldoawal::count();
 
@@ -98,9 +98,21 @@ class SaldoawalController extends Controller
             ->get();
 
         // Format data untuk DataTables
+        $hakaksiAktif = session('hakaksi_aktif', '');
+        $canEdit = str_contains($hakaksiAktif, 'Edit');
+        $canHapus = str_contains($hakaksiAktif, 'Hapus');
+
         $data = [];
         $no = 1;
         foreach ($rsData as $row) {
+
+            $btnEdit = $canEdit
+                ? '<a href="'.url('saldoawal/edit/'.Crypt::encrypt($row->idsaldoawal)).'" class="btn btn-warning">Edit</a>'
+                : '<button type="button" class="btn btn-warning" disabled title="Anda tidak memiliki hak akses Edit">Edit</button>';
+
+            $btnHapus = $canHapus
+                ? '<a href="'.url('saldoawal/hapus/'.Crypt::encrypt($row->idsaldoawal)).'" class="dropdown-item" id="btnHapus">Hapus</a>'
+                : '<span class="dropdown-item disabled text-muted" title="Anda tidak memiliki hak akses Hapus"><i class="fa fa-ban mr-1"></i> Hapus</span>';
 
             $data[] = [
                 'no' => $no++,
@@ -113,15 +125,14 @@ class SaldoawalController extends Controller
                                     <span class="sr-only">Toggle Dropleft</span>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a href="' . url('saldoawal/hapus/' . Crypt::encrypt($row->idsaldoawal)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
+                                        '.$btnHapus.'
                                     </div>
                                 </div>
-                                <a href="' . url('saldoawal/edit/' . Crypt::encrypt($row->idsaldoawal)) . '" class="btn btn-warning">Edit</a>                                
+                                '.$btnEdit.'                                
                             </div>',
 
             ];
         }
-
 
         // Response untuk DataTables
         return response()->json([
@@ -143,30 +154,29 @@ class SaldoawalController extends Controller
         $inserted_date = date('Y-m-d H:i:s');
         $updated_date = date('Y-m-d H:i:s');
 
-
         if (empty($idsaldoawal)) {
 
-            $idjurnal = $tahun . '0101SA00000';
+            $idjurnal = $tahun.'0101SA00000';
 
             $idsaldoawal = $tahun;
-            $dataDetailSaldoAwal = array();
-            $dataDetailJurnal = array();
+            $dataDetailSaldoAwal = [];
+            $dataDetailJurnal = [];
             for ($i = 0; $i < count($isidatatable); $i++) {
-                $dataDetailSaldoAwal[] = array(
+                $dataDetailSaldoAwal[] = [
                     'idsaldoawal' => $idsaldoawal,
                     'kdakun' => $isidatatable[$i]['kdakun'],
                     'debet' => untitik($isidatatable[$i]['debet']),
                     'kredit' => untitik($isidatatable[$i]['kredit']),
-                );
-                $dataDetailJurnal[] = array(
+                ];
+                $dataDetailJurnal[] = [
                     'idjurnal' => $idjurnal,
                     'kdakun' => $isidatatable[$i]['kdakun'],
                     'debet' => untitik($isidatatable[$i]['debet']),
                     'kredit' => untitik($isidatatable[$i]['kredit']),
-                );
+                ];
             }
 
-            $dataSaldoAwal = array(
+            $dataSaldoAwal = [
                 'idsaldoawal' => $idsaldoawal,
                 'tahun' => $tahun,
                 'totaldebet' => $totaldebet,
@@ -174,44 +184,44 @@ class SaldoawalController extends Controller
                 'inserted_date' => $inserted_date,
                 'updated_date' => $updated_date,
                 'idpengguna' => session('idpengguna'),
-            );
+            ];
 
-            $dataJurnal = array(
+            $dataJurnal = [
                 'idjurnal' => $idjurnal,
-                'tgljurnal' => $tahun . '-01-01',
-                'keterangan' => 'Saldo Awal Tahun ' . $tahun,
+                'tgljurnal' => $tahun.'-01-01',
+                'keterangan' => 'Saldo Awal Tahun '.$tahun,
                 'totaldebet' => $totaldebet,
                 'totalkredit' => $totalkredit,
                 'inserted_date' => $inserted_date,
                 'updated_date' => $updated_date,
                 'idpengguna' => session('idpengguna'),
                 'jenis' => 'Saldo Awal',
-            );
+            ];
             $simpan = $this->model->simpanData($dataSaldoAwal, $dataJurnal, $dataDetailSaldoAwal, $dataDetailJurnal, $idsaldoawal);
         } else {
 
             $tahun = $idsaldoawal; //idsaldoawal = tahun
 
-            $idjurnal = $tahun . '0101SA00000';
+            $idjurnal = $tahun.'0101SA00000';
 
-            $dataDetailSaldoAwal = array();
-            $dataDetailJurnal = array();
+            $dataDetailSaldoAwal = [];
+            $dataDetailJurnal = [];
             for ($i = 0; $i < count($isidatatable); $i++) {
-                $dataDetailSaldoAwal[] = array(
+                $dataDetailSaldoAwal[] = [
                     'idsaldoawal' => $idsaldoawal,
                     'kdakun' => $isidatatable[$i]['kdakun'],
                     'debet' => untitik($isidatatable[$i]['debet']),
                     'kredit' => untitik($isidatatable[$i]['kredit']),
-                );
-                $dataDetailJurnal[] = array(
+                ];
+                $dataDetailJurnal[] = [
                     'idjurnal' => $idjurnal,
                     'kdakun' => $isidatatable[$i]['kdakun'],
                     'debet' => untitik($isidatatable[$i]['debet']),
                     'kredit' => untitik($isidatatable[$i]['kredit']),
-                );
+                ];
             }
 
-            $dataSaldoAwal = array(
+            $dataSaldoAwal = [
                 'idsaldoawal' => $idsaldoawal,
                 'tahun' => $tahun,
                 'totaldebet' => $totaldebet,
@@ -219,31 +229,29 @@ class SaldoawalController extends Controller
                 'inserted_date' => $inserted_date,
                 'updated_date' => $updated_date,
                 'idpengguna' => session('idpengguna'),
-            );
+            ];
 
-            $dataJurnal = array(
+            $dataJurnal = [
                 'idjurnal' => $idjurnal,
-                'tgljurnal' => $tahun . '-01-01',
-                'keterangan' => 'Saldo Awal Tahun ' . $tahun,
+                'tgljurnal' => $tahun.'-01-01',
+                'keterangan' => 'Saldo Awal Tahun '.$tahun,
                 'totaldebet' => $totaldebet,
                 'totalkredit' => $totalkredit,
                 'inserted_date' => $inserted_date,
                 'updated_date' => $updated_date,
                 'idpengguna' => session('idpengguna'),
                 'jenis' => 'Saldo Awal',
-            );
+            ];
 
             $simpan = $this->model->updateData($dataSaldoAwal, $dataJurnal, $dataDetailSaldoAwal, $dataDetailJurnal, $idsaldoawal, $idjurnal);
         }
 
         if ($simpan['status'] == 'success') {
-            return response()->json(array('success' => true));
+            return response()->json(['success' => true]);
         } else {
-            return response()->json(array('msg' => 'Data gagal disimpan! Error: ' . $simpan['message']));
+            return response()->json(['msg' => 'Data gagal disimpan! Error: '.$simpan['message']]);
         }
     }
-
-
 
     public function hapus($idsaldoawal)
     {
@@ -258,6 +266,7 @@ class SaldoawalController extends Controller
         if (App::isPosting($tahun)) {
             $bulan = bulan(date('m', strtotime($tahun)));
             $tahun = date('Y', strtotime($tahun));
+
             return redirect('/saldoawal')->with('fail', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
         }
 
@@ -265,7 +274,7 @@ class SaldoawalController extends Controller
         if ($hapus['status'] == 'success') {
             return redirect('/saldoawal')->with('success', $hapus['message']);
         } else {
-            return redirect('/saldoawal')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/saldoawal')->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
 
@@ -275,6 +284,7 @@ class SaldoawalController extends Controller
         $rsSaldoAwal = Saldoawal::find($idsaldoawal);
 
         $rsDetail = $this->model->getDetail($idsaldoawal);
-        return response()->json(array('rsSaldoAwal' => $rsSaldoAwal, 'rsDetail' => $rsDetail));
+
+        return response()->json(['rsSaldoAwal' => $rsSaldoAwal, 'rsDetail' => $rsDetail]);
     }
 }

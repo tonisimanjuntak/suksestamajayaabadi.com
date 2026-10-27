@@ -4,15 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Akun2;
 use App\Models\Akun3;
-use Illuminate\Http\Request;
 use App\Models\App;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 
 class Akun3Controller extends Controller
 {
-    var $model;
-    var $App;
+    public $model;
+
+    public $App;
 
     public function __construct()
     {
@@ -26,14 +27,16 @@ class Akun3Controller extends Controller
         $akun3 = Akun3::all();
         $data['akun3'] = $akun3;
         $data['menu'] = 'akun3';
+
         return view('akun3.index', $data);
     }
 
     public function tambah()
     {
         $data['menu'] = 'akun3';
-        $data['kdakun'] = "";
-        $data['ltambah'] = "1";
+        $data['kdakun'] = '';
+        $data['ltambah'] = '1';
+
         return view('akun3.form', $data);
     }
 
@@ -47,7 +50,8 @@ class Akun3Controller extends Controller
         }
         $data['menu'] = 'akun3';
         $data['kdakun'] = $kdakun;
-        $data['ltambah'] = "0";
+        $data['ltambah'] = '0';
+
         return view('akun3.form', $data);
     }
 
@@ -62,7 +66,7 @@ class Akun3Controller extends Controller
         }
 
         // Cek apakah ada pencarian
-        if ($request->has('search') && !empty($request->input('search.value'))) {
+        if ($request->has('search') && ! empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where('kdakun', 'LIKE', "%{$search}%")
                 ->orWhere('namaakun', 'LIKE', "%{$search}%");
@@ -86,7 +90,6 @@ class Akun3Controller extends Controller
             $query->orderBy('kdakun', 'Asc');
         }
 
-
         // Hitung total data tanpa filter
         $totalData = Akun3::count();
 
@@ -105,21 +108,33 @@ class Akun3Controller extends Controller
         // Format data untuk DataTables
         $data = [];
         $no = 1;
+        $hakaksiAktif = session('hakaksi_aktif', '');
+        $canEdit = str_contains($hakaksiAktif, 'Edit');
+        $canHapus = str_contains($hakaksiAktif, 'Hapus');
+
         foreach ($rsData as $row) {
+            $btnEdit = $canEdit
+                ? '<a href="'.url('akun3/edit/'.Crypt::encrypt($row->kdakun)).'" class="btn btn-warning">Edit</a>'
+                : '<button type="button" class="btn btn-warning" disabled title="Anda tidak memiliki hak akses Edit">Edit</button>';
+
+            $itemHapus = $canHapus
+                ? '<a href="'.url('akun3/hapus/'.Crypt::encrypt($row->kdakun)).'" class="dropdown-item" id="btnHapus">Hapus</a>'
+                : '<span class="dropdown-item disabled text-muted" title="Anda tidak memiliki hak akses Hapus">Hapus</span>';
+
             $data[] = [
                 'no' => $no++,
                 'kdakun' => $row->kdakun,
-                'namaakun' => '<strong>' . $row->namaakun . '</strong><br><small>' . $row->kdparent . ' - ' . $row->namaparent . '</small>',
+                'namaakun' => '<strong>'.$row->namaakun.'</strong><br><small>'.$row->kdparent.' - '.$row->namaparent.'</small>',
                 'action' => '<div class="btn-group btn-block">
                                 <div class="btn-group dropleft" role="group">
                                     <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <span class="sr-only">Toggle Dropleft</span>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a href="' . url('akun3/hapus/' . Crypt::encrypt($row->kdakun)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
+                                        '.$itemHapus.'
                                     </div>
                                 </div>
-                                <a href="' . url('akun3/edit/' . Crypt::encrypt($row->kdakun)) . '" class="btn btn-warning">Edit</a>                                
+                                '.$btnEdit.'                                
                             </div>',
 
             ];
@@ -144,7 +159,7 @@ class Akun3Controller extends Controller
         $updated_date = date('Y-m-d H:i:s');
 
         if ($ltambah == '1') {
-            $data = array(
+            $data = [
                 'kdakun' => $kdakun,
                 'namaakun' => $namaakun,
                 'kdparent' => $kdparent,
@@ -152,14 +167,14 @@ class Akun3Controller extends Controller
                 'updated_date' => $updated_date,
                 'statusaktif' => 'Aktif',
                 'levels' => '3',
-            );
+            ];
             $simpan = $this->model->simpanData($data);
         } else {
-            $data = array(
+            $data = [
                 'kdakun' => $kdakun,
                 'namaakun' => $namaakun,
                 'updated_date' => $updated_date,
-            );
+            ];
             $simpan = $this->model->updateData($data, $kdakun);
         }
 
@@ -167,11 +182,9 @@ class Akun3Controller extends Controller
         if ($simpan['status'] == 'success') {
             return redirect('/akun3')->with('success', $simpan['message']);
         } else {
-            return redirect('/akun3')->with('fail', 'Data gagal disimpan! Error: ' . $simpan['message']);
+            return redirect('/akun3')->with('fail', 'Data gagal disimpan! Error: '.$simpan['message']);
         }
     }
-
-
 
     public function hapus($kdakun)
     {
@@ -183,14 +196,14 @@ class Akun3Controller extends Controller
         }
 
         if (App::adaTurunanAkun($kdakun)) {
-            return redirect('/akun3')->with('other', 'Akun ' . $kdakun . ' mempunyai turunan akun. tidak dapat dihapus!');
+            return redirect('/akun3')->with('other', 'Akun '.$kdakun.' mempunyai turunan akun. tidak dapat dihapus!');
         }
 
         $hapus = $this->model->hapusData($kdakun, $rsAkun3);
         if ($hapus['status'] == 'success') {
             return redirect('/akun3')->with('success', $hapus['message']);
         } else {
-            return redirect('/akun3')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/akun3')->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
 
@@ -198,6 +211,7 @@ class Akun3Controller extends Controller
     {
         $kdakun = $request->input('kdakun');
         $rsAkun3 = Akun3::find($kdakun);
+
         return response()->json($rsAkun3);
     }
 
@@ -214,7 +228,7 @@ class Akun3Controller extends Controller
         $formattedResults = $results->map(function ($item) {
             return [
                 'id' => $item->kdakun,
-                'text' => $item->kdakun . ' - ' . $item->namaakun,
+                'text' => $item->kdakun.' - '.$item->namaakun,
             ];
         });
 

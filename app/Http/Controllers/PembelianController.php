@@ -2,20 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Uploads;
-
+use App\Models\App;
 use App\Models\Barang;
-use App\Models\Supplier;
-use App\Models\Pembelian;
 use App\Models\Hutang;
+use App\Models\Pembelian;
+use App\Models\Supplier;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use App\Models\App;
 
 class PembelianController extends Controller
 {
-    var $model;
+    public $model;
 
     public function __construct()
     {
@@ -28,6 +26,7 @@ class PembelianController extends Controller
         $pembelian = $this->model->allView();
         $data['pembelian'] = $pembelian;
         $data['menu'] = 'pembelian';
+
         return view('pembelian.index', $data);
     }
 
@@ -35,7 +34,8 @@ class PembelianController extends Controller
     {
         $data['rsBarang'] = Barang::all();
         $data['menu'] = 'pembelian';
-        $data['idpembelian'] = "";
+        $data['idpembelian'] = '';
+
         return view('pembelian.form', $data);
     }
 
@@ -56,6 +56,7 @@ class PembelianController extends Controller
         if (App::isPosting($tgl_po)) {
             $bulan = bulan(date('m', strtotime($tgl_po)));
             $tahun = date('Y', strtotime($tgl_po));
+
             return redirect('/pembelian')->with('fail', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
         }
 
@@ -63,9 +64,9 @@ class PembelianController extends Controller
         $data['rsSupplier'] = Supplier::all();
         $data['menu'] = 'pembelian';
         $data['idpembelian'] = $idpembelian;
+
         return view('pembelian.form', $data);
     }
-
 
     public function listdata(Request $request)
     {
@@ -76,13 +77,13 @@ class PembelianController extends Controller
         $tglakhir = $request->input('tglakhir');
         $idsupplier = $request->input('idsupplier');
 
-        $query->whereBetween("tgl_po", [$tglawal, $tglakhir]);
+        $query->whereBetween('tgl_po', [$tglawal, $tglakhir]);
         if ($idsupplier != '' && $idsupplier != null) {
             $query->where('idsupplier', $idsupplier);
         }
 
         // Cek apakah ada pencarian
-        if ($request->has('search') && !empty($request->input('search.value'))) {
+        if ($request->has('search') && ! empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where(function ($groupwhere) use ($search) {
                 $groupwhere->where('idpembelian', 'LIKE', "%{$search}%")
@@ -110,7 +111,6 @@ class PembelianController extends Controller
             $query->orderBy('idpembelian', 'Desc');
         }
 
-
         // Hitung total data tanpa filter
         $totalData = Pembelian::count();
 
@@ -127,19 +127,31 @@ class PembelianController extends Controller
             ->get();
 
         // Format data untuk DataTables
+        $hakaksiAktif = session('hakaksi_aktif', '');
+        $canEdit = str_contains($hakaksiAktif, 'Edit');
+        $canHapus = str_contains($hakaksiAktif, 'Hapus');
+
         $data = [];
         $no = 1;
         foreach ($rsData as $row) {
 
-            if (!empty($row->nofaktur)) {
-                $nofaktur = '<i class="fa fa-check-circle text-success"></i> ' . $row->nofaktur;
+            if (! empty($row->nofaktur)) {
+                $nofaktur = '<i class="fa fa-check-circle text-success"></i> '.$row->nofaktur;
             } else {
                 $nofaktur = '-';
             }
 
+            $btnEdit = $canEdit
+                ? '<a href="'.url('pembelian/edit/'.Crypt::encrypt($row->idpembelian)).'" class="btn btn-warning">Edit</a>'
+                : '<button type="button" class="btn btn-warning" disabled title="Anda tidak memiliki hak akses Edit">Edit</button>';
+
+            $btnHapus = $canHapus
+                ? '<a href="'.url('pembelian/hapus/'.Crypt::encrypt($row->idpembelian)).'" class="dropdown-item" id="btnHapus">Hapus</a>'
+                : '<span class="dropdown-item disabled text-muted" title="Anda tidak memiliki hak akses Hapus"><i class="fa fa-ban mr-1"></i> Hapus</span>';
+
             $data[] = [
                 'no' => $no++,
-                'tgl_po' => tgldmy($row->tgl_po) . '<br>' . $row->idpembelian,
+                'tgl_po' => tgldmy($row->tgl_po).'<br>'.$row->idpembelian,
                 'namasupplier' => $row->namasupplier,
                 'keterangan_po' => $row->keterangan_po,
                 'totalfaktur_po' => format_rupiah($row->totalfaktur_po),
@@ -150,15 +162,14 @@ class PembelianController extends Controller
                                     <span class="sr-only">Toggle Dropleft</span>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a href="' . url('pembelian/hapus/' . Crypt::encrypt($row->idpembelian)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
+                                        '.$btnHapus.'
                                     </div>
                                 </div>
-                                <a href="' . url('pembelian/edit/' . Crypt::encrypt($row->idpembelian)) . '" class="btn btn-warning">Edit</a>                                
+                                '.$btnEdit.'                                
                             </div>',
 
             ];
         }
-
 
         // Response untuk DataTables
         return response()->json([
@@ -186,20 +197,20 @@ class PembelianController extends Controller
         $inserted_date = date('Y-m-d H:i:s');
         $updated_date = date('Y-m-d H:i:s');
 
-
         if (App::isPosting($tgl_po)) {
             $bulan = bulan(date('m', strtotime($tgl_po)));
             $tahun = date('Y', strtotime($tgl_po));
-            return response()->json(array("msg" => "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!"));
+
+            return response()->json(['msg' => "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!"]);
         }
 
         if (empty($idpembelian)) {
 
             $idpembelian = $this->model->createID();
 
-            $dataDetail = array();
+            $dataDetail = [];
             for ($i = 0; $i < count($isidatatable); $i++) {
-                $dataDetail[] = array(
+                $dataDetail[] = [
                     'idpembelian' => $idpembelian,
                     'idbarang' => $isidatatable[$i]['idbarang'],
                     'jumlahbeli_po' => untitik($isidatatable[$i]['jumlahbeli']),
@@ -207,10 +218,10 @@ class PembelianController extends Controller
                     'hargadpp_po' => untitik($isidatatable[$i]['hargadpp']),
                     'jumlahppn_po' => untitik($isidatatable[$i]['jumlahppn']),
                     'subtotalbeli_po' => untitik($isidatatable[$i]['subtotalbeli']),
-                );
+                ];
             }
 
-            $data = array(
+            $data = [
                 'idpembelian' => $idpembelian,
                 'idsupplier' => $idsupplier,
                 'ppnpersen' => $ppnpersen,
@@ -222,23 +233,23 @@ class PembelianController extends Controller
                 'inserted_date' => $inserted_date,
                 'updated_date' => $updated_date,
                 'idpengguna_po' => session('idpengguna'),
-            );
+            ];
             $simpan = $this->model->simpanData($data, $dataDetail, $idpembelian);
         } else {
 
             $rsPembelian = Pembelian::find($idpembelian);
-            if (!empty($rsPembelian) && $rsPembelian->statuspenerimaan == 'Sudah Diterima') {
-                return response()->json(array('msg' => 'Tidak boleh diubah karena order ini sudah ada penerimaan barang nya!'));
+            if (! empty($rsPembelian) && $rsPembelian->statuspenerimaan == 'Sudah Diterima') {
+                return response()->json(['msg' => 'Tidak boleh diubah karena order ini sudah ada penerimaan barang nya!']);
             }
 
             //cek jika sudah dilakukan pembayaran hutang
             if (Hutang::hutangSudahDibayar($idpembelian)) {
-                return response()->json(array('msg' => 'Hutang untuk faktur ini sudah dilakukan pembayaran sehingga tidak dapat diubah lagi!'));
+                return response()->json(['msg' => 'Hutang untuk faktur ini sudah dilakukan pembayaran sehingga tidak dapat diubah lagi!']);
             }
 
-            $dataDetail = array();
+            $dataDetail = [];
             for ($i = 0; $i < count($isidatatable); $i++) {
-                $dataDetail[] = array(
+                $dataDetail[] = [
                     'idpembelian' => $idpembelian,
                     'idbarang' => $isidatatable[$i]['idbarang'],
                     'jumlahbeli_po' => untitik($isidatatable[$i]['jumlahbeli']),
@@ -246,10 +257,10 @@ class PembelianController extends Controller
                     'hargadpp_po' => untitik($isidatatable[$i]['hargadpp']),
                     'jumlahppn_po' => untitik($isidatatable[$i]['jumlahppn']),
                     'subtotalbeli_po' => untitik($isidatatable[$i]['subtotalbeli']),
-                );
+                ];
             }
 
-            $data = array(
+            $data = [
                 'idpembelian' => $idpembelian,
                 'idsupplier' => $idsupplier,
                 'ppnpersen' => $ppnpersen,
@@ -260,19 +271,17 @@ class PembelianController extends Controller
                 'totalfaktur_po' => $totalfaktur,
                 'updated_date' => $updated_date,
                 'idpengguna_po' => session('idpengguna'),
-            );
+            ];
 
             $simpan = $this->model->updateData($data, $dataDetail, $idpembelian);
         }
 
         if ($simpan['status'] == 'success') {
-            return response()->json(array('success' => true));
+            return response()->json(['success' => true]);
         } else {
-            return response()->json(array('msg' => 'Data gagal disimpan! Error: ' . $simpan['message']));
+            return response()->json(['msg' => 'Data gagal disimpan! Error: '.$simpan['message']]);
         }
     }
-
-
 
     public function hapus($idpembelian)
     {
@@ -291,6 +300,7 @@ class PembelianController extends Controller
         if (App::isPosting($tgl_po)) {
             $bulan = bulan(date('m', strtotime($tgl_po)));
             $tahun = date('Y', strtotime($tgl_po));
+
             return redirect('/pembelian')->with('fail', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
         }
 
@@ -303,7 +313,7 @@ class PembelianController extends Controller
         if ($hapus['status'] == 'success') {
             return redirect('/pembelian')->with('success', $hapus['message']);
         } else {
-            return redirect('/pembelian')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/pembelian')->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
 
@@ -313,7 +323,8 @@ class PembelianController extends Controller
         $rsPembelian = Pembelian::find($idpembelian);
 
         $rsDetail = $this->model->getDetail($idpembelian);
-        return response()->json(array('rsPembelian' => $rsPembelian, 'rsDetail' => $rsDetail));
+
+        return response()->json(['rsPembelian' => $rsPembelian, 'rsDetail' => $rsDetail]);
     }
 
     public function searchFaktur(Request $request)
@@ -329,7 +340,7 @@ class PembelianController extends Controller
         $formattedResults = $results->map(function ($item) {
             return [
                 'id' => $item->idpembelian,
-                'text' => $item->tgl_po . ' || No Faktur: ' . $item->nofaktur,
+                'text' => $item->tgl_po.' || No Faktur: '.$item->nofaktur,
             ];
         });
 
@@ -350,7 +361,7 @@ class PembelianController extends Controller
         $formattedResults = $results->map(function ($item) {
             return [
                 'id' => $item->idpembelian,
-                'text' => $item->tgl_po . ' || No Faktur: ' . $item->nofaktur,
+                'text' => $item->tgl_po.' || No Faktur: '.$item->nofaktur,
             ];
         });
 

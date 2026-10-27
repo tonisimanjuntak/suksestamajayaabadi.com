@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Wilayah;
-use Illuminate\Http\Request;
 use App\Models\App;
-use Illuminate\Support\Facades\Crypt;
+use App\Models\Wilayah;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 
 class WilayahController extends Controller
 {
-    var $model;
-    var $App;
+    public $model;
+
+    public $App;
 
     public function __construct()
     {
@@ -25,13 +26,15 @@ class WilayahController extends Controller
         $wilayah = Wilayah::all();
         $data['wilayah'] = $wilayah;
         $data['menu'] = 'wilayah';
+
         return view('wilayah.index', $data);
     }
 
     public function tambah()
     {
         $data['menu'] = 'wilayah';
-        $data['idwilayah'] = "";
+        $data['idwilayah'] = '';
+
         return view('wilayah.form', $data);
     }
 
@@ -45,6 +48,7 @@ class WilayahController extends Controller
         }
         $data['menu'] = 'wilayah';
         $data['idwilayah'] = $idwilayah;
+
         return view('wilayah.form', $data);
     }
 
@@ -59,7 +63,7 @@ class WilayahController extends Controller
         }
 
         // Cek apakah ada pencarian
-        if ($request->has('search') && !empty($request->input('search.value'))) {
+        if ($request->has('search') && ! empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where('idwilayah', 'LIKE', "%{$search}%")
                 ->orWhere('namawilayah', 'LIKE', "%{$search}%");
@@ -83,7 +87,6 @@ class WilayahController extends Controller
             $query->orderBy('namawilayah', 'Asc');
         }
 
-
         // Hitung total data tanpa filter
         $totalData = Wilayah::count();
 
@@ -102,12 +105,25 @@ class WilayahController extends Controller
         // Format data untuk DataTables
         $data = [];
         $no = 1;
+        $hakaksiAktif = session('hakaksi_aktif', '');
+        $canEdit = str_contains($hakaksiAktif, 'Edit');
+        $canHapus = str_contains($hakaksiAktif, 'Hapus');
+
         foreach ($rsData as $row) {
             if ($row->statusaktif == 'Aktif') {
-                $statusaktif = '<span class="badge badge-success">' . $row->statusaktif . '</span>';
+                $statusaktif = '<span class="badge badge-success">'.$row->statusaktif.'</span>';
             } else {
-                $statusaktif = '<span class="badge badge-danger">' . $row->statusaktif . '</span>';
+                $statusaktif = '<span class="badge badge-danger">'.$row->statusaktif.'</span>';
             }
+
+            $btnEdit = $canEdit
+                ? '<a href="'.url('wilayah/edit/'.Crypt::encrypt($row->idwilayah)).'" class="btn btn-warning">Edit</a>'
+                : '<button type="button" class="btn btn-warning" disabled title="Anda tidak memiliki hak akses Edit">Edit</button>';
+
+            $itemHapus = $canHapus
+                ? '<a href="'.url('wilayah/hapus/'.Crypt::encrypt($row->idwilayah)).'" class="dropdown-item" id="btnHapus">Hapus</a>'
+                : '<span class="dropdown-item disabled text-muted" title="Anda tidak memiliki hak akses Hapus">Hapus</span>';
+
             $data[] = [
                 'no' => $no++,
                 'idwilayah' => $row->idwilayah,
@@ -119,10 +135,10 @@ class WilayahController extends Controller
                                     <span class="sr-only">Toggle Dropleft</span>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a href="' . url('wilayah/hapus/' . Crypt::encrypt($row->idwilayah)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
+                                        '.$itemHapus.'
                                     </div>
                                 </div>
-                                <a href="' . url('wilayah/edit/' . Crypt::encrypt($row->idwilayah)) . '" class="btn btn-warning">Edit</a>                                
+                                '.$btnEdit.'                                
                             </div>',
 
             ];
@@ -149,21 +165,21 @@ class WilayahController extends Controller
 
         if (empty($idwilayah)) {
             $idwilayah = $this->model->createID($namawilayah);
-            $data = array(
+            $data = [
                 'idwilayah' => $idwilayah,
                 'namawilayah' => $namawilayah,
                 'inserted_date' => $inserted_date,
                 'updated_date' => $updated_date,
                 'statusaktif' => 'Aktif',
-            );
+            ];
             $simpan = $this->model->simpanData($data);
         } else {
-            $data = array(
+            $data = [
                 'idwilayah' => $idwilayah,
                 'namawilayah' => $namawilayah,
                 'updated_date' => $updated_date,
                 'statusaktif' => $statusaktif,
-            );
+            ];
             $simpan = $this->model->updateData($data, $idwilayah);
         }
 
@@ -171,11 +187,9 @@ class WilayahController extends Controller
         if ($simpan['status'] == 'success') {
             return redirect('/wilayah')->with('success', $simpan['message']);
         } else {
-            return redirect('/wilayah')->with('fail', 'Data gagal disimpan! Error: ' . $simpan['message']);
+            return redirect('/wilayah')->with('fail', 'Data gagal disimpan! Error: '.$simpan['message']);
         }
     }
-
-
 
     public function hapus($idwilayah)
     {
@@ -190,7 +204,7 @@ class WilayahController extends Controller
         if ($hapus['status'] == 'success') {
             return redirect('/wilayah')->with('success', $hapus['message']);
         } else {
-            return redirect('/wilayah')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/wilayah')->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
 
@@ -198,6 +212,7 @@ class WilayahController extends Controller
     {
         $idwilayah = $request->input('idwilayah');
         $rsKategori = Wilayah::find($idwilayah);
+
         return response()->json($rsKategori);
     }
 

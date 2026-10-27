@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Penerimaan;
-use Illuminate\Http\Request;
-use App\Models\Akun;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\App;
+use App\Models\Penerimaan;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 
 class PenerimaanController extends Controller
 {
-    var $model;
+    public $model;
 
     public function __construct()
     {
@@ -24,13 +23,15 @@ class PenerimaanController extends Controller
         $penerimaan = $this->model->allView();
         $data['penerimaan'] = $penerimaan;
         $data['menu'] = 'penerimaan';
+
         return view('penerimaan.index', $data);
     }
 
     public function tambah()
     {
         $data['menu'] = 'penerimaan';
-        $data['idpenerimaan'] = "";
+        $data['idpenerimaan'] = '';
+
         return view('penerimaan.form', $data);
     }
 
@@ -44,9 +45,9 @@ class PenerimaanController extends Controller
         }
         $data['menu'] = 'penerimaan';
         $data['idpenerimaan'] = $idpenerimaan;
+
         return view('penerimaan.form', $data);
     }
-
 
     public function listdata(Request $request)
     {
@@ -57,13 +58,13 @@ class PenerimaanController extends Controller
         $tglakhir = $request->input('tglakhir');
         $carabayar = $request->input('carabayar');
 
-        $query->whereBetween("tglpenerimaan", [$tglawal, $tglakhir]);
-        if (!empty($carabayar)) {
+        $query->whereBetween('tglpenerimaan', [$tglawal, $tglakhir]);
+        if (! empty($carabayar)) {
             $query->where('carabayar', $carabayar);
         }
 
         // Cek apakah ada pencarian
-        if ($request->has('search') && !empty($request->input('search.value'))) {
+        if ($request->has('search') && ! empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where(function ($groupwhere) use ($search) {
                 $groupwhere->where('idpenerimaan', 'LIKE', "%{$search}%")
@@ -91,7 +92,6 @@ class PenerimaanController extends Controller
             $query->orderBy('idpenerimaan', 'Desc');
         }
 
-
         // Hitung total data tanpa filter
         $totalData = Penerimaan::count();
 
@@ -108,9 +108,21 @@ class PenerimaanController extends Controller
             ->get();
 
         // Format data untuk DataTables
+        $hakaksiAktif = session('hakaksi_aktif', '');
+        $canEdit = str_contains($hakaksiAktif, 'Edit');
+        $canHapus = str_contains($hakaksiAktif, 'Hapus');
+
         $data = [];
         $no = 1;
         foreach ($rsData as $row) {
+
+            $btnEdit = $canEdit
+                ? '<a href="'.url('penerimaan/edit/'.Crypt::encrypt($row->idpenerimaan)).'" class="btn btn-warning">Edit</a>'
+                : '<button type="button" class="btn btn-warning" disabled title="Anda tidak memiliki hak akses Edit">Edit</button>';
+
+            $btnHapus = $canHapus
+                ? '<a href="'.url('penerimaan/hapus/'.Crypt::encrypt($row->idpenerimaan)).'" class="dropdown-item" id="btnHapus">Hapus</a>'
+                : '<span class="dropdown-item disabled text-muted" title="Anda tidak memiliki hak akses Hapus"><i class="fa fa-ban mr-1"></i> Hapus</span>';
 
             $data[] = [
                 'no' => $no++,
@@ -126,15 +138,14 @@ class PenerimaanController extends Controller
                                     <span class="sr-only">Toggle Dropleft</span>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a href="' . url('penerimaan/hapus/' . Crypt::encrypt($row->idpenerimaan)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
+                                        '.$btnHapus.'
                                     </div>
                                 </div>
-                                <a href="' . url('penerimaan/edit/' . Crypt::encrypt($row->idpenerimaan)) . '" class="btn btn-warning">Edit</a>                                
+                                '.$btnEdit.'                                
                             </div>',
 
             ];
         }
-
 
         // Response untuk DataTables
         return response()->json([
@@ -157,11 +168,11 @@ class PenerimaanController extends Controller
         $inserted_date = date('Y-m-d H:i:s');
         $updated_date = date('Y-m-d H:i:s');
 
-
         if (App::isPosting($tglpenerimaan)) {
             $bulan = bulan(date('m', strtotime($tglpenerimaan)));
             $tahun = date('Y', strtotime($tglpenerimaan));
-            return response()->json(array("msg" => "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!"));
+
+            return response()->json(['msg' => "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!"]);
         }
 
         if ($carabayar != 'Transfer') {
@@ -173,19 +184,17 @@ class PenerimaanController extends Controller
             $idpenerimaan = $this->model->createID();
 
             $totalpenerimaan = 0;
-            $dataDetail = array();
+            $dataDetail = [];
             for ($i = 0; $i < count($isidatatable); $i++) {
-                $dataDetail[] = array(
+                $dataDetail[] = [
                     'idpenerimaan' => $idpenerimaan,
                     'kdakun' => $isidatatable[$i]['kdakun'],
                     'jumlahpenerimaan' => untitik($isidatatable[$i]['jumlahpenerimaan']),
-                );
+                ];
                 $totalpenerimaan += untitik($isidatatable[$i]['jumlahpenerimaan']);
             }
 
-
-
-            $data = array(
+            $data = [
                 'idpenerimaan' => $idpenerimaan,
                 'tglpenerimaan' => $tglpenerimaan,
                 'totalpenerimaan' => $totalpenerimaan,
@@ -195,24 +204,22 @@ class PenerimaanController extends Controller
                 'idpengguna' => session('idpengguna'),
                 'carabayar' => $carabayar,
                 'idbank' => $idbank,
-            );
+            ];
             $simpan = $this->model->simpanData($data, $dataDetail, $idpenerimaan);
         } else {
 
             $totalpenerimaan = 0;
-            $dataDetail = array();
+            $dataDetail = [];
             for ($i = 0; $i < count($isidatatable); $i++) {
-                $dataDetail[] = array(
+                $dataDetail[] = [
                     'idpenerimaan' => $idpenerimaan,
                     'kdakun' => $isidatatable[$i]['kdakun'],
                     'jumlahpenerimaan' => untitik($isidatatable[$i]['jumlahpenerimaan']),
-                );
+                ];
                 $totalpenerimaan += untitik($isidatatable[$i]['jumlahpenerimaan']);
             }
 
-
-
-            $data = array(
+            $data = [
                 'idpenerimaan' => $idpenerimaan,
                 'tglpenerimaan' => $tglpenerimaan,
                 'totalpenerimaan' => $totalpenerimaan,
@@ -221,19 +228,17 @@ class PenerimaanController extends Controller
                 'idpengguna' => session('idpengguna'),
                 'carabayar' => $carabayar,
                 'idbank' => $idbank,
-            );
+            ];
 
             $simpan = $this->model->updateData($data, $dataDetail, $idpenerimaan);
         }
 
         if ($simpan['status'] == 'success') {
-            return response()->json(array('success' => true));
+            return response()->json(['success' => true]);
         } else {
-            return response()->json(array('msg' => 'Data gagal disimpan! Error: ' . $simpan['message']));
+            return response()->json(['msg' => 'Data gagal disimpan! Error: '.$simpan['message']]);
         }
     }
-
-
 
     public function hapus($idpenerimaan)
     {
@@ -248,6 +253,7 @@ class PenerimaanController extends Controller
         if (App::isPosting($tglpenerimaan)) {
             $bulan = bulan(date('m', strtotime($tglpenerimaan)));
             $tahun = date('Y', strtotime($tglpenerimaan));
+
             return redirect('/penerimaan')->with('fail', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
         }
 
@@ -255,7 +261,7 @@ class PenerimaanController extends Controller
         if ($hapus['status'] == 'success') {
             return redirect('/penerimaan')->with('success', $hapus['message']);
         } else {
-            return redirect('/penerimaan')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/penerimaan')->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
 
@@ -265,6 +271,7 @@ class PenerimaanController extends Controller
         $rsPenerimaan = Penerimaan::find($idpenerimaan);
 
         $rsDetail = $this->model->getDetail($idpenerimaan);
-        return response()->json(array('rsPenerimaan' => $rsPenerimaan, 'rsDetail' => $rsDetail));
+
+        return response()->json(['rsPenerimaan' => $rsPenerimaan, 'rsDetail' => $rsDetail]);
     }
 }

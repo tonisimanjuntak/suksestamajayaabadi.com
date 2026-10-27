@@ -36,6 +36,7 @@ class PemeliharaansystemController extends Controller
         $data['statistik'] = $this->pemeliharaanModel->getStatistikGlobal();
         $data['periodeList'] = $this->pemeliharaanModel->getPeriodeList();
         $data['periodeAktif'] = '1';
+        $data['maintenanceInfo'] = $this->pemeliharaanModel->getMaintenanceInfo();
 
         return view('pemeliharaansystem.index', $data);
     }
@@ -85,6 +86,31 @@ class PemeliharaansystemController extends Controller
         $currentSessionId = session()->getId();
         $result = $this->pemeliharaanModel->logoutSemuaPengguna($currentSessionId);
         $result['statistik'] = $this->pemeliharaanModel->getStatistikGlobal($currentSessionId);
+
+        return response()->json($result);
+    }
+
+    /**
+     * Eksekusi mulai maintenance sistem via AJAX
+     */
+    public function mulaiMaintenance(Request $request)
+    {
+        $this->checkDev();
+
+        $durasi = $request->input('durasi', 60);
+        $result = $this->pemeliharaanModel->mulaiMaintenance($durasi);
+
+        return response()->json($result);
+    }
+
+    /**
+     * Eksekusi selesai maintenance sistem via AJAX
+     */
+    public function selesaiMaintenance(Request $request)
+    {
+        $this->checkDev();
+
+        $result = $this->pemeliharaanModel->selesaiMaintenance();
 
         return response()->json($result);
     }

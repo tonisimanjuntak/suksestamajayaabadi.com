@@ -2,21 +2,20 @@
 
 namespace App\Http\Controllers;
 
-
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use App\Models\Uploads;
+use App\Models\Akun4;
+use App\Models\App;
 use App\Models\Barang;
 use App\Models\Kategoribarang;
 use App\Models\Satuan;
-use App\Models\Akun4;
-use App\Models\App;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 
 class BarangController extends Controller
 {
-    var $model;
-    var $App;
+    public $model;
+
+    public $App;
 
     public function __construct()
     {
@@ -30,13 +29,15 @@ class BarangController extends Controller
         $barang = Barang::all();
         $data['barang'] = $barang;
         $data['menu'] = 'barang';
+
         return view('barang.index', $data);
     }
 
     public function tambah()
     {
         $data['menu'] = 'barang';
-        $data['idbarang'] = "";
+        $data['idbarang'] = '';
+
         return view('barang.form', $data);
     }
 
@@ -50,6 +51,7 @@ class BarangController extends Controller
         }
         $data['menu'] = 'barang';
         $data['idbarang'] = $idbarang;
+
         return view('barang.form', $data);
     }
 
@@ -64,7 +66,7 @@ class BarangController extends Controller
         }
 
         // Cek apakah ada pencarian
-        if ($request->has('search') && !empty($request->input('search.value'))) {
+        if ($request->has('search') && ! empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where('kdbarang', 'LIKE', "%{$search}%")
                 ->orWhere('namabarang', 'LIKE', "%{$search}%")
@@ -90,7 +92,6 @@ class BarangController extends Controller
             $query->orderBy('namabarang', 'Asc');
         }
 
-
         // Hitung total data tanpa filter
         $totalData = Barang::count();
 
@@ -109,33 +110,44 @@ class BarangController extends Controller
         // Format data untuk DataTables
         $data = [];
         $no = 1;
+        $hakaksiAktif = session('hakaksi_aktif', '');
+        $canEdit = str_contains($hakaksiAktif, 'Edit');
+        $canHapus = str_contains($hakaksiAktif, 'Hapus');
+
         foreach ($rsData as $row) {
             if ($row->statusaktif == 'Aktif') {
-                $statusaktif = '<span class="badge badge-success">' . $row->statusaktif . '</span>';
+                $statusaktif = '<span class="badge badge-success">'.$row->statusaktif.'</span>';
             } else {
-                $statusaktif = '<span class="badge badge-danger">' . $row->statusaktif . '</span>';
+                $statusaktif = '<span class="badge badge-danger">'.$row->statusaktif.'</span>';
             }
             $bonussales = '';
             if ($row->jenisbonuspenjualan == 'Persen') {
-                $bonussales = $row->persenbonuspenjualan . ' %';
+                $bonussales = $row->persenbonuspenjualan.' %';
             } else {
-                $bonussales = 'Rp. ' . $row->jumlahbonuspenjualan;
+                $bonussales = 'Rp. '.$row->jumlahbonuspenjualan;
             }
-
 
             $bonustagihan = '';
             if ($row->jenisbonustagihan == 'Persen') {
-                $bonustagihan = $row->persenbonustagihan . ' %';
+                $bonustagihan = $row->persenbonustagihan.' %';
             } else {
-                $bonustagihan = 'Rp. ' . $row->jumlahbonustagihan;
+                $bonustagihan = 'Rp. '.$row->jumlahbonustagihan;
             }
+
+            $btnEdit = $canEdit
+                ? '<a href="'.url('barang/edit/'.Crypt::encrypt($row->idbarang)).'" class="btn btn-warning">Edit</a>'
+                : '<button type="button" class="btn btn-warning" disabled title="Anda tidak memiliki hak akses Edit">Edit</button>';
+
+            $itemHapus = $canHapus
+                ? '<a href="'.url('barang/hapus/'.Crypt::encrypt($row->idbarang)).'" class="dropdown-item" id="btnHapus">Hapus</a>'
+                : '<span class="dropdown-item disabled text-muted" title="Anda tidak memiliki hak akses Hapus">Hapus</span>';
 
             $data[] = [
                 'no' => $no++,
                 'kdbarang' => $row->kdbarang,
-                'namabarang' => '<strong>' . $row->namabarang . '</strong><br><small>' . $row->namakategori . ' - ' . $row->jenisbarang . '</small>',
+                'namabarang' => '<strong>'.$row->namabarang.'</strong><br><small>'.$row->namakategori.' - '.$row->jenisbarang.'</small>',
                 'namasatuan' => $row->namasatuan,
-                'bonussales' => $bonussales . '<br>' . $bonustagihan,
+                'bonussales' => $bonussales.'<br>'.$bonustagihan,
                 'hargabeli' => format_rupiah($row->hargabeli),
                 'hargajualdiskon' => format_rupiah($row->hargajualdiskon),
                 'stokminimum' => $row->stokminimum,
@@ -146,11 +158,11 @@ class BarangController extends Controller
                                     <span class="sr-only">Toggle Dropleft</span>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a href="' . url('barang/hapus/' . Crypt::encrypt($row->idbarang)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
-                                        <a href="' . url('kartustokbarang/cetak2/' . $row->idbarang) . '" class="dropdown-item" target="_blank">Lihat Kartu Stok</a>
+                                        '.$itemHapus.'
+                                        <a href="'.url('kartustokbarang/cetak2/'.$row->idbarang).'" class="dropdown-item" target="_blank">Lihat Kartu Stok</a>
                                     </div>
                                 </div>
-                                <a href="' . url('barang/edit/' . Crypt::encrypt($row->idbarang)) . '" class="btn btn-warning">Edit</a>                                
+                                '.$btnEdit.'                                
                             </div>',
 
             ];
@@ -184,7 +196,6 @@ class BarangController extends Controller
         $persenbonuspenjualan = $request->get('persenbonuspenjualan');
         $jumlahbonuspenjualan = untitik($request->get('jumlahbonuspenjualan'));
 
-
         $jenisbonustagihan = $request->get('jenisbonustagihan');
         $persenbonustagihan = $request->get('persenbonustagihan');
         $jumlahbonustagihan = untitik($request->get('jumlahbonustagihan'));
@@ -201,7 +212,6 @@ class BarangController extends Controller
             $persenbonuspenjualan = 0;
         }
 
-
         if ($jenisbonustagihan == 'Persen') {
             $jumlahbonustagihan = 0;
         }
@@ -214,7 +224,7 @@ class BarangController extends Controller
             $idbarang = $this->model->createID($idkategori);
             $kdbarang = $idbarang; // request 18-04-2026, samakan kdbarang dengan idbarang
 
-            $data = array(
+            $data = [
                 'idbarang' => $idbarang,
                 'kdbarang' => $kdbarang,
                 'namabarang' => $namabarang,
@@ -235,10 +245,10 @@ class BarangController extends Controller
                 'inserted_date' => $inserted_date,
                 'updated_date' => $updated_date,
                 'statusaktif' => 'Aktif',
-            );
+            ];
             $simpan = $this->model->simpanData($data);
         } else {
-            $data = array(
+            $data = [
                 'idbarang' => $idbarang,
                 'kdbarang' => $kdbarang,
                 'namabarang' => $namabarang,
@@ -258,7 +268,7 @@ class BarangController extends Controller
                 'persenbonustagihan' => $persenbonustagihan,
                 'updated_date' => $updated_date,
                 'statusaktif' => $statusaktif,
-            );
+            ];
             $simpan = $this->model->updateData($data, $idbarang);
         }
 
@@ -266,11 +276,9 @@ class BarangController extends Controller
         if ($simpan['status'] == 'success') {
             return redirect('/barang')->with('success', $simpan['message']);
         } else {
-            return redirect('/barang')->with('fail', 'Data gagal disimpan! Error: ' . $simpan['message']);
+            return redirect('/barang')->with('fail', 'Data gagal disimpan! Error: '.$simpan['message']);
         }
     }
-
-
 
     public function hapus($idbarang)
     {
@@ -285,7 +293,7 @@ class BarangController extends Controller
         if ($hapus['status'] == 'success') {
             return redirect('/barang')->with('success', $hapus['message']);
         } else {
-            return redirect('/barang')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/barang')->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
 
@@ -293,6 +301,7 @@ class BarangController extends Controller
     {
         $idbarang = $request->input('idbarang');
         $rsBarang = Barang::find($idbarang);
+
         return response()->json($rsBarang);
     }
 
@@ -335,7 +344,6 @@ class BarangController extends Controller
 
         return response()->json(['results' => $formattedResults]);
     }
-
 
     public function searchAkunBarang(Request $request)
     {

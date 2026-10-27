@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Uploads;
-use App\Models\Pengguna;
 use App\Models\Otorisasi;
+use App\Models\Pengguna;
+use App\Models\Uploads;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class PenggunaController extends Controller
 {
-    var $model;
+    public $model;
 
     public function __construct()
     {
@@ -24,13 +24,15 @@ class PenggunaController extends Controller
         $pengguna = Pengguna::all();
         $data['pengguna'] = $pengguna;
         $data['menu'] = 'pengguna';
+
         return view('pengguna.index', $data);
     }
 
     public function tambah()
     {
         $data['menu'] = 'pengguna';
-        $data['idpengguna'] = "";
+        $data['idpengguna'] = '';
+
         return view('pengguna.form', $data);
     }
 
@@ -44,9 +46,9 @@ class PenggunaController extends Controller
         }
         $data['menu'] = 'pengguna';
         $data['idpengguna'] = $idpengguna;
+
         return view('pengguna.form', $data);
     }
-
 
     public function otorisasi($idpengguna)
     {
@@ -60,9 +62,9 @@ class PenggunaController extends Controller
         $data['rsMenus'] = $this->model->getMenus();
         $data['menu'] = 'pengguna';
         $data['idpengguna'] = $idpengguna;
+
         return view('pengguna.otorisasi', $data);
     }
-
 
     public function listdata(Request $request)
     {
@@ -77,7 +79,7 @@ class PenggunaController extends Controller
         }
 
         // Cek apakah ada pencarian
-        if ($request->has('search') && !empty($request->input('search.value'))) {
+        if ($request->has('search') && ! empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where('idpengguna', 'LIKE', "%{$search}%")
                 ->orWhere('namapengguna', 'LIKE', "%{$search}%");
@@ -101,7 +103,6 @@ class PenggunaController extends Controller
             $query->orderBy('namapengguna', 'Asc');
         }
 
-
         // Hitung total data tanpa filter
         $totalData = Pengguna::count();
 
@@ -120,22 +121,34 @@ class PenggunaController extends Controller
         // Format data untuk DataTables
         $data = [];
         $no = 1;
+        $hakaksiAktif = session('hakaksi_aktif', '');
+        $canEdit = str_contains($hakaksiAktif, 'Edit');
+        $canHapus = str_contains($hakaksiAktif, 'Hapus');
+
         foreach ($rsData as $row) {
             if ($row->statusaktif == 'Aktif') {
-                $statusaktif = '<span class="badge badge-success">' . $row->statusaktif . '</span>';
+                $statusaktif = '<span class="badge badge-success">'.$row->statusaktif.'</span>';
             } else {
-                $statusaktif = '<span class="badge badge-danger">' . $row->statusaktif . '</span>';
+                $statusaktif = '<span class="badge badge-danger">'.$row->statusaktif.'</span>';
             }
 
-            if (!empty($row->fotopengguna)) {
-                $fotopengguna = url('uploads/pengguna/' . $row->fotopengguna);
+            if (! empty($row->fotopengguna)) {
+                $fotopengguna = url('uploads/pengguna/'.$row->fotopengguna);
             } else {
                 $fotopengguna = url('images/profil1.png');
             }
 
+            $btnEdit = $canEdit
+                ? '<a href="'.url('pengguna/edit/'.Crypt::encrypt($row->idpengguna)).'" class="btn btn-warning">Edit</a>'
+                : '<button type="button" class="btn btn-warning" disabled title="Anda tidak memiliki hak akses Edit">Edit</button>';
+
+            $itemHapus = $canHapus
+                ? '<a href="'.url('pengguna/hapus/'.Crypt::encrypt($row->idpengguna)).'" class="dropdown-item" id="btnHapus">Hapus</a>'
+                : '<span class="dropdown-item disabled text-muted" title="Anda tidak memiliki hak akses Hapus">Hapus</span>';
+
             $data[] = [
                 'no' => $no++,
-                'fotopengguna' => '<img src="' . $fotopengguna . '" alt="" style="width: 80%;">',
+                'fotopengguna' => '<img src="'.$fotopengguna.'" alt="" style="width: 80%;">',
                 'idpengguna' => $row->idpengguna,
                 'namapengguna' => $row->namapengguna,
                 'namaotorisasi' => $row->namaotorisasi,
@@ -147,16 +160,15 @@ class PenggunaController extends Controller
                                     <span class="sr-only">Toggle Dropleft</span>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a href="' . url('pengguna/hapus/' . Crypt::encrypt($row->idpengguna)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
-                                        <a href="' . url('pengguna/otorisasi/' . Crypt::encrypt($row->idpengguna)) . '" class="dropdown-item">Otorisasi Pengguna</a>
+                                        '.$itemHapus.'
+                                        <a href="'.url('pengguna/otorisasi/'.Crypt::encrypt($row->idpengguna)).'" class="dropdown-item">Otorisasi Pengguna</a>
                                     </div>
                                 </div>
-                                <a href="' . url('pengguna/edit/' . Crypt::encrypt($row->idpengguna)) . '" class="btn btn-warning">Edit</a>                                
+                                '.$btnEdit.'                                
                             </div>',
 
             ];
         }
-
 
         // Response untuk DataTables
         return response()->json([
@@ -189,7 +201,7 @@ class PenggunaController extends Controller
         if ($uploads['status'] == 'success') {
             $file_name = $uploads['file_name'];
         } else {
-            return redirect('/pengguna')->with('fail', 'Data gagal disimpan! Error: ' . $uploads['message']);
+            return redirect('/pengguna')->with('fail', 'Data gagal disimpan! Error: '.$uploads['message']);
         }
         if (empty($emailpengguna)) {
             $emailpengguna = null;
@@ -203,7 +215,7 @@ class PenggunaController extends Controller
 
             $idpengguna = $this->model->createID($namapengguna);
 
-            $data = array(
+            $data = [
                 'idpengguna' => $idpengguna,
                 'namapengguna' => $namapengguna,
                 'jeniskelamin' => $jeniskelamin,
@@ -217,7 +229,7 @@ class PenggunaController extends Controller
                 'inserted_date' => $inserted_date,
                 'updated_date' => $updated_date,
                 'statusaktif' => 'Aktif',
-            );
+            ];
             // dd($data);
             $simpan = $this->model->simpanData($data);
         } else {
@@ -228,7 +240,7 @@ class PenggunaController extends Controller
                     return redirect('/pengguna')->with('other', 'Ulangi password tidak sama');
                 }
 
-                $data = array(
+                $data = [
                     'idpengguna' => $idpengguna,
                     'namapengguna' => $namapengguna,
                     'jeniskelamin' => $jeniskelamin,
@@ -241,9 +253,9 @@ class PenggunaController extends Controller
                     'halamandashboard' => $halamandashboard,
                     'updated_date' => $updated_date,
                     'statusaktif' => $statusaktif,
-                );
+                ];
             } else {
-                $data = array(
+                $data = [
                     'idpengguna' => $idpengguna,
                     'namapengguna' => $namapengguna,
                     'jeniskelamin' => $jeniskelamin,
@@ -255,7 +267,7 @@ class PenggunaController extends Controller
                     'halamandashboard' => $halamandashboard,
                     'updated_date' => $updated_date,
                     'statusaktif' => $statusaktif,
-                );
+                ];
             }
             // dd($data);
 
@@ -266,11 +278,9 @@ class PenggunaController extends Controller
         if ($simpan['status'] == 'success') {
             return redirect('/pengguna')->with('success', $simpan['message']);
         } else {
-            return redirect('/pengguna')->with('fail', 'Data gagal disimpan! Error: ' . $simpan['message']);
+            return redirect('/pengguna')->with('fail', 'Data gagal disimpan! Error: '.$simpan['message']);
         }
     }
-
-
 
     public function hapus($idpengguna)
     {
@@ -285,7 +295,7 @@ class PenggunaController extends Controller
         if ($hapus['status'] == 'success') {
             return redirect('/pengguna')->with('success', $hapus['message']);
         } else {
-            return redirect('/pengguna')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/pengguna')->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
 
@@ -293,6 +303,7 @@ class PenggunaController extends Controller
     {
         $idpengguna = $request->input('idpengguna');
         $rsPengguna = Pengguna::find($idpengguna);
+
         return response()->json($rsPengguna);
     }
 
@@ -309,7 +320,7 @@ class PenggunaController extends Controller
         $formattedResults = $results->map(function ($item) {
             return [
                 'id' => $item->idotorisasi,
-                'text' => $item->idotorisasi . ' - ' . $item->namaotorisasi,
+                'text' => $item->idotorisasi.' - '.$item->namaotorisasi,
             ];
         });
 
@@ -322,9 +333,9 @@ class PenggunaController extends Controller
 
         // Query pencarian
         $results = Pengguna::where(function ($query) use ($search) {
-                $query->where('idpengguna', 'LIKE', "%{$search}%")
-                    ->orWhere('namapengguna', 'LIKE', "%{$search}%");
-            })
+            $query->where('idpengguna', 'LIKE', "%{$search}%")
+                ->orWhere('namapengguna', 'LIKE', "%{$search}%");
+        })
             ->limit(50)
             ->get();
 
@@ -335,9 +346,9 @@ class PenggunaController extends Controller
                 'text' => $item->namapengguna,
             ];
         });
+
         return response()->json(['results' => $formattedResults]);
     }
-
 
     public function searchKasir(Request $request)
     {
@@ -359,9 +370,9 @@ class PenggunaController extends Controller
                 'text' => $item->namapengguna,
             ];
         });
+
         return response()->json(['results' => $formattedResults]);
     }
-
 
     public function simpanotorisasi(Request $request)
     {
@@ -371,16 +382,16 @@ class PenggunaController extends Controller
         // HAPUS atau KOMENTARI baris ini:
         // return response()->json($idmenus);  // ←← HAPUS SAAT PRODUKSI
 
-        $dataOtorisasi = array();
+        $dataOtorisasi = [];
 
         for ($i = 0; $i < count($idmenus); $i++) {
             $hakaksi = '';
             $idmenus_otorisasi = $idmenus[$i];
 
-            $Lihat = $request->input('Lihat' . $idmenus_otorisasi);
-            $Tambah = $request->input('Tambah' . $idmenus_otorisasi);
-            $Edit = $request->input('Edit' . $idmenus_otorisasi);
-            $Hapus = $request->input('Hapus' . $idmenus_otorisasi);
+            $Lihat = $request->input('Lihat'.$idmenus_otorisasi);
+            $Tambah = $request->input('Tambah'.$idmenus_otorisasi);
+            $Edit = $request->input('Edit'.$idmenus_otorisasi);
+            $Hapus = $request->input('Hapus'.$idmenus_otorisasi);
 
             // Hanya simpan jika bisa "Lihat"
             if ($Lihat) {
@@ -424,12 +435,12 @@ class PenggunaController extends Controller
         if ($simpan['status'] == 'success') {
             return response()->json([
                 'status' => 'success',
-                'message' => $simpan['message'] . ' Otorisasi ini akan berlaku setelah pengguna logout.'
+                'message' => $simpan['message'].' Otorisasi ini akan berlaku setelah pengguna logout.',
             ]);
         } else {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Data gagal disimpan! Error: ' . $simpan['message']
+                'message' => 'Data gagal disimpan! Error: '.$simpan['message'],
             ], 500);
         }
     }

@@ -2,18 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Konversistok;
-use Illuminate\Http\Request;
-use App\Models\Barang;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\App;
+use App\Models\Konversistok;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
-use TCPDF;
 
 class KonversistokController extends Controller
 {
-    var $model;
+    public $model;
 
     public function __construct()
     {
@@ -26,13 +24,15 @@ class KonversistokController extends Controller
         $konversistok = $this->model->allView();
         $data['konversistok'] = $konversistok;
         $data['menu'] = 'konversistok';
+
         return view('konversistok.index', $data);
     }
 
     public function tambah()
     {
         $data['menu'] = 'konversistok';
-        $data['idkonversi'] = "";
+        $data['idkonversi'] = '';
+
         return view('konversistok.form', $data);
     }
 
@@ -44,10 +44,10 @@ class KonversistokController extends Controller
         $tglawal = $request->input('tglawal');
         $tglakhir = $request->input('tglakhir');
 
-        $query->whereBetween(DB::raw("DATE(tglkonversi)"), [$tglawal, $tglakhir]);
+        $query->whereBetween(DB::raw('DATE(tglkonversi)'), [$tglawal, $tglakhir]);
 
         // Cek apakah ada pencarian
-        if ($request->has('search') && !empty($request->input('search.value'))) {
+        if ($request->has('search') && ! empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where(function ($groupwhere) use ($search) {
                 $groupwhere->where('idkonversi', 'LIKE', "%{$search}%")
@@ -77,7 +77,6 @@ class KonversistokController extends Controller
             $query->orderBy('idkonversi', 'Desc');
         }
 
-
         // Hitung total data tanpa filter
         $totalData = Konversistok::count();
 
@@ -96,19 +95,24 @@ class KonversistokController extends Controller
         // Format data untuk DataTables
         $data = [];
         $no = 1;
+        $hakaksiAktif = session('hakaksi_aktif', '');
+        $canHapus = str_contains($hakaksiAktif, 'Hapus');
+
         foreach ($rsData as $row) {
+            $btnAction = $canHapus
+                ? '<a href="'.url('konversistok/hapus/'.Crypt::encrypt($row->idkonversi)).'" class="btn btn-danger btn-sm" id="btnHapus"><i class="fa fa-trash"></i></a>'
+                : '<button type="button" class="btn btn-danger btn-sm" disabled title="Anda tidak memiliki hak akses Hapus"><i class="fa fa-trash"></i></button>';
 
             $data[] = [
                 'no' => $no++,
                 'idkonversi' => $row->idkonversi,
                 'tglkonversi' => $row->tglkonversi,
-                'keterangan' => $row->keterangan . '<br>Operator: ' . $row->namapengguna,
-                'namabarangasal' => '<strong>(' . $row->jlhbarangasal.' '.$row->namasatuanasal . ')</strong> '. $row->namabarangasal,
-                'namabarangtujuan' => '<strong>(' . $row->jlhbarangtujuan.' '.$row->namasatuantujuan . ')</strong> ' .$row->namabarangtujuan,
-                'action' => '<a href="' . url('konversistok/hapus/' . Crypt::encrypt($row->idkonversi)) . '" class="btn btn-danger btn-sm" id="btnHapus"><i class="fa fa-trash"></i></a>',
+                'keterangan' => $row->keterangan.'<br>Operator: '.$row->namapengguna,
+                'namabarangasal' => '<strong>('.$row->jlhbarangasal.' '.$row->namasatuanasal.')</strong> '.$row->namabarangasal,
+                'namabarangtujuan' => '<strong>('.$row->jlhbarangtujuan.' '.$row->namasatuantujuan.')</strong> '.$row->namabarangtujuan,
+                'action' => $btnAction,
             ];
         }
-
 
         // Response untuk DataTables
         return response()->json([
@@ -124,24 +128,25 @@ class KonversistokController extends Controller
         $idkonversi = $request->get('idkonversi');
         $tglkonversi = date('Y-m-d H:i:s');
         $keterangan = $request->get('keterangan');
-        $idbarangasal   = $request->get('idbarangasal');
-        $idsatuanasal   = $request->get('idsatuanasal');
-        $jumlahbarangasal   = $request->get('jumlahbarangasal');
-        $idbarangtujuan   = $request->get('idbarangtujuan');
-        $idsatuantujuan   = $request->get('idsatuantujuan');
-        $jumlahbarangtujuan   = $request->get('jumlahbarangtujuan');
+        $idbarangasal = $request->get('idbarangasal');
+        $idsatuanasal = $request->get('idsatuanasal');
+        $jumlahbarangasal = $request->get('jumlahbarangasal');
+        $idbarangtujuan = $request->get('idbarangtujuan');
+        $idsatuantujuan = $request->get('idsatuantujuan');
+        $jumlahbarangtujuan = $request->get('jumlahbarangtujuan');
         $inserted_date = date('Y-m-d H:i:s');
         $updated_date = date('Y-m-d H:i:s');
 
         if (App::isPosting($tglkonversi)) {
             $bulan = bulan(date('m', strtotime($tglkonversi)));
             $tahun = date('Y', strtotime($tglkonversi));
-            return response()->json(array("msg" => "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!"));
+
+            return response()->json(['msg' => "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!"]);
         }
 
         $idkonversi = $this->model->createID();
 
-        $data = array(
+        $data = [
             'idkonversi' => $idkonversi,
             'tglkonversi' => $tglkonversi,
             'keterangan' => $keterangan,
@@ -154,13 +159,13 @@ class KonversistokController extends Controller
             'inserted_date' => $inserted_date,
             'updated_date' => $updated_date,
             'idpengguna' => session('idpengguna'),
-        );
+        ];
 
         $simpan = $this->model->simpanData($data);
         if ($simpan['status'] == 'success') {
-            return response()->json(array('success' => true));
+            return response()->json(['success' => true]);
         } else {
-            return response()->json(array('msg' => 'Data gagal disimpan! Error: ' . $simpan['message']));
+            return response()->json(['msg' => 'Data gagal disimpan! Error: '.$simpan['message']]);
         }
     }
 
@@ -168,10 +173,9 @@ class KonversistokController extends Controller
     {
         $idkonversi = $request->input('idkonversi');
         $rsKonversi = Konversistok::find($idkonversi);
-        return response()->json(array('$rsKonversi' => $rsKonversiStok));
+
+        return response()->json(['$rsKonversi' => $rsKonversiStok]);
     }
-
-
 
     public function hapus($idkonversi)
     {
@@ -185,6 +189,7 @@ class KonversistokController extends Controller
         if (App::isPosting($rsKonversi->tglkonversi)) {
             $bulan = bulan(date('m', strtotime($rsKonversi->tglkonversi)));
             $tahun = date('Y', strtotime($rsKonversi->tglkonversi));
+
             return redirect('/konversistok')->with('other', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
         }
 
@@ -192,8 +197,7 @@ class KonversistokController extends Controller
         if ($hapus['status'] == 'success') {
             return redirect('/konversistok')->with('success', $hapus['message']);
         } else {
-            return redirect('/konversistok')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/konversistok')->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
-    
 }

@@ -216,6 +216,79 @@
                 </div>
             </div>
 
+            <!-- Modul 3: Mode Pemeliharaan Sistem (Maintenance Mode) -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card card-outline {{ $maintenanceInfo['is_active'] ? 'card-danger' : 'card-info' }} shadow-sm" id="cardMaintenance">
+                        <div class="card-header">
+                            <h3 class="card-title font-weight-bold">
+                                <i class="fas fa-tools mr-2 text-danger"></i>3. Mode Pemeliharaan Sistem (Maintenance Mode)
+                            </h3>
+                            <div class="card-tools">
+                                <span id="badgeMaintenanceStatus" class="badge {{ $maintenanceInfo['is_active'] ? 'badge-danger' : 'badge-success' }}">
+                                    {{ $maintenanceInfo['is_active'] ? 'Sedang Maintenance' : 'Sistem Normal / Aktif' }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-light border mb-4">
+                                <h6 class="font-weight-bold text-dark mb-1"><i class="fas fa-info-circle mr-1 text-info"></i>Petunjuk Operasi:</h6>
+                                <p class="mb-1 text-sm text-muted">
+                                    Ketika mode maintenance diaktifkan, seluruh pengguna sistem yang sudah login (kecuali Developer) akan dialihkan ke halaman pemeliharaan sistem dengan informasi estimasi waktu selesai.
+                                </p>
+                                <ul class="mb-0 text-sm text-muted pl-3">
+                                    <li>Pengguna Developer (<code>idpengguna: 9999999999</code>) tetap memiliki akses penuh ke seluruh menu untuk melakukan perbaikan.</li>
+                                    <li>Pilih estimasi durasi pemeliharaan, sistem otomatis menghitung tanggal & waktu selesai.</li>
+                                    <li>Klik tombol <strong>Mulai Maintenance</strong> untuk mengunci akses pengguna.</li>
+                                    <li>Setelah proses perbaikan selesai, klik tombol <strong>Maintenance Selesai</strong> untuk membuka kembali akses aplikasi secara normal.</li>
+                                </ul>
+                            </div>
+
+                            <div class="card bg-light border p-3 mb-0">
+                                <div class="row align-items-center">
+                                    <div class="col-md-7 col-12 mb-md-0 mb-3">
+                                        <div class="form-group mb-2">
+                                            <label for="selectDurasiMaintenance" class="font-weight-bold text-sm">
+                                                Estimasi Lama Waktu Maintenance:
+                                            </label>
+                                            <select id="selectDurasiMaintenance" class="form-control" {{ $maintenanceInfo['is_active'] ? 'disabled' : '' }}>
+                                                <option value="30">30 Menit</option>
+                                                <option value="60" selected>60 Menit</option>
+                                                <option value="90">90 Menit</option>
+                                                <option value="120">120 Menit</option>
+                                                <option value="240">240 Menit</option>
+                                                <option value="360">360 Menit</option>
+                                                <option value="720">720 Menit</option>
+                                                <option value="1440">1440 Menit</option>
+                                            </select>
+                                        </div>
+                                        <div id="infoMaintenanceActive" class="{{ $maintenanceInfo['is_active'] ? '' : 'd-none' }}">
+                                            <div class="alert alert-danger mb-0 py-2 px-3 text-sm">
+                                                <i class="fas fa-exclamation-triangle mr-1"></i>
+                                                Sistem saat ini sedang dalam status pemeliharaan. Estimasi selesai: 
+                                                <strong id="textEstimatedFinished">{{ $maintenanceInfo['estimated_finished'] }}</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 col-12 text-md-right text-left">
+                                        <div id="wrapperBtnMulai" class="{{ $maintenanceInfo['is_active'] ? 'd-none' : '' }}">
+                                            <button type="button" class="btn btn-danger btn-lg font-weight-bold shadow-sm" id="btnMulaiMaintenance">
+                                                <i class="fas fa-play mr-2"></i>Mulai Maintenance
+                                            </button>
+                                        </div>
+                                        <div id="wrapperBtnSelesai" class="{{ $maintenanceInfo['is_active'] ? '' : 'd-none' }}">
+                                            <button type="button" class="btn btn-success btn-lg font-weight-bold shadow-sm" id="btnSelesaiMaintenance">
+                                                <i class="fas fa-check-circle mr-2"></i>Maintenance Selesai
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Placeholder untuk Pemeliharaan System Mendatang -->
             <div class="row">
                 <div class="col-12">
@@ -501,6 +574,153 @@ $(document).ready(function() {
                             swal({
                                 title: "Gagal!",
                                 text: res.message || "Terjadi kesalahan saat memproses logout pengguna.",
+                                icon: "error",
+                                button: "OK"
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        $btn.prop('disabled', false).html(origHtml);
+                        var errDetail = "Terjadi kesalahan pada server.";
+                        try {
+                            var parsed = JSON.parse(xhr.responseText);
+                            if (parsed && parsed.message) {
+                                errDetail = parsed.message;
+                            }
+                        } catch(e) {}
+                        swal({
+                            title: "Error Server",
+                            text: errDetail,
+                            icon: "error",
+                            button: "OK"
+                        });
+                    }
+                });
+            }
+        });
+    });
+
+    // Tombol Mulai Maintenance
+    $('#btnMulaiMaintenance').on('click', function(e) {
+        e.preventDefault();
+
+        var durasi = $('#selectDurasiMaintenance').val();
+        var durasiText = $('#selectDurasiMaintenance option:selected').text();
+
+        swal({
+            title: "Konfirmasi Maintenance",
+            text: "Apakah akan mulai maintenance?\n\nDurasi estimasi: " + durasiText + ".\nSeluruh pengguna yang sedang login akan diarahkan ke halaman maintenance.",
+            icon: "warning",
+            buttons: ["Batal", "Ya, Mulai Maintenance!"],
+            dangerMode: true,
+        }).then((willProceed) => {
+            if (willProceed) {
+                var $btn = $('#btnMulaiMaintenance');
+                var origHtml = $btn.html();
+                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Memproses...');
+
+                $.ajax({
+                    url: "{{ route('pemeliharaansystem.mulaiMaintenance') }}",
+                    type: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        durasi: durasi
+                    },
+                    dataType: "json",
+                    success: function(res) {
+                        $btn.prop('disabled', false).html(origHtml);
+
+                        if (res.status === 'success') {
+                            swal({
+                                title: "Berhasil!",
+                                text: res.message,
+                                icon: "success",
+                                button: "OK"
+                            });
+
+                            // Update tampilan ke status maintenance aktif
+                            $('#cardMaintenance').removeClass('card-info').addClass('card-danger');
+                            $('#badgeMaintenanceStatus').removeClass('badge-success').addClass('badge-danger').text('Sedang Maintenance');
+                            $('#selectDurasiMaintenance').prop('disabled', true);
+                            $('#textEstimatedFinished').text(res.estimated_finished);
+                            $('#infoMaintenanceActive').removeClass('d-none');
+                            $('#wrapperBtnMulai').addClass('d-none');
+                            $('#wrapperBtnSelesai').removeClass('d-none');
+                        } else {
+                            swal({
+                                title: "Gagal!",
+                                text: res.message || "Terjadi kesalahan saat mengaktifkan maintenance.",
+                                icon: "error",
+                                button: "OK"
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        $btn.prop('disabled', false).html(origHtml);
+                        var errDetail = "Terjadi kesalahan pada server.";
+                        try {
+                            var parsed = JSON.parse(xhr.responseText);
+                            if (parsed && parsed.message) {
+                                errDetail = parsed.message;
+                            }
+                        } catch(e) {}
+                        swal({
+                            title: "Error Server",
+                            text: errDetail,
+                            icon: "error",
+                            button: "OK"
+                        });
+                    }
+                });
+            }
+        });
+    });
+
+    // Tombol Maintenance Selesai
+    $('#btnSelesaiMaintenance').on('click', function(e) {
+        e.preventDefault();
+
+        swal({
+            title: "Konfirmasi Selesai",
+            text: "Apakah maintenance sudah selesai?\n\nSistem akan kembali normal dan seluruh pengguna dapat mengakses modul aplikasi.",
+            icon: "warning",
+            buttons: ["Batal", "Ya, Selesai!"],
+            dangerMode: false,
+        }).then((willProceed) => {
+            if (willProceed) {
+                var $btn = $('#btnSelesaiMaintenance');
+                var origHtml = $btn.html();
+                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Memproses...');
+
+                $.ajax({
+                    url: "{{ route('pemeliharaansystem.selesaiMaintenance') }}",
+                    type: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}"
+                    },
+                    dataType: "json",
+                    success: function(res) {
+                        $btn.prop('disabled', false).html(origHtml);
+
+                        if (res.status === 'success') {
+                            swal({
+                                title: "Berhasil!",
+                                text: res.message,
+                                icon: "success",
+                                button: "OK"
+                            });
+
+                            // Update tampilan ke status normal
+                            $('#cardMaintenance').removeClass('card-danger').addClass('card-info');
+                            $('#badgeMaintenanceStatus').removeClass('badge-danger').addClass('badge-success').text('Sistem Normal / Aktif');
+                            $('#selectDurasiMaintenance').prop('disabled', false);
+                            $('#infoMaintenanceActive').addClass('d-none');
+                            $('#wrapperBtnSelesai').addClass('d-none');
+                            $('#wrapperBtnMulai').removeClass('d-none');
+                        } else {
+                            swal({
+                                title: "Gagal!",
+                                text: res.message || "Terjadi kesalahan saat menonaktifkan maintenance.",
                                 icon: "error",
                                 button: "OK"
                             });

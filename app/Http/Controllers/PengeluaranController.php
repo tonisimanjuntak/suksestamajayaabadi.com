@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pengeluaran;
-use Illuminate\Http\Request;
-use App\Models\Akun;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\App;
+use App\Models\Pengeluaran;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 
 class PengeluaranController extends Controller
 {
-    var $model;
+    public $model;
 
     public function __construct()
     {
@@ -24,13 +23,15 @@ class PengeluaranController extends Controller
         $pegngeluaran = $this->model->allView();
         $data['pengeluaran'] = $pegngeluaran;
         $data['menu'] = 'pengeluaran';
+
         return view('pengeluaran.index', $data);
     }
 
     public function tambah()
     {
         $data['menu'] = 'pengeluaran';
-        $data['idpengeluaran'] = "";
+        $data['idpengeluaran'] = '';
+
         return view('pengeluaran.form', $data);
     }
 
@@ -44,9 +45,9 @@ class PengeluaranController extends Controller
         }
         $data['menu'] = 'pengeluaran';
         $data['idpengeluaran'] = $idpengeluaran;
+
         return view('pengeluaran.form', $data);
     }
-
 
     public function listdata(Request $request)
     {
@@ -57,13 +58,13 @@ class PengeluaranController extends Controller
         $tglakhir = $request->input('tglakhir');
         $carabayar = $request->input('carabayar');
 
-        $query->whereBetween("tglpengeluaran", [$tglawal, $tglakhir]);
-        if (!empty($carabayar)) {
+        $query->whereBetween('tglpengeluaran', [$tglawal, $tglakhir]);
+        if (! empty($carabayar)) {
             $query->where('carabayar', $carabayar);
         }
 
         // Cek apakah ada pencarian
-        if ($request->has('search') && !empty($request->input('search.value'))) {
+        if ($request->has('search') && ! empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where(function ($groupwhere) use ($search) {
                 $groupwhere->where('idpengeluaran', 'LIKE', "%{$search}%")
@@ -91,7 +92,6 @@ class PengeluaranController extends Controller
             $query->orderBy('idpengeluaran', 'Desc');
         }
 
-
         // Hitung total data tanpa filter
         $totalData = Pengeluaran::count();
 
@@ -108,14 +108,26 @@ class PengeluaranController extends Controller
             ->get();
 
         // Format data untuk DataTables
+        $hakaksiAktif = session('hakaksi_aktif', '');
+        $canEdit = str_contains($hakaksiAktif, 'Edit');
+        $canHapus = str_contains($hakaksiAktif, 'Hapus');
+
         $data = [];
         $no = 1;
         foreach ($rsData as $row) {
 
+            $btnEdit = $canEdit
+                ? '<a href="'.url('pengeluaran/edit/'.Crypt::encrypt($row->idpengeluaran)).'" class="btn btn-warning">Edit</a>'
+                : '<button type="button" class="btn btn-warning" disabled title="Anda tidak memiliki hak akses Edit">Edit</button>';
+
+            $btnHapus = $canHapus
+                ? '<a href="'.url('pengeluaran/hapus/'.Crypt::encrypt($row->idpengeluaran)).'" class="dropdown-item" id="btnHapus">Hapus</a>'
+                : '<span class="dropdown-item disabled text-muted" title="Anda tidak memiliki hak akses Hapus"><i class="fa fa-ban mr-1"></i> Hapus</span>';
+
             $data[] = [
                 'no' => $no++,
                 'idpengeluaran' => $row->idpengeluaran,
-                'tglpengeluaran' => $row->tglpengeluaran . '<br>' . $row->nokwitansi,
+                'tglpengeluaran' => $row->tglpengeluaran.'<br>'.$row->nokwitansi,
                 'nokwitansi' => $row->nokwitansi,
                 'keterangan' => $row->keterangan,
                 'carabayar' => $row->carabayar,
@@ -127,15 +139,14 @@ class PengeluaranController extends Controller
                                     <span class="sr-only">Toggle Dropleft</span>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a href="' . url('pengeluaran/hapus/' . Crypt::encrypt($row->idpengeluaran)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
+                                        '.$btnHapus.'
                                     </div>
                                 </div>
-                                <a href="' . url('pengeluaran/edit/' . Crypt::encrypt($row->idpengeluaran)) . '" class="btn btn-warning">Edit</a>                                
+                                '.$btnEdit.'                                
                             </div>',
 
             ];
         }
-
 
         // Response untuk DataTables
         return response()->json([
@@ -159,11 +170,11 @@ class PengeluaranController extends Controller
         $inserted_date = date('Y-m-d H:i:s');
         $updated_date = date('Y-m-d H:i:s');
 
-
         if (App::isPosting($tglpengeluaran)) {
             $bulan = bulan(date('m', strtotime($tglpengeluaran)));
             $tahun = date('Y', strtotime($tglpengeluaran));
-            return response()->json(array("msg" => "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!"));
+
+            return response()->json(['msg' => "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!"]);
         }
 
         if ($carabayar != 'Transfer') {
@@ -175,19 +186,17 @@ class PengeluaranController extends Controller
             $idpengeluaran = $this->model->createID();
 
             $totalpengeluaran = 0;
-            $dataDetail = array();
+            $dataDetail = [];
             for ($i = 0; $i < count($isidatatable); $i++) {
-                $dataDetail[] = array(
+                $dataDetail[] = [
                     'idpengeluaran' => $idpengeluaran,
                     'kdakun' => $isidatatable[$i]['kdakun'],
                     'jumlahpengeluaran' => untitik($isidatatable[$i]['jumlahpengeluaran']),
-                );
+                ];
                 $totalpengeluaran += untitik($isidatatable[$i]['jumlahpengeluaran']);
             }
 
-
-
-            $data = array(
+            $data = [
                 'idpengeluaran' => $idpengeluaran,
                 'tglpengeluaran' => $tglpengeluaran,
                 'nokwitansi' => $nokwitansi,
@@ -198,24 +207,22 @@ class PengeluaranController extends Controller
                 'idpengguna' => session('idpengguna'),
                 'carabayar' => $carabayar,
                 'idbank' => $idbank,
-            );
+            ];
             $simpan = $this->model->simpanData($data, $dataDetail, $idpengeluaran);
         } else {
 
             $totalpengeluaran = 0;
-            $dataDetail = array();
+            $dataDetail = [];
             for ($i = 0; $i < count($isidatatable); $i++) {
-                $dataDetail[] = array(
+                $dataDetail[] = [
                     'idpengeluaran' => $idpengeluaran,
                     'kdakun' => $isidatatable[$i]['kdakun'],
                     'jumlahpengeluaran' => untitik($isidatatable[$i]['jumlahpengeluaran']),
-                );
+                ];
                 $totalpengeluaran += untitik($isidatatable[$i]['jumlahpengeluaran']);
             }
 
-
-
-            $data = array(
+            $data = [
                 'idpengeluaran' => $idpengeluaran,
                 'tglpengeluaran' => $tglpengeluaran,
                 'nokwitansi' => $nokwitansi,
@@ -225,19 +232,17 @@ class PengeluaranController extends Controller
                 'idpengguna' => session('idpengguna'),
                 'carabayar' => $carabayar,
                 'idbank' => $idbank,
-            );
+            ];
 
             $simpan = $this->model->updateData($data, $dataDetail, $idpengeluaran);
         }
 
         if ($simpan['status'] == 'success') {
-            return response()->json(array('success' => true));
+            return response()->json(['success' => true]);
         } else {
-            return response()->json(array('msg' => 'Data gagal disimpan! Error: ' . $simpan['message']));
+            return response()->json(['msg' => 'Data gagal disimpan! Error: '.$simpan['message']]);
         }
     }
-
-
 
     public function hapus($idpengeluaran)
     {
@@ -252,6 +257,7 @@ class PengeluaranController extends Controller
         if (App::isPosting($tglpengeluaran)) {
             $bulan = bulan(date('m', strtotime($tglpengeluaran)));
             $tahun = date('Y', strtotime($tglpengeluaran));
+
             return redirect('/pengeluaran')->with('fail', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
         }
 
@@ -259,7 +265,7 @@ class PengeluaranController extends Controller
         if ($hapus['status'] == 'success') {
             return redirect('/pengeluaran')->with('success', $hapus['message']);
         } else {
-            return redirect('/pengeluaran')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/pengeluaran')->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
 
@@ -269,6 +275,7 @@ class PengeluaranController extends Controller
         $rsPengeluaran = Pengeluaran::find($idpengeluaran);
 
         $rsDetail = $this->model->getDetail($idpengeluaran);
-        return response()->json(array('rsPengeluaran' => $rsPengeluaran, 'rsDetail' => $rsDetail));
+
+        return response()->json(['rsPengeluaran' => $rsPengeluaran, 'rsDetail' => $rsDetail]);
     }
 }

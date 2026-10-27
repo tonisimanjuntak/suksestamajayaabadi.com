@@ -4,14 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Akun1;
 use App\Models\App;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class Akun1Controller extends Controller
 {
-    var $model;
-    var $App;
+    public $model;
+
+    public $App;
 
     public function __construct()
     {
@@ -25,14 +26,16 @@ class Akun1Controller extends Controller
         $akun1 = Akun1::all();
         $data['akun1'] = $akun1;
         $data['menu'] = 'akun1';
+
         return view('akun1.index', $data);
     }
 
     public function tambah()
     {
         $data['menu'] = 'akun1';
-        $data['kdakun'] = "";
-        $data['ltambah'] = "1";
+        $data['kdakun'] = '';
+        $data['ltambah'] = '1';
+
         return view('akun1.form', $data);
     }
 
@@ -46,7 +49,8 @@ class Akun1Controller extends Controller
         }
         $data['menu'] = 'akun1';
         $data['kdakun'] = $kdakun;
-        $data['ltambah'] = "0";
+        $data['ltambah'] = '0';
+
         return view('akun1.form', $data);
     }
 
@@ -63,7 +67,7 @@ class Akun1Controller extends Controller
         }
 
         // Cek apakah ada pencarian
-        if ($request->has('search') && !empty($request->input('search.value'))) {
+        if ($request->has('search') && ! empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where('kdakun', 'LIKE', "%{$search}%")
                 ->orWhere('namaakun', 'LIKE', "%{$search}%");
@@ -87,7 +91,6 @@ class Akun1Controller extends Controller
             $query->orderBy('kdakun', 'Asc');
         }
 
-
         // Hitung total data tanpa filter
         $totalData = Akun1::count();
 
@@ -106,7 +109,19 @@ class Akun1Controller extends Controller
         // Format data untuk DataTables
         $data = [];
         $no = 1;
+        $hakaksiAktif = session('hakaksi_aktif', '');
+        $canEdit = str_contains($hakaksiAktif, 'Edit');
+        $canHapus = str_contains($hakaksiAktif, 'Hapus');
+
         foreach ($rsData as $row) {
+            $btnEdit = $canEdit
+                ? '<a href="'.url('akun1/edit/'.Crypt::encrypt($row->kdakun)).'" class="btn btn-warning">Edit</a>'
+                : '<button type="button" class="btn btn-warning" disabled title="Anda tidak memiliki hak akses Edit">Edit</button>';
+
+            $itemHapus = $canHapus
+                ? '<a href="'.url('akun1/hapus/'.Crypt::encrypt($row->kdakun)).'" class="dropdown-item" id="btnHapus">Hapus</a>'
+                : '<span class="dropdown-item disabled text-muted" title="Anda tidak memiliki hak akses Hapus">Hapus</span>';
+
             $data[] = [
                 'no' => $no++,
                 'kdakun' => $row->kdakun,
@@ -117,10 +132,10 @@ class Akun1Controller extends Controller
                                     <span class="sr-only">Toggle Dropleft</span>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a href="' . url('akun1/hapus/' . Crypt::encrypt($row->kdakun)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
+                                        '.$itemHapus.'
                                     </div>
                                 </div>
-                                <a href="' . url('akun1/edit/' . Crypt::encrypt($row->kdakun)) . '" class="btn btn-warning">Edit</a>                                
+                                '.$btnEdit.'                                
                             </div>',
 
             ];
@@ -144,21 +159,21 @@ class Akun1Controller extends Controller
         $updated_date = date('Y-m-d H:i:s');
 
         if ($ltambah == '1') {
-            $data = array(
+            $data = [
                 'kdakun' => $kdakun,
                 'namaakun' => $namaakun,
                 'inserted_date' => $inserted_date,
                 'updated_date' => $updated_date,
                 'statusaktif' => 'Aktif',
                 'levels' => '1',
-            );
+            ];
             $simpan = $this->model->simpanData($data);
         } else {
-            $data = array(
+            $data = [
                 'kdakun' => $kdakun,
                 'namaakun' => $namaakun,
                 'updated_date' => $updated_date,
-            );
+            ];
             $simpan = $this->model->updateData($data, $kdakun);
         }
 
@@ -166,11 +181,9 @@ class Akun1Controller extends Controller
         if ($simpan['status'] == 'success') {
             return redirect('/akun1')->with('success', $simpan['message']);
         } else {
-            return redirect('/akun1')->with('fail', 'Data gagal disimpan! Error: ' . $simpan['message']);
+            return redirect('/akun1')->with('fail', 'Data gagal disimpan! Error: '.$simpan['message']);
         }
     }
-
-
 
     public function hapus($kdakun)
     {
@@ -182,14 +195,14 @@ class Akun1Controller extends Controller
         }
 
         if (App::adaTurunanAkun($kdakun)) {
-            return redirect('/akun1')->with('other', 'Akun ' . $kdakun . ' mempunyai turunan akun. tidak dapat dihapus!');
+            return redirect('/akun1')->with('other', 'Akun '.$kdakun.' mempunyai turunan akun. tidak dapat dihapus!');
         }
 
         $hapus = $this->model->hapusData($kdakun, $rsAkun1);
         if ($hapus['status'] == 'success') {
             return redirect('/akun1')->with('success', $hapus['message']);
         } else {
-            return redirect('/akun1')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/akun1')->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
 
@@ -197,6 +210,7 @@ class Akun1Controller extends Controller
     {
         $kdakun = $request->input('kdakun');
         $rsAkun1 = Akun1::find($kdakun);
+
         return response()->json($rsAkun1);
     }
 }

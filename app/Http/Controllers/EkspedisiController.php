@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Ekspedisi;
-use Illuminate\Http\Request;
-use App\Models\Uploads;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\App;
+use App\Models\Ekspedisi;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 
 class EkspedisiController extends Controller
 {
-    var $model;
-    var $App;
+    public $model;
+
+    public $App;
 
     public function __construct()
     {
@@ -26,13 +26,15 @@ class EkspedisiController extends Controller
         $ekspedisi = Ekspedisi::all();
         $data['ekspedisi'] = $ekspedisi;
         $data['menu'] = 'ekspedisi';
+
         return view('ekspedisi.index', $data);
     }
 
     public function tambah()
     {
         $data['menu'] = 'ekspedisi';
-        $data['idekspedisi'] = "";
+        $data['idekspedisi'] = '';
+
         return view('ekspedisi.form', $data);
     }
 
@@ -46,6 +48,7 @@ class EkspedisiController extends Controller
         }
         $data['menu'] = 'ekspedisi';
         $data['idekspedisi'] = $idekspedisi;
+
         return view('ekspedisi.form', $data);
     }
 
@@ -60,7 +63,7 @@ class EkspedisiController extends Controller
         }
 
         // Cek apakah ada pencarian
-        if ($request->has('search') && !empty($request->input('search.value'))) {
+        if ($request->has('search') && ! empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where('idekspedisi', 'LIKE', "%{$search}%")
                 ->orWhere('namaekspedisi', 'LIKE', "%{$search}%");
@@ -84,7 +87,6 @@ class EkspedisiController extends Controller
             $query->orderBy('namaekspedisi', 'Asc');
         }
 
-
         // Hitung total data tanpa filter
         $totalData = Ekspedisi::count();
 
@@ -103,12 +105,25 @@ class EkspedisiController extends Controller
         // Format data untuk DataTables
         $data = [];
         $no = 1;
+        $hakaksiAktif = session('hakaksi_aktif', '');
+        $canEdit = str_contains($hakaksiAktif, 'Edit');
+        $canHapus = str_contains($hakaksiAktif, 'Hapus');
+
         foreach ($rsData as $row) {
             if ($row->statusaktif == 'Aktif') {
-                $statusaktif = '<span class="badge badge-success">' . $row->statusaktif . '</span>';
+                $statusaktif = '<span class="badge badge-success">'.$row->statusaktif.'</span>';
             } else {
-                $statusaktif = '<span class="badge badge-danger">' . $row->statusaktif . '</span>';
+                $statusaktif = '<span class="badge badge-danger">'.$row->statusaktif.'</span>';
             }
+
+            $btnEdit = $canEdit
+                ? '<a href="'.url('ekspedisi/edit/'.Crypt::encrypt($row->idekspedisi)).'" class="btn btn-warning">Edit</a>'
+                : '<button type="button" class="btn btn-warning" disabled title="Anda tidak memiliki hak akses Edit">Edit</button>';
+
+            $itemHapus = $canHapus
+                ? '<a href="'.url('ekspedisi/hapus/'.Crypt::encrypt($row->idekspedisi)).'" class="dropdown-item" id="btnHapus">Hapus</a>'
+                : '<span class="dropdown-item disabled text-muted" title="Anda tidak memiliki hak akses Hapus">Hapus</span>';
+
             $data[] = [
                 'no' => $no++,
                 'idekspedisi' => $row->idekspedisi,
@@ -121,10 +136,10 @@ class EkspedisiController extends Controller
                                     <span class="sr-only">Toggle Dropleft</span>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a href="' . url('ekspedisi/hapus/' . Crypt::encrypt($row->idekspedisi)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
+                                        '.$itemHapus.'
                                     </div>
                                 </div>
-                                <a href="' . url('ekspedisi/edit/' . Crypt::encrypt($row->idekspedisi)) . '" class="btn btn-warning">Edit</a>                                
+                                '.$btnEdit.'                                
                             </div>',
 
             ];
@@ -166,7 +181,7 @@ class EkspedisiController extends Controller
         if (empty($idekspedisi)) {
 
             $idekspedisi = $this->model->createID();
-            $data = array(
+            $data = [
                 'idekspedisi' => $idekspedisi,
                 'namaekspedisi' => $namaekspedisi,
                 'notelpekspedisi' => $notelpekspedisi,
@@ -180,11 +195,11 @@ class EkspedisiController extends Controller
                 'updated_date' => $updated_date,
                 'statusaktif' => 'Aktif',
                 'kdakunutang' => $kdakunutang,
-            );
+            ];
             $simpan = $this->model->simpanData($data);
         } else {
 
-            $data = array(
+            $data = [
                 'idekspedisi' => $idekspedisi,
                 'namaekspedisi' => $namaekspedisi,
                 'notelpekspedisi' => $notelpekspedisi,
@@ -197,7 +212,7 @@ class EkspedisiController extends Controller
                 'updated_date' => $updated_date,
                 'statusaktif' => $statusaktif,
                 'kdakunutang' => $kdakunutang,
-            );
+            ];
             $simpan = $this->model->updateData($data, $idekspedisi);
         }
 
@@ -205,11 +220,9 @@ class EkspedisiController extends Controller
         if ($simpan['status'] == 'success') {
             return redirect('/ekspedisi')->with('success', $simpan['message']);
         } else {
-            return redirect('/ekspedisi')->with('fail', 'Data gagal disimpan! Error: ' . $simpan['message']);
+            return redirect('/ekspedisi')->with('fail', 'Data gagal disimpan! Error: '.$simpan['message']);
         }
     }
-
-
 
     public function hapus($idekspedisi)
     {
@@ -224,7 +237,7 @@ class EkspedisiController extends Controller
         if ($hapus['status'] == 'success') {
             return redirect('/ekspedisi')->with('success', $hapus['message']);
         } else {
-            return redirect('/ekspedisi')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/ekspedisi')->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
 
@@ -232,6 +245,7 @@ class EkspedisiController extends Controller
     {
         $idekspedisi = $request->input('idekspedisi');
         $rsEkspedisi = Ekspedisi::find($idekspedisi);
+
         return response()->json($rsEkspedisi);
     }
 

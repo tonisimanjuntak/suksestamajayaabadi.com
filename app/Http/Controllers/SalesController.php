@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Uploads;
-use App\Models\Sales;
-use App\Models\Wilayah;
-use Illuminate\Http\Request;
 use App\Models\App;
 use App\Models\Konsumen;
-use Illuminate\Support\Facades\Crypt;
+use App\Models\Sales;
+use App\Models\Uploads;
+use App\Models\Wilayah;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 
 class SalesController extends Controller
 {
-    var $model;
-    var $App;
+    public $model;
+
+    public $App;
 
     public function __construct()
     {
@@ -28,6 +29,7 @@ class SalesController extends Controller
         $sales = Sales::all();
         $data['sales'] = $sales;
         $data['menu'] = 'sales';
+
         return view('sales.index', $data);
     }
 
@@ -35,8 +37,9 @@ class SalesController extends Controller
     {
         $rsWilayah = Wilayah::all();
         $data['menu'] = 'sales';
-        $data['idsales'] = "";
+        $data['idsales'] = '';
         $data['rsWilayah'] = $rsWilayah;
+
         return view('sales.form', $data);
     }
 
@@ -52,6 +55,7 @@ class SalesController extends Controller
         $data['menu'] = 'sales';
         $data['idsales'] = $idsales;
         $data['rsWilayah'] = $rsWilayah;
+
         return view('sales.form', $data);
     }
 
@@ -66,7 +70,7 @@ class SalesController extends Controller
         }
 
         // Cek apakah ada pencarian
-        if ($request->has('search') && !empty($request->input('search.value'))) {
+        if ($request->has('search') && ! empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where('idsales', 'LIKE', "%{$search}%")
                 ->orWhere('namasales', 'LIKE', "%{$search}%");
@@ -90,7 +94,6 @@ class SalesController extends Controller
             $query->orderBy('namasales', 'Asc');
         }
 
-
         // Hitung total data tanpa filter
         $totalData = Sales::count();
 
@@ -109,19 +112,32 @@ class SalesController extends Controller
         // Format data untuk DataTables
         $data = [];
         $no = 1;
+        $hakaksiAktif = session('hakaksi_aktif', '');
+        $canEdit = str_contains($hakaksiAktif, 'Edit');
+        $canHapus = str_contains($hakaksiAktif, 'Hapus');
+
         foreach ($rsData as $row) {
             if ($row->statusaktif == 'Aktif') {
-                $statusaktif = '<span class="badge badge-success">' . $row->statusaktif . '</span>';
+                $statusaktif = '<span class="badge badge-success">'.$row->statusaktif.'</span>';
             } else {
-                $statusaktif = '<span class="badge badge-danger">' . $row->statusaktif . '</span>';
+                $statusaktif = '<span class="badge badge-danger">'.$row->statusaktif.'</span>';
             }
+
+            $btnEdit = $canEdit
+                ? '<a href="'.url('sales/edit/'.Crypt::encrypt($row->idsales)).'" class="btn btn-warning">Edit</a>'
+                : '<button type="button" class="btn btn-warning" disabled title="Anda tidak memiliki hak akses Edit">Edit</button>';
+
+            $itemHapus = $canHapus
+                ? '<a href="'.url('sales/hapus/'.Crypt::encrypt($row->idsales)).'" class="dropdown-item" id="btnHapus">Hapus</a>'
+                : '<span class="dropdown-item disabled text-muted" title="Anda tidak memiliki hak akses Hapus">Hapus</span>';
+
             $data[] = [
                 'no' => $no++,
                 'idsales' => $row->idsales,
                 'namasales' => $row->namasales,
                 'npwp' => $row->npwp,
-                'tempatlahir' => $row->tempatlahir . '<br>' . $row->tgllahir,
-                'email' => $row->email . '<br>' . $row->nowa,
+                'tempatlahir' => $row->tempatlahir.'<br>'.$row->tgllahir,
+                'email' => $row->email.'<br>'.$row->nowa,
                 'statusaktif' => $statusaktif,
                 'action' => '<div class="btn-group btn-block">
                                 <div class="btn-group dropleft" role="group">
@@ -129,10 +145,10 @@ class SalesController extends Controller
                                     <span class="sr-only">Toggle Dropleft</span>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a href="' . url('sales/hapus/' . Crypt::encrypt($row->idsales)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
+                                        '.$itemHapus.'
                                     </div>
                                 </div>
-                                <a href="' . url('sales/edit/' . Crypt::encrypt($row->idsales)) . '" class="btn btn-warning">Edit</a>                                
+                                '.$btnEdit.'                                
                             </div>',
 
             ];
@@ -175,15 +191,14 @@ class SalesController extends Controller
         $filekontrak = $request->file('filekontrak');
         $filekontrak_lama = $request->get('filekontrak_lama');
 
-        
         if (empty($tglkontrak)) {
-            $tglkontrak = NULL;
+            $tglkontrak = null;
         } else {
             $tglkontrak = tglymd($tglkontrak);
         }
 
         if (empty($email)) {
-            $email = NULL;
+            $email = null;
         }
 
         $filekontrak_name = '';
@@ -191,24 +206,22 @@ class SalesController extends Controller
         if ($uploads['status'] == 'success') {
             $filekontrak_name = $uploads['file_name'];
         } else {
-            return redirect('/sales')->with('fail', 'Data gagal disimpan! Error: ' . $uploads['message']);
+            return redirect('/sales')->with('fail', 'Data gagal disimpan! Error: '.$uploads['message']);
         }
-
-
 
         if (empty($idsales)) {
             $idsales = $this->model->createID($namasales);
 
-            $salesWilayah = array();
+            $salesWilayah = [];
             for ($i = 0; $i < count($idwilayah); $i++) {
 
-                $salesWilayah[] = array(
+                $salesWilayah[] = [
                     'idsales' => $idsales,
                     'idwilayah' => $idwilayah[$i],
-                );
+                ];
             }
 
-            $data = array(
+            $data = [
                 'idsales' => $idsales,
                 'namasales' => $namasales,
                 'jeniskelamin' => $jeniskelamin,
@@ -228,20 +241,20 @@ class SalesController extends Controller
                 'updated_date' => $updated_date,
                 'statusaktif' => 'Aktif',
                 'targetpenjualan' => $targetpenjualan,
-            );
+            ];
             $simpan = $this->model->simpanData($data, $salesWilayah);
         } else {
 
-            $salesWilayah = array();
+            $salesWilayah = [];
             for ($i = 0; $i < count($idwilayah); $i++) {
 
-                $salesWilayah[] = array(
+                $salesWilayah[] = [
                     'idsales' => $idsales,
                     'idwilayah' => $idwilayah[$i],
-                );
+                ];
             }
 
-            $data = array(
+            $data = [
                 'idsales' => $idsales,
                 'namasales' => $namasales,
                 'jeniskelamin' => $jeniskelamin,
@@ -260,7 +273,7 @@ class SalesController extends Controller
                 'updated_date' => $updated_date,
                 'statusaktif' => $statusaktif,
                 'targetpenjualan' => $targetpenjualan,
-            );
+            ];
 
             // dd($data);
 
@@ -271,11 +284,9 @@ class SalesController extends Controller
         if ($simpan['status'] == 'success') {
             return redirect('/sales')->with('success', $simpan['message']);
         } else {
-            return redirect('/sales')->with('fail', 'Data gagal disimpan! Error: ' . $simpan['message']);
+            return redirect('/sales')->with('fail', 'Data gagal disimpan! Error: '.$simpan['message']);
         }
     }
-
-
 
     public function hapus($idsales)
     {
@@ -287,13 +298,13 @@ class SalesController extends Controller
         }
         $filekontrak = $rsSales->filekontrak;
 
-
         $hapus = $this->model->hapusData($idsales, $rsSales);
         if ($hapus['status'] == 'success') {
             Uploads::hapusFile('uploads/sales/kontrak', $filekontrak);
+
             return redirect('/sales')->with('success', $hapus['message']);
         } else {
-            return redirect('/sales')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/sales')->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
 
@@ -302,7 +313,7 @@ class SalesController extends Controller
         $idsales = $request->input('idsales');
         $rsSales = Sales::find($idsales);
         $rsWilayah = $this->model->getWilayahSales($idsales);
-        $dataWilayah = array();
+        $dataWilayah = [];
 
         if ($rsWilayah) {
             foreach ($rsWilayah as $rowWilayah) {
@@ -314,8 +325,7 @@ class SalesController extends Controller
             }
         }
 
-
-        return response()->json(array('rsSales' => $rsSales, 'dataWilayah' => $dataWilayah));
+        return response()->json(['rsSales' => $rsSales, 'dataWilayah' => $dataWilayah]);
     }
 
     public function searchSales(Request $request)
@@ -332,7 +342,7 @@ class SalesController extends Controller
         $formattedResults = $results->map(function ($item) {
             return [
                 'id' => $item->idsales,
-                'text' => $item->namasales . ' (NPWP: ' . $item->npwp . ')',
+                'text' => $item->namasales.' (NPWP: '.$item->npwp.')',
             ];
         });
 
@@ -345,12 +355,13 @@ class SalesController extends Controller
         $rsKonsumen = Konsumen::find($idkonsumen);
         $idwilayahkonsumen = $rsKonsumen->idwilayah;
         $idsales = '';
-        if (!empty($idwilayahkonsumen)) {
+        if (! empty($idwilayahkonsumen)) {
             $rsSales = $this->model->getSalesByWilayah($idwilayahkonsumen);
             if ($rsSales) {
                 $idsales = $rsSales->idsales;
             }
         }
+
         return response()->json($idsales);
     }
 }

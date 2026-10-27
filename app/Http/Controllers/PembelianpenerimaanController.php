@@ -2,22 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Uploads;
-
+use App\Helpers\PpnHelper;
+use App\Models\App;
 use App\Models\Barang;
-use App\Models\Supplier;
-use App\Models\Pembelianpenerimaan;
-use App\Models\Pembelian;
 use App\Models\Hutang;
+use App\Models\Pembelian;
+use App\Models\Pembelianpenerimaan;
+use App\Models\Supplier;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use App\Models\App;
-use App\Helpers\PpnHelper;
 
 class PembelianpenerimaanController extends Controller
 {
-    var $model;
+    public $model;
 
     public function __construct()
     {
@@ -30,6 +28,7 @@ class PembelianpenerimaanController extends Controller
         $pembelian = $this->model->allView();
         $data['pembelianpenerimaan'] = $pembelian;
         $data['menu'] = 'pembelianpenerimaan';
+
         return view('pembelianpenerimaan.index', $data);
     }
 
@@ -37,7 +36,7 @@ class PembelianpenerimaanController extends Controller
     {
         $data['rsBarang'] = Barang::all();
         $data['menu'] = 'pembelianpenerimaan';
-        $data['idpembelian'] = "";
+        $data['idpembelian'] = '';
 
         return view('pembelianpenerimaan.form', $data);
     }
@@ -54,9 +53,9 @@ class PembelianpenerimaanController extends Controller
         $data['rsSupplier'] = Supplier::all();
         $data['menu'] = 'pembelianpenerimaan';
         $data['idpembelian'] = $idpembelian;
+
         return view('pembelianpenerimaan.form', $data);
     }
-
 
     public function listdata(Request $request)
     {
@@ -68,17 +67,17 @@ class PembelianpenerimaanController extends Controller
         $idsupplier = $request->input('idsupplier');
         $carabayar = $request->input('carabayar');
 
-        $query->whereBetween("tglfaktur", [$tglawal, $tglakhir]);
+        $query->whereBetween('tglfaktur', [$tglawal, $tglakhir]);
         if ($idsupplier != '' && $idsupplier != null) {
             $query->where('idsupplier', $idsupplier);
         }
 
-        if (!empty($carabayar)) {
+        if (! empty($carabayar)) {
             $query->where('carabayar', $carabayar);
         }
 
         // Cek apakah ada pencarian
-        if ($request->has('search') && !empty($request->input('search.value'))) {
+        if ($request->has('search') && ! empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where(function ($groupwhere) use ($search) {
                 $groupwhere->where('idpembelian', 'LIKE', "%{$search}%")
@@ -108,7 +107,6 @@ class PembelianpenerimaanController extends Controller
             $query->orderBy('idpembelian', 'Desc');
         }
 
-
         // Hitung total data tanpa filter
         $totalData = Pembelianpenerimaan::count();
 
@@ -125,14 +123,21 @@ class PembelianpenerimaanController extends Controller
             ->get();
 
         // Format data untuk DataTables
+        $hakaksiAktif = session('hakaksi_aktif', '');
+        $canHapus = str_contains($hakaksiAktif, 'Hapus');
+
         $data = [];
         $no = 1;
         foreach ($rsData as $row) {
 
+            $btnHapus = $canHapus
+                ? '<a href="'.url('pembelianpenerimaan/hapus/'.Crypt::encrypt($row->idpembelian)).'" class="dropdown-item" id="btnHapus">Hapus</a>'
+                : '<span class="dropdown-item disabled text-muted" title="Anda tidak memiliki hak akses Hapus"><i class="fa fa-ban mr-1"></i> Hapus</span>';
+
             $data[] = [
                 'no' => $no++,
                 'idpembelian' => $row->idpembelian,
-                'tglfaktur' => $row->tglfaktur . '<br>' . $row->nofaktur,
+                'tglfaktur' => $row->tglfaktur.'<br>'.$row->nofaktur,
                 'namasupplier' => $row->namasupplier,
                 'keterangan' => $row->keterangan,
                 'carabayar' => $row->carabayar,
@@ -145,15 +150,14 @@ class PembelianpenerimaanController extends Controller
                                     <span class="sr-only">Toggle Dropleft</span>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a href="' . url('pembelianpenerimaan/hapus/' . Crypt::encrypt($row->idpembelian)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
+                                        '.$btnHapus.'
                                     </div>
                                 </div>
-                                <a href="#" class="btn btn-info" data-idpembelian="' . $row->idpembelian . '" id="btnLihatPenerimaan">Lihat</a>
+                                <a href="#" class="btn btn-info" data-idpembelian="'.$row->idpembelian.'" id="btnLihatPenerimaan">Lihat</a>
                             </div>',
 
             ];
         }
-
 
         // Response untuk DataTables
         return response()->json([
@@ -193,11 +197,11 @@ class PembelianpenerimaanController extends Controller
         $inserted_date = date('Y-m-d H:i:s');
         $updated_date = date('Y-m-d H:i:s');
 
-
         if (App::isPosting($tglfaktur)) {
             $bulan = bulan(date('m', strtotime($tglfaktur)));
             $tahun = date('Y', strtotime($tglfaktur));
-            return response()->json(array("msg" => "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!"));
+
+            return response()->json(['msg' => "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!"]);
         }
 
         if ($carabayar != 'Transfer' && $carabayar != 'Giro') {
@@ -208,38 +212,38 @@ class PembelianpenerimaanController extends Controller
             $nobilyetgiro = null;
         }
 
-        if ($totalpotongan == "") {
+        if ($totalpotongan == '') {
             $totalpotongan = 0;
         }
 
-        if ($biayapengiriman == "") {
+        if ($biayapengiriman == '') {
             $biayapengiriman = 0;
         }
 
         //cek jika sudah dilakukan pembayaran hutang
         if (Hutang::hutangSudahDibayar($idpembelian)) {
-            return response()->json(array('msg' => 'Hutang untuk faktur ini sudah dilakukan pembayaran sehingga tidak dapat diubah lagi!'));
+            return response()->json(['msg' => 'Hutang untuk faktur ini sudah dilakukan pembayaran sehingga tidak dapat diubah lagi!']);
         }
 
         //Jika nanti ada biaya lain di luar biaya pengiriman
         // $totalBiayaLainnya = $biayapengiriman;
 
         //Total harga beli detail tidak ambil dari total faktur karena total faktur potongan dan ditambah biaya pengiriman
-        $totalSubTotalBeliDetail = array_sum(array_map(function($item) {
+        $totalSubTotalBeliDetail = array_sum(array_map(function ($item) {
             return (float) untitik($item['subtotalbeli']);
         }, $isidatatable));
-        
-        $dataDetail = array();
+
+        $dataDetail = [];
         $runningTotalPpn = 0;
         for ($i = 0; $i < count($isidatatable); $i++) {
             $subTotalBeli = untitik($isidatatable[$i]['subtotalbeli']);
             $hargaSatuan = untitik($isidatatable[$i]['hargasatuan']);
             $jumlahDiskon = untitik($isidatatable[$i]['jumlahdiskon']);
             $jumlahBeli = untitik($isidatatable[$i]['jumlahbeli']);
-            
+
             // Proporsional Per 1 Item Barang
             $rasioProporsi = ($totalSubTotalBeliDetail > 0) ? ($subTotalBeli / $totalSubTotalBeliDetail) : 0;
-            
+
             // Hitung PPN Proporsional per item
             // Jika ini item terakhir, gunakan sisa PPN untuk menghindari selisih pembulatan
             if ($i == count($isidatatable) - 1) {
@@ -252,7 +256,7 @@ class PembelianpenerimaanController extends Controller
             $jumlahPpnSatuan = ($jumlahBeli > 0) ? PpnHelper::roundPPN($jumlahPpnItem / $jumlahBeli) : 0;
             $hargaDppSatuan = $hargaSatuan - $jumlahDiskon - $jumlahPpnSatuan;
 
-            $dataDetail[] = array(
+            $dataDetail[] = [
                 'idpembelian' => $idpembelian,
                 'iddetail' => $isidatatable[$i]['iddetail'],
                 'idbarang' => $isidatatable[$i]['idbarang'],
@@ -265,11 +269,11 @@ class PembelianpenerimaanController extends Controller
                 'jenisdiskon' => $isidatatable[$i]['jenisdiskon'],
                 'diskonpersen1' => $isidatatable[$i]['diskonpersen1'],
                 'diskonpersen2' => $isidatatable[$i]['diskonpersen2'],
-                'diskonpersen3' => $isidatatable[$i]['diskonpersen3']
-            );
+                'diskonpersen3' => $isidatatable[$i]['diskonpersen3'],
+            ];
         }
 
-        $data = array(
+        $data = [
             'idpembelian' => $idpembelian,
             'nofaktur' => $nofaktur,
             'tglfaktur' => $tglfaktur,
@@ -291,18 +295,16 @@ class PembelianpenerimaanController extends Controller
             'nobilyetgiro' => $nobilyetgiro,
             'tglbilyetgiro' => $tglbilyetgiro,
             'statuspenerimaan' => 'Sudah Diterima',
-        );
+        ];
 
         $simpan = $this->model->updateData($data, $dataDetail, $idpembelian);
 
         if ($simpan['status'] == 'success') {
-            return response()->json(array('success' => true));
+            return response()->json(['success' => true]);
         } else {
-            return response()->json(array('msg' => 'Data gagal disimpan! Error: ' . $simpan['message']));
+            return response()->json(['msg' => 'Data gagal disimpan! Error: '.$simpan['message']]);
         }
     }
-
-
 
     public function hapus($idpembelian)
     {
@@ -317,6 +319,7 @@ class PembelianpenerimaanController extends Controller
         if (App::isPosting($tglfaktur)) {
             $bulan = bulan(date('m', strtotime($tglfaktur)));
             $tahun = date('Y', strtotime($tglfaktur));
+
             return redirect('/pembelianpenerimaan')->with('fail', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
         }
 
@@ -329,7 +332,7 @@ class PembelianpenerimaanController extends Controller
         if ($hapus['status'] == 'success') {
             return redirect('/pembelianpenerimaan')->with('success', $hapus['message']);
         } else {
-            return redirect('/pembelianpenerimaan')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/pembelianpenerimaan')->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
 
@@ -339,7 +342,8 @@ class PembelianpenerimaanController extends Controller
         $rsPembelian = Pembelianpenerimaan::find($idpembelian);
 
         $rsDetail = $this->model->getDetail($idpembelian);
-        return response()->json(array('rsPembelian' => $rsPembelian, 'rsDetail' => $rsDetail));
+
+        return response()->json(['rsPembelian' => $rsPembelian, 'rsDetail' => $rsDetail]);
     }
 
     public function searchFaktur(Request $request)
@@ -357,7 +361,7 @@ class PembelianpenerimaanController extends Controller
         $formattedResults = $results->map(function ($item) {
             return [
                 'id' => $item->idpembelian,
-                'text' => $item->tglfaktur . ' || No Faktur: ' . $item->nofaktur,
+                'text' => $item->tglfaktur.' || No Faktur: '.$item->nofaktur,
             ];
         });
 
@@ -378,7 +382,7 @@ class PembelianpenerimaanController extends Controller
         $formattedResults = $results->map(function ($item) {
             return [
                 'id' => $item->idpembelian,
-                'text' => $item->tglfaktur . ' || No Faktur: ' . $item->nofaktur,
+                'text' => $item->tglfaktur.' || No Faktur: '.$item->nofaktur,
             ];
         });
 
@@ -401,7 +405,7 @@ class PembelianpenerimaanController extends Controller
         $formattedResults = $results->map(function ($item) {
             return [
                 'id' => $item->idpembelian,
-                'text' => $item->idpembelian . ' || Tgl PO: ' . tgldmy($item->tgl_po),
+                'text' => $item->idpembelian.' || Tgl PO: '.tgldmy($item->tgl_po),
             ];
         });
 
@@ -422,6 +426,7 @@ class PembelianpenerimaanController extends Controller
         $idpembelian = $request->input('idpembelian');
         $idbarang = $request->input('idbarang');
         $rowDetail = $this->model->getDetailId($idpembelian, $idbarang);
+
         return response()->json(['rowDetail' => $rowDetail]);
     }
 
@@ -430,6 +435,7 @@ class PembelianpenerimaanController extends Controller
         $idpembelian = $request->input('idpembelian');
         $rsPembelian = Pembelianpenerimaan::find($idpembelian);
         $rsPembelianDetail = $this->model->getDetail($idpembelian);
+
         return response()->json(['rsPembelian' => $rsPembelian, 'rsPembelianDetail' => $rsPembelianDetail]);
     }
 }
