@@ -178,3 +178,4 @@
 [2026-10-23] [update] Login - Redesain halaman login modern & informatif (split-screen, jam digital real-time, show/hide password, deteksi Caps Lock, dan modal bantuan IT)
 [2026-10-23] [feature] Login - Integrasi Google reCAPTCHA v2 (I'm not a robot checkbox) berbasis konfigurasi tabel settings (google_recaptcha_v2_enabled, google_recaptcha_v2_site_key, google_recaptcha_v2_secret_key) dengan auto-reset jika login gagal
 [2026-10-23] [feature] Pemeliharaan System - Tambah fitur Force Logout Seluruh Pengguna di menu Pemeliharaan System (menghapus sesi aktif seluruh pengguna lain di database & file session, mempertahankan sesi developer tetap login, dan mencatat riwayat aktifitas audit trail)
+[2026-10-26] [feature] Laporan Perubahan Modal - Pembuatan modul Laporan Perubahan Modal dengan controller LapperubahanmodalController, model Lapperubahanmodal, filter periode tanggal, cetak PDF (TCPDF), dan ekspor Excel bersumber dari tabel jurnal dan jurnaldetail
