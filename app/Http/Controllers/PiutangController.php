@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Piutang;
-use App\Models\Penjualan;
+use App\Models\App;
 use App\Models\Konsumen;
+use App\Models\Penjualan;
+use App\Models\Piutang;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use App\Models\App;
 use TCPDF;
 
 class PiutangController extends Controller
 {
-    var $model;
+    public $model;
 
     public function __construct()
     {
@@ -24,13 +24,15 @@ class PiutangController extends Controller
     public function index()
     {
         $data['menu'] = 'piutang';
+
         return view('piutang.index', $data);
     }
 
     public function tambah()
     {
         $data['menu'] = 'piutang';
-        $data['idpiutang'] = "";
+        $data['idpiutang'] = '';
+
         return view('piutang.form', $data);
     }
 
@@ -47,6 +49,7 @@ class PiutangController extends Controller
         if (App::isPosting($tglpiutang)) {
             $bulan = bulan(date('m', strtotime($tglpiutang)));
             $tahun = date('Y', strtotime($tglpiutang));
+
             return redirect('/piutang')->with('other', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
         }
 
@@ -57,6 +60,7 @@ class PiutangController extends Controller
 
         $data['menu'] = 'piutang';
         $data['idpiutang'] = $idpiutang;
+
         return view('piutang.form', $data);
     }
 
@@ -77,9 +81,9 @@ class PiutangController extends Controller
         $data['rsPiutang'] = $rsPiutang;
         $data['rsPiutangDetail'] = $rsPiutangDetail;
         $data['sisaPiutang'] = $sisaPiutang;
+
         return view('piutang.detail', $data);
     }
-
 
     public function listdata(Request $request)
     {
@@ -91,12 +95,12 @@ class PiutangController extends Controller
         $idkonsumen = $request->input('idkonsumen');
         $statusbayar = $request->input('statusbayar');
 
-        $query->whereBetween("tglpiutang", [$tglawal, $tglakhir]);
+        $query->whereBetween('tglpiutang', [$tglawal, $tglakhir]);
         if ($idkonsumen != '' && $idkonsumen != null) {
             $query->where('idkonsumen', $idkonsumen);
         }
 
-        if (!empty($statusbayar)) {
+        if (! empty($statusbayar)) {
             if ($statusbayar == 'Belum Lunas') {
                 $query->whereRaw('totaldebet > totalkredit');
             } else {
@@ -105,7 +109,7 @@ class PiutangController extends Controller
         }
 
         // Cek apakah ada pencarian
-        if ($request->has('search') && !empty($request->input('search.value'))) {
+        if ($request->has('search') && ! empty($request->input('search.value'))) {
             $search = $request->input('search.value');
             $query->where(function ($groupwhere) use ($search) {
                 $groupwhere->where('idpiutang', 'LIKE', "%{$search}%")
@@ -134,7 +138,6 @@ class PiutangController extends Controller
             $query->orderBy('idpiutang', 'Desc');
         }
 
-
         // Hitung total data tanpa filter
         $totalData = Piutang::count();
 
@@ -153,6 +156,10 @@ class PiutangController extends Controller
         // Format data untuk DataTables
         $data = [];
         $no = 1;
+        $hakaksi = session('hakaksi_aktif', '');
+        $canEdit = str_contains(strtolower($hakaksi), 'edit') || session('idpengguna') == '9999999999';
+        $canHapus = str_contains(strtolower($hakaksi), 'hapus') || session('idpengguna') == '9999999999';
+
         foreach ($rsData as $row) {
 
             if ($row->totaldebet <= $row->totalkredit) {
@@ -161,6 +168,10 @@ class PiutangController extends Controller
                 $statuslunas = '<span class="badge badge-danger">Belum Lunas</span>';
             }
 
+            $btnBayar = $canEdit
+                ? '<a href="'.url('piutang/detail/'.Crypt::encrypt($row->idpiutang)).'" class="btn btn-primary">Bayar</a>'
+                : '<button type="button" class="btn btn-primary" disabled>Bayar</button>';
+
             if ($row->jenissumber == 'Penjualan') {
                 $btnAksi = '<div class="btn-group btn-block">
                                 <div class="btn-group dropleft" role="group">
@@ -168,34 +179,38 @@ class PiutangController extends Controller
                                     <span class="sr-only">Toggle Dropleft</span>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a href="' . url('piutang/cetakBukuPiutang/' . Crypt::encrypt($row->idpiutang)) . '" class="dropdown-item" target="_blank">Cetak Buku Hutang</a>
+                                        <a href="'.url('piutang/cetakBukuPiutang/'.Crypt::encrypt($row->idpiutang)).'" class="dropdown-item" target="_blank">Cetak Buku Hutang</a>
                                     </div>
                                 </div>
-                                <a href="' . url('piutang/detail/' . Crypt::encrypt($row->idpiutang)) . '" class="btn btn-primary">Bayar</a>                                
+                                '.$btnBayar.'                                
                             </div>';
             } else {
+                $btnEditItem = $canEdit ? '<a href="'.url('piutang/edit/'.Crypt::encrypt($row->idpiutang)).'" class="dropdown-item">Edit</a>' : '';
+                $btnHapusItem = $canHapus ? '<a href="'.url('piutang/hapusList/'.Crypt::encrypt($row->idpiutang)).'" class="dropdown-item" id="btnHapus">Hapus</a>' : '';
+                $divider = ($canEdit || $canHapus) ? '<div class="dropdown-divider"></div>' : '';
+
                 $btnAksi = '<div class="btn-group btn-block">
                                 <div class="btn-group dropleft" role="group">
                                     <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <span class="sr-only">Toggle Dropleft</span>
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a href="' . url('piutang/cetakBukuPiutang/' . Crypt::encrypt($row->idpiutang)) . '" class="dropdown-item" target="_blank">Cetak Buku Hutang</a>
-                                        <div class="dropdown-divider"></div>
-                                        <a href="' . url('piutang/edit/' . Crypt::encrypt($row->idpiutang)) . '" class="dropdown-item">Edit</a>
-                                        <a href="' . url('piutang/hapusList/' . Crypt::encrypt($row->idpiutang)) . '" class="dropdown-item" id="btnHapus">Hapus</a>
+                                        <a href="'.url('piutang/cetakBukuPiutang/'.Crypt::encrypt($row->idpiutang)).'" class="dropdown-item" target="_blank">Cetak Buku Hutang</a>
+                                        '.$divider.'
+                                        '.$btnEditItem.'
+                                        '.$btnHapusItem.'
                                     </div>
                                 </div>
-                                <a href="' . url('piutang/detail/' . Crypt::encrypt($row->idpiutang)) . '" class="btn btn-primary">Bayar</a>                                
+                                '.$btnBayar.'                                
                             </div>';
             }
 
             $data[] = [
                 'no' => $no++,
-                'idpiutang' => $row->idpiutang . '<br>' . tgldmy($row->tglpiutang),
-                'noinvoice' => (!empty($row->noinvoice) ? $row->noinvoice : '-'),
-                'tgljatuhtempo' => tgldmy($row->tgljatuhtempo) . '<br>' . $row->namajenispiutang . ' (' . $row->jatuhtempo . ' hari)',
-                'namakonsumen' => $row->namakonsumen . '<br><i>' . $row->keterangan . '</i>',
+                'idpiutang' => $row->idpiutang.'<br>'.tgldmy($row->tglpiutang),
+                'noinvoice' => (! empty($row->noinvoice) ? $row->noinvoice : '-'),
+                'tgljatuhtempo' => tgldmy($row->tgljatuhtempo).'<br>'.$row->namajenispiutang.' ('.$row->jatuhtempo.' hari)',
+                'namakonsumen' => $row->namakonsumen.'<br><i>'.$row->keterangan.'</i>',
                 'totaldebet' => format_rupiah($row->totaldebet),
                 'totalkredit' => format_rupiah($row->totalkredit),
                 'statuslunas' => $statuslunas,
@@ -203,7 +218,6 @@ class PiutangController extends Controller
 
             ];
         }
-
 
         // Response untuk DataTables
         return response()->json([
@@ -225,10 +239,10 @@ class PiutangController extends Controller
         $inserted_date = date('Y-m-d H:i:s');
         $updated_date = date('Y-m-d H:i:s');
 
-
         if (App::isPosting($tglpiutang)) {
             $bulan = bulan(date('m', strtotime($tglpiutang)));
             $tahun = date('Y', strtotime($tglpiutang));
+
             return redirect('/piutang')->with('other', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
         }
 
@@ -238,7 +252,7 @@ class PiutangController extends Controller
             $idpiutangdetail = $this->model->createIDDetail($idpiutang);
             $tgljatuhtempo = App::createTglJatuhTempo($idjenispiutang, $tglpiutang);
 
-            $data = array(
+            $data = [
                 'idpiutang' => $idpiutang,
                 'idjenispiutang' => $idjenispiutang,
                 'tglpiutang' => $tglpiutang,
@@ -249,9 +263,9 @@ class PiutangController extends Controller
                 'totalkredit' => 0,
                 'jenissumber' => 'Non Penjualan',
                 'keterangan' => $keterangan,
-            );
+            ];
 
-            $dataDetail = array(
+            $dataDetail = [
                 'idpiutangdetail' => $idpiutangdetail,
                 'idpiutang' => $idpiutang,
                 'tglpiutang' => $tglpiutang,
@@ -261,7 +275,7 @@ class PiutangController extends Controller
                 'updated_date' => $updated_date,
                 'idpengguna' => session('idpengguna'),
                 'jenis' => 'Piutang',
-            );
+            ];
 
             $simpan = $this->model->simpanTambahPiutang($data, $dataDetail, $idpiutang);
         } else {
@@ -269,7 +283,7 @@ class PiutangController extends Controller
             $idpiutangdetail = $this->model->createIDDetail($idpiutang);
             $tgljatuhtempo = App::createTglJatuhTempo($idjenispiutang, $tglpiutang);
 
-            $data = array(
+            $data = [
                 'idpiutang' => $idpiutang,
                 'idjenispiutang' => $idjenispiutang,
                 'tglpiutang' => $tglpiutang,
@@ -280,9 +294,9 @@ class PiutangController extends Controller
                 'totalkredit' => 0,
                 'jenissumber' => 'Non Penjualan',
                 'keterangan' => $keterangan,
-            );
+            ];
 
-            $dataDetail = array(
+            $dataDetail = [
                 'idpiutangdetail' => $idpiutangdetail,
                 'idpiutang' => $idpiutang,
                 'tglpiutang' => $tglpiutang,
@@ -292,16 +306,15 @@ class PiutangController extends Controller
                 'updated_date' => $updated_date,
                 'idpengguna' => session('idpengguna'),
                 'jenis' => 'Piutang',
-            );
+            ];
 
             $simpan = $this->model->updateTambahPiutang($data, $dataDetail, $idpiutang);
         }
 
-
         if ($simpan['status'] == 'success') {
             return redirect('/piutang')->with('success', $simpan['message']);
         } else {
-            return redirect('/piutang')->with('fail', 'Data gagal disimpan! Error: ' . $simpan['message']);
+            return redirect('/piutang')->with('fail', 'Data gagal disimpan! Error: '.$simpan['message']);
         }
     }
 
@@ -317,11 +330,11 @@ class PiutangController extends Controller
         $inserted_date = date('Y-m-d H:i:s');
         $updated_date = date('Y-m-d H:i:s');
 
-
         if (App::isPosting($tglpiutang)) {
             $bulan = bulan(date('m', strtotime($tglpiutang)));
             $tahun = date('Y', strtotime($tglpiutang));
-            return response()->json(array("msg" => "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!"));
+
+            return response()->json(['msg' => "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!"]);
         }
 
         if ($carabayar != 'Transfer' && $carabayar != 'Giro') {
@@ -332,26 +345,23 @@ class PiutangController extends Controller
             $nobilyetgiro = null;
         }
 
-
-
         $idpiutangdetail = $this->model->createIDDetail($idpiutang);
-
 
         $rsPiutang = Piutang::find($idpiutang);
         $idpenjualan = $rsPiutang->idpenjualan;
-        
+
         //create kwitansi
-        if (!empty($idpenjualan) && $idpenjualan != null) {
+        if (! empty($idpenjualan) && $idpenjualan != null) {
             $nokwitansi = Penjualan::createKwitansi($idpenjualan);
-        }else{
+        } else {
             $nokwitansi = null;
         }
 
         if (($rsPiutang->totaldebet - $rsPiutang->totalkredit) < $kredit) {
-            return redirect('/piutang/detail/' . Crypt::encrypt($idpiutang))->with('fail', 'Jumlah yang dibayar tidak boleh melebihi sisa piutang!');
+            return redirect('/piutang/detail/'.Crypt::encrypt($idpiutang))->with('fail', 'Jumlah yang dibayar tidak boleh melebihi sisa piutang!');
         }
 
-        $data = array(
+        $data = [
             'idpiutangdetail' => $idpiutangdetail,
             'idpiutang' => $idpiutang,
             'tglpiutang' => $tglpiutang,
@@ -365,17 +375,15 @@ class PiutangController extends Controller
             'nobilyetgiro' => $nobilyetgiro,
             'jenis' => 'Pembayaran Piutang',
             'nokwitansi' => $nokwitansi,
-        );
+        ];
         $simpan = $this->model->simpanData($data, $idpiutang, $rsPiutang, $nokwitansi);
 
         if ($simpan['status'] == 'success') {
-            return redirect('/piutang/detail/' . Crypt::encrypt($idpiutang))->with('success', $simpan['message']);
+            return redirect('/piutang/detail/'.Crypt::encrypt($idpiutang))->with('success', $simpan['message']);
         } else {
-            return redirect('/piutang/detail/' . Crypt::encrypt($idpiutang))->with('fail', 'Data gagal disimpan! Error: ' . $simpan['message']);
+            return redirect('/piutang/detail/'.Crypt::encrypt($idpiutang))->with('fail', 'Data gagal disimpan! Error: '.$simpan['message']);
         }
     }
-
-
 
     public function hapus($idpiutangdetail)
     {
@@ -391,18 +399,19 @@ class PiutangController extends Controller
         if (App::isPosting($tglpiutang)) {
             $bulan = bulan(date('m', strtotime($tglpiutang)));
             $tahun = date('Y', strtotime($tglpiutang));
-            return redirect('/piutang/detail/' . Crypt::encrypt($idpiutang))->with('other', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
+
+            return redirect('/piutang/detail/'.Crypt::encrypt($idpiutang))->with('other', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
         }
 
         if ($this->model->cekPiutangSetelahnya($idpiutang, $idpiutangdetail)) {
-            return redirect('/piutang/detail/' . Crypt::encrypt($idpiutang))->with('other', "Tidak boleh menghapus pembayaran ini. Hapus pembayaran harus dilakukan secara berurutan dari yang terakhir terlebih dahulu!");
+            return redirect('/piutang/detail/'.Crypt::encrypt($idpiutang))->with('other', 'Tidak boleh menghapus pembayaran ini. Hapus pembayaran harus dilakukan secara berurutan dari yang terakhir terlebih dahulu!');
         }
 
         $hapus = $this->model->hapusData($idpiutang, $idpiutangdetail, $rsPiutangDetail);
         if ($hapus['status'] == 'success') {
-            return redirect('/piutang/detail/' . Crypt::encrypt($idpiutang))->with('success', $hapus['message']);
+            return redirect('/piutang/detail/'.Crypt::encrypt($idpiutang))->with('success', $hapus['message']);
         } else {
-            return redirect('/piutang/detail/' . Crypt::encrypt($idpiutang))->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/piutang/detail/'.Crypt::encrypt($idpiutang))->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
 
@@ -420,18 +429,19 @@ class PiutangController extends Controller
         if (App::isPosting($tglpiutang)) {
             $bulan = bulan(date('m', strtotime($tglpiutang)));
             $tahun = date('Y', strtotime($tglpiutang));
-            return redirect('/piutang/detail/' . Crypt::encrypt($idpiutang))->with('other', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
+
+            return redirect('/piutang/detail/'.Crypt::encrypt($idpiutang))->with('other', "Jurnal bulan $bulan $tahun sudah di posting! tidak boleh merubah jurnal di periode ini lagi!");
         }
 
         if ($this->model->piutangSudahDibayarByIdPiutang($idpiutang)) {
-            return redirect('/piutang')->with('other', "Tidak boleh menghapus Piutang ini karena sudah ada pembayaran!");
+            return redirect('/piutang')->with('other', 'Tidak boleh menghapus Piutang ini karena sudah ada pembayaran!');
         }
 
         $hapus = $this->model->hapusList($idpiutang, $rsPiutang);
         if ($hapus['status'] == 'success') {
             return redirect('/piutang')->with('success', $hapus['message']);
         } else {
-            return redirect('/piutang')->with('fail', 'Data gagal dihapus! Error: ' . $hapus['message']);
+            return redirect('/piutang')->with('fail', 'Data gagal dihapus! Error: '.$hapus['message']);
         }
     }
 
@@ -444,7 +454,7 @@ class PiutangController extends Controller
             $idpiutang = Crypt::decrypt($idpiutang);
             $rsPiutang = Piutang::findOrFail($idpiutang);
         } catch (ModelNotFoundException $e) {
-            echo "Data tidak ditemukan!";
+            echo 'Data tidak ditemukan!';
         }
         $idkonsumen = $rsPiutang->idkonsumen;
         $rsKonsumen = Konsumen::find($idkonsumen);
@@ -453,7 +463,6 @@ class PiutangController extends Controller
         $data['rsPiutang'] = $rsPiutang;
         $data['rsKonsumen'] = $rsKonsumen;
         $view = view('piutang.cetakBukuPiutang', $data);
-
 
         $pdf = new TCPDF();
 
@@ -486,6 +495,7 @@ class PiutangController extends Controller
         $rsPiutang = Piutang::find($idpiutang);
 
         $rsDetail = $this->model->getDetail($idpiutang);
-        return response()->json(array('rsPiutang' => $rsPiutang, 'rsDetail' => $rsDetail));
+
+        return response()->json(['rsPiutang' => $rsPiutang, 'rsDetail' => $rsDetail]);
     }
 }
