@@ -81,10 +81,10 @@
                 <tr style="font-size: 9px; font-weight: bold;">
                     <th style="width: 5%; text-align: center;">NO</th>
                     <th style="width: 15%; text-align: center;">KODE BARANG</th>
-                    <th style="width: 35%; text-align: left;">NAMA BARANG</th>
+                    <th style="width: 35%; text-align: center;">NAMA BARANG</th>
                     <th style="width: 15%; text-align: center;">KUANTITAS</th>
-                    <th style="width: 15%; text-align: right;">NILAI TOTAL BIAYA</th>
-                    <th style="width: 15%; text-align: right;">BIAYA RATA-RATA</th>
+                    <th style="width: 15%; text-align: center;">TOTAL HPP</th>
+                    <th style="width: 15%; text-align: center;">HPP</th>
                 </tr>
             </thead>
             <tbody>

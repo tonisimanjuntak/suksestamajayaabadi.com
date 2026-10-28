@@ -43,6 +43,7 @@ use App\Http\Controllers\KartustokbarangController;
 use App\Http\Controllers\LapstokfifoController;
 use App\Http\Controllers\RekonsiliasiStokController;
 use App\Http\Controllers\PemeliharaansystemController;
+use App\Http\Controllers\LapneracaController;
 use App\Http\Controllers\LapneracasaldoController;
 use App\Http\Controllers\LappenagihansalesController;
 use App\Http\Controllers\LappenerimaanController;
@@ -710,6 +711,11 @@ Route::middleware(['check.menu.access'])->group(function () {
         Route::controller(LapperubahanmodalController::class)->group(function () {
             Route::get('lapperubahanmodal', 'index');
             Route::get('lapperubahanmodal/cetak/{jenisCetakan}/{tglawal}/{tglakhir}', 'cetak');            
+        });
+
+        Route::controller(LapneracaController::class)->group(function () {
+            Route::get('lapneraca', 'index');
+            Route::get('lapneraca/cetak/{jenisCetakan}/{tglakhir}', 'cetak');
         });
 
 });

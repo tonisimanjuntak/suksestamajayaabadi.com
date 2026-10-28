@@ -60,8 +60,8 @@
                                                 <th style="width: 15%; text-align: center;">Kode Barang</th>
                                                 <th style="text-align: left;">Nama Barang</th>
                                                 <th style="width: 10%; text-align: center;">Kuantitas</th>
-                                                <th style="width: 15%; text-align: right;">Nilai Total Biaya</th>
-                                                <th style="width: 15%; text-align: right;">Biaya Rata-Rata</th>
+                                                <th style="width: 15%; text-align: right;">Total HPP</th>
+                                                <th style="width: 15%; text-align: right;">HPP</th>
                                             </tr>
                                         </thead>
                                         <tbody>
