@@ -13,4 +13,8 @@ class Riwayataktifitas extends Model
     use HasFactory;
     protected $table = 'riwayataktifitas';
     protected $keyType = 'int';
+
+    protected $casts = [
+        'deskripsi' => 'array',
+    ];
 }

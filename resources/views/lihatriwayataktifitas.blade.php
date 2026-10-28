@@ -146,6 +146,9 @@
                     name: 'deskripsi',
                     className: 'dt-body-left',
                     orderable: false,
+                    render: function(data) {
+                        return data || '-';
+                    }
                 },
                 {
                     data: 'namafunction',

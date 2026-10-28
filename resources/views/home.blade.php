@@ -781,12 +781,37 @@
         });
     }
 
+    function formatDeskripsiLive(deskripsi) {
+        if (!deskripsi) return '-';
+        try {
+            var parsed = typeof deskripsi === 'string' ? JSON.parse(deskripsi) : deskripsi;
+            if (typeof parsed === 'object' && parsed !== null) {
+                var pairs = [];
+                for (var key in parsed) {
+                    if (Object.prototype.hasOwnProperty.call(parsed, key)) {
+                        var label = key.replace(/_/g, ' ');
+                        var val = parsed[key];
+                        if (typeof val === 'object' && val !== null) {
+                            val = JSON.stringify(val);
+                        }
+                        pairs.push(label + ': ' + (val === null ? '-' : val));
+                    }
+                }
+                return pairs.length > 0 ? pairs.join(', ') : '-';
+            }
+        } catch (e) {
+            // bukan json
+        }
+        return deskripsi;
+    }
+
     function addRowRiwayatAktifitas(arrRiwayat) {
         if (!arrRiwayat || arrRiwayat.length === 0) return;
 
         for (var i = arrRiwayat.length - 1; i >= 0; i--) {
             var item = arrRiwayat[i];
             var actionBadge = getActionBadge(item.namafunction);
+            var deskripsiTeks = formatDeskripsiLive(item.deskripsi);
 
             var rowHtml = `
                 <tr>
@@ -803,8 +828,8 @@
                     <td class="small text-muted align-middle">
                         <code>${item.namatabel || '-'}</code>
                     </td>
-                    <td class="small text-dark align-middle text-truncate" style="max-width: 250px;" title="${item.deskripsi || '-'}">
-                        ${item.deskripsi || '-'}
+                    <td class="small text-dark align-middle text-truncate" style="max-width: 250px;" title="${deskripsiTeks.replace(/"/g, '&quot;')}">
+                        ${deskripsiTeks}
                     </td>
                 </tr>
             `;

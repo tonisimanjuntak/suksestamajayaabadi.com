@@ -17,6 +17,101 @@ class HomeController extends Controller
         $this->model = new Home;
     }
 
+    /**
+     * Format deskripsi JSON array menjadi HTML rapi untuk tampilan web / DataTables.
+     */
+    private function formatDeskripsiHtml($deskripsi)
+    {
+        if (is_string($deskripsi)) {
+            $decoded = json_decode($deskripsi, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                $deskripsi = $decoded;
+            }
+        }
+
+        if (!is_array($deskripsi) || empty($deskripsi)) {
+            return is_array($deskripsi) ? '-' : e($deskripsi ?? '-');
+        }
+
+        // Cek jika indexed array (array of items)
+        $isIndexed = array_keys($deskripsi) === range(0, count($deskripsi) - 1);
+        if ($isIndexed) {
+            $itemsHtml = [];
+            foreach ($deskripsi as $i => $item) {
+                $num = $i + 1;
+                if (is_array($item)) {
+                    $sub = [];
+                    foreach ($item as $k => $v) {
+                        $sub[] = '<b>' . e(ucwords(str_replace('_', ' ', $k))) . ':</b> ' . e(is_array($v) ? json_encode($v) : ($v ?? '-'));
+                    }
+                    $itemsHtml[] = '<div><span class="badge badge-secondary mr-1">#' . $num . '</span> ' . implode(', ', $sub) . '</div>';
+                } else {
+                    $itemsHtml[] = '<div><span class="badge badge-secondary mr-1">#' . $num . '</span> ' . e($item ?? '-') . '</div>';
+                }
+            }
+            return implode('', $itemsHtml);
+        }
+
+        $html = '<table class="table table-sm table-borderless m-0" style="font-size:12px; line-height:1.4;">';
+        foreach ($deskripsi as $key => $value) {
+            $label = ucwords(str_replace('_', ' ', $key));
+            $val = is_array($value) ? json_encode($value) : ($value ?? '-');
+            $html .= '<tr>'
+                . '<td style="padding:1px 4px; font-weight:600; white-space:nowrap; width:1%; color:#555;">' . e($label) . '</td>'
+                . '<td style="padding:1px 4px; width:1%;">:</td>'
+                . '<td style="padding:1px 4px;">' . e($val) . '</td>'
+                . '</tr>';
+        }
+        $html .= '</table>';
+
+        return $html;
+    }
+
+    /**
+     * Format deskripsi JSON array menjadi HTML sederhana untuk TCPDF (cetak PDF).
+     */
+    private function formatDeskripsiCetak($deskripsi)
+    {
+        if (is_string($deskripsi)) {
+            $decoded = json_decode($deskripsi, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                $deskripsi = $decoded;
+            }
+        }
+
+        if (!is_array($deskripsi) || empty($deskripsi)) {
+            return is_array($deskripsi) ? '-' : e($deskripsi ?? '-');
+        }
+
+        // Cek jika indexed array (array of items)
+        $isIndexed = array_keys($deskripsi) === range(0, count($deskripsi) - 1);
+        if ($isIndexed) {
+            $rows = [];
+            foreach ($deskripsi as $i => $item) {
+                $num = $i + 1;
+                if (is_array($item)) {
+                    $sub = [];
+                    foreach ($item as $k => $v) {
+                        $sub[] = '<b>' . e(ucwords(str_replace('_', ' ', $k))) . ':</b> ' . e(is_array($v) ? json_encode($v) : ($v ?? '-'));
+                    }
+                    $rows[] = '[#' . $num . '] ' . implode(', ', $sub);
+                } else {
+                    $rows[] = '[#' . $num . '] ' . e($item ?? '-');
+                }
+            }
+            return implode('<br/>', $rows);
+        }
+
+        $lines = [];
+        foreach ($deskripsi as $key => $value) {
+            $label = ucwords(str_replace('_', ' ', $key));
+            $val = is_array($value) ? json_encode($value) : ($value ?? '-');
+            $lines[] = '<b>' . e($label) . '</b>: ' . e($val);
+        }
+
+        return implode('<br/>', $lines);
+    }
+
     public function index()
     {
 
@@ -60,9 +155,12 @@ class HomeController extends Controller
         // Cek apakah ada pencarian
         if ($request->has('search') && !empty($request->input('search.value'))) {
             $search = $request->input('search.value');
-            $query->where('namapengguna', 'LIKE', "%{$search}%")
-                ->orWhere('namatabel', 'LIKE', "%{$search}%")
-                ->orWhere('namafunction', 'LIKE', "%{$search}%");
+            $query->where(function ($q) use ($search) {
+                $q->where('namapengguna', 'LIKE', "%{$search}%")
+                    ->orWhere('namatabel', 'LIKE', "%{$search}%")
+                    ->orWhere('namafunction', 'LIKE', "%{$search}%")
+                    ->orWhere('deskripsi', 'LIKE', "%{$search}%");
+            });
         }
 
         // Sorting berdasarkan kolom yang diklik
@@ -107,7 +205,7 @@ class HomeController extends Controller
             $data[] = [
                 'no' => $no++,
                 'inserted_date' => $row->inserted_date,
-                'deskripsi' => $row->deskripsi,
+                'deskripsi' => $this->formatDeskripsiHtml($row->deskripsi),
                 'namafunction' => $row->namafunction,
                 'namatabel' => $row->namatabel,
                 'namapengguna' => $row->namapengguna,
@@ -353,11 +451,18 @@ class HomeController extends Controller
         /*
             composer require tecnickcom/tcpdf
         */
+        ini_set('memory_limit', '512M');
+        set_time_limit(300);
+
         $query = Riwayataktifitas::select('*')->whereRaw("CAST(inserted_date AS DATE) BETWEEN ? AND ?", [$tglawal, $tglakhir]);
         if ($idpengguna != "-") {
             $query = $query->where('idpengguna', $idpengguna);
         }
-        $data['rsRiwayat'] = $query->get();
+        $rsRiwayat = $query->get();
+        foreach ($rsRiwayat as $r) {
+            $r->deskripsi_formatted = $this->formatDeskripsiCetak($r->deskripsi);
+        }
+        $data['rsRiwayat'] = $rsRiwayat;
         $data['tglawal'] = $tglawal;
         $data['tglakhir'] = $tglakhir;
         $view = view('cetakriwayataktifitas', $data);

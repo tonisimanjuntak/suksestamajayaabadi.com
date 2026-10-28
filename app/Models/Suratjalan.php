@@ -127,8 +127,14 @@ class Suratjalan extends Model
             }
 
             $this->App->riwayatAktifitas($data, 'suratjalan', 'simpanData');
-            $this->App->riwayatAktifitas($dataDetail, 'suratjalandetail', 'simpanData');
-            $this->App->riwayatAktifitas($dataDetailRincian, 'suratjalanrincian', 'simpanData');
+            
+            // Format log riwayat untuk detail surat jalan agar informatif (memuat noinvoice, tanggal, konsumen, total)
+            $logDetail = DB::table('v_suratjalandetail')
+                ->where('idsuratjalan', $idsuratjalan)
+                ->select('idsuratjalan', 'noinvoice', 'tglinvoice', 'namakonsumen', 'totalinvoice')
+                ->get();
+            $this->App->riwayatAktifitas($logDetail->isNotEmpty() ? $logDetail : $dataDetail, 'suratjalandetail', 'simpanData');
+            // riwayat untuk rincian manual tidak dicatat, hanya detail invoice
 
             DB::commit();
 
@@ -320,8 +326,14 @@ class Suratjalan extends Model
 
             //riwayat aktifitas
             $this->App->riwayatAktifitas($data, 'suratjalan', 'updateData');
-            $this->App->riwayatAktifitas($dataDetail, 'suratjalandetail', 'updateData');
-            $this->App->riwayatAktifitas($dataDetailRincian, 'suratjalanrincian', 'updateData');
+            
+            // Format log riwayat untuk detail surat jalan agar informatif (memuat noinvoice, tanggal, konsumen, total)
+            $logDetail = DB::table('v_suratjalandetail')
+                ->where('idsuratjalan', $idsuratjalan)
+                ->select('idsuratjalan', 'noinvoice', 'tglinvoice', 'namakonsumen', 'totalinvoice')
+                ->get();
+            $this->App->riwayatAktifitas($logDetail->isNotEmpty() ? $logDetail : $dataDetail, 'suratjalandetail', 'updateData');
+            // riwayat untuk rincian manual tidak dicatat, hanya detail invoice
 
             DB::commit();
             return ['status' => 'success', 'message' => "Data berhasil disimpan"];
@@ -357,9 +369,15 @@ class Suratjalan extends Model
                 $this->App->riwayatAktifitas($rsHutangEkspedisi, 'hutangekspedisi', 'hapusDataSuratJalan');
             }
 
-            $detailOld = DB::table('suratjalandetail')
+            $detailOld = DB::table('v_suratjalandetail')
                 ->where('idsuratjalan', $idsuratjalan)
+                ->select('idsuratjalan', 'noinvoice', 'tglinvoice', 'namakonsumen', 'totalinvoice')
                 ->get();
+            if ($detailOld->isEmpty()) {
+                $detailOld = DB::table('suratjalandetail')
+                    ->where('idsuratjalan', $idsuratjalan)
+                    ->get();
+            }
             $detailRincianOld = DB::table('suratjalanrincian')
                 ->where('idsuratjalan', $idsuratjalan)
                 ->get();
@@ -438,7 +456,7 @@ class Suratjalan extends Model
 
             $this->App->riwayatAktifitas($rsSuratJalan, 'suratjalan', 'hapusData');
             $this->App->riwayatAktifitas($detailOld, 'suratjalandetail', 'hapusData');
-            $this->App->riwayatAktifitas($detailRincianOld, 'suratjalanrincian', 'hapusData');
+            // riwayat untuk rincian manual tidak dicatat, hanya detail invoice
 
 
             DB::commit();

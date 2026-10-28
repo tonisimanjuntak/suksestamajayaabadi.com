@@ -56,8 +56,11 @@
     <table>
         <thead>
             <tr>
-                <th class="" style="width: 10%; text-align: center;" rowspan="3"><img
-                        src="{{ public_path('images/'. session('usaha_logo')) }}" alt="" style="width: 50px;"></th>
+                <th class="" style="width: 10%; text-align: center;" rowspan="3">
+                    @if(session('usaha_logo') && file_exists(public_path('images/'. session('usaha_logo'))))
+                        <img src="{{ public_path('images/'. session('usaha_logo')) }}" alt="" style="width: 50px;">
+                    @endif
+                </th>
                 <th style="width: 90%; font-size: 15px; text-align: left; padding-right: 50px;" colspan="7">{{ session('usaha_nama') }}</th>
             </tr>
             <tr>
@@ -105,7 +108,7 @@
 
                     <tr>
                         <td width="15%" style="font-size:10px; text-align:center;">{{ $row->inserted_date }}</td>
-                        <td width="40%" style="font-size:10px; text-align:left;">{{ $row->deskripsi }}</td>
+                        <td width="40%" style="font-size:10px; text-align:left;">{!! $row->deskripsi_formatted ?? '-' !!}</td>
                         <td width="15%" style="font-size:10px; text-align:center;">{{ $row->namafunction }}</td>
                         <td width="15%" style="font-size:10px; text-align:center;">{{ $row->namatabel }}</td>
                         <td width="15%" style="font-size:10px; text-align:center;">{{ $row->namapengguna }}</td>
