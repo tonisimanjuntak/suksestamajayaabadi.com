@@ -762,7 +762,7 @@
                 </div>
 
                 <div class="form-header">
-                    <h2 class="form-title">Selamat Datang Lae</h2>
+                    <h2 class="form-title">Selamat Datang</h2>
                     <p class="form-subtitle">Masukkan username dan password Anda untuk masuk ke sistem.</p>
                 </div>
 
